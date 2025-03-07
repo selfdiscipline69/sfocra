@@ -1,11 +1,68 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from 'react';
+
 
 export default function SignupScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+// Clear inputs on initial load/refresh
+useEffect(() => {
+  const clearInputs = async () => {
+    setEmail('');
+    setPassword('');
+  };
+  clearInputs();
+}, []); // Empty dependency array means it runs once on mount
+
+// Save user data to AsyncStorage
+const saveUserData = async () => {
+  try {
+    await AsyncStorage.setItem('userEmail', email);
+    await AsyncStorage.setItem('userPassword', password);
+    return true;
+  } catch (err) {
+    console.log('Failed to save user data', err);
+    return false;
+  }
+};
+
+// Verify login credentials
+const verifyLogin = async () => {
+  try {
+    const storedEmail = await AsyncStorage.getItem('userEmail');
+    const storedPassword = await AsyncStorage.getItem('userPassword');
+    
+    if (email === storedEmail && password === storedPassword) {
+      router.replace('/question1');
+    } else {
+      console.log('Invalid credentials');
+      // You might want to add some user feedback here
+      alert('Invalid email or password');
+    }
+  } catch (err) {
+    console.log('Error verifying login', err);
+  }
+};
+
+// Handle login button press
+const handleLogin = async () => {
+  // If no stored credentials exist, save them and proceed
+  const storedEmail = await AsyncStorage.getItem('userEmail');
+  if (!storedEmail) {
+    const saved = await saveUserData();
+    if (saved) {
+      router.replace('/question1');
+    }
+  } else {
+    // If credentials exist, verify them
+    await verifyLogin();
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -169,3 +226,7 @@ const styles = StyleSheet.create({
     height: 30,
   },
 });
+
+function useEffect(arg0: () => void, arg1: never[]) {
+  throw new Error('Function not implemented.');
+}
