@@ -1,10 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Updated import
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Question1() {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
+
+  // Load saved selection when component mounts
+  useEffect(() => {
+    const loadSelection = async () => {
+      try {
+        const savedSelection = await AsyncStorage.getItem('question1Selection');
+        if (savedSelection !== null) {
+          setSelected(savedSelection);
+        }
+      } catch (e) {
+        console.error('Error loading selection:', e);
+      }
+    };
+    loadSelection();
+  }, []);
+
+  // Function to save selection to AsyncStorage
+  const handleSelection = async (option) => {
+    try {
+      await AsyncStorage.setItem('question1Selection', option);
+      setSelected(option);
+    } catch (e) {
+      console.error('Error saving selection:', e);
+    }
+  };
+
+  // Optional: Function to handle navigation with saved data
+  const handleNext = async () => {
+    if (selected) {
+      try {
+        await AsyncStorage.setItem('question1Selection', selected);
+        router.push('/question2');
+      } catch (e) {
+        console.error('Error saving before navigation:', e);
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -23,7 +61,7 @@ export default function Question1() {
           <TouchableOpacity
             key={option}
             style={[styles.option, selected === option && styles.selectedOption]}
-            onPress={() => setSelected(option)}
+            onPress={() => handleSelection(option)} // Updated to use handleSelection
           >
             <Text style={styles.optionText}>{option}</Text>
             {selected === option && <Text style={styles.checkmark}>✔</Text>}
@@ -39,8 +77,8 @@ export default function Question1() {
       {/* Next Button */}
       <TouchableOpacity
         style={styles.nextButton}
-        onPress={() => router.push('/question2')}
-        disabled={!selected} // Prevent navigation without selection
+        onPress={handleNext} // Updated to use handleNext
+        disabled={!selected}
       >
         <Text style={styles.nextText}>Next</Text>
       </TouchableOpacity>
@@ -52,13 +90,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    backgroundColor: 'black', // 🔥 Set background to black
+    backgroundColor: 'black',
     justifyContent: 'space-between',
     paddingVertical: 50,
   },
   progressBar: {
     height: 5,
-    backgroundColor: '#555', // 🔥 Make progress bar track darker
+    backgroundColor: '#555',
     borderRadius: 10,
     overflow: 'hidden',
     marginBottom: 20,
@@ -77,11 +115,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
-    color: 'white', // 🔥 Make text white
+    color: 'white',
   },
   subtext: {
     fontSize: 16,
-    color: '#aaa', // 🔥 Light gray for readability
+    color: '#aaa',
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -91,19 +129,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 15,
     borderWidth: 1,
-    borderColor: '#888', // 🔥 Slightly lighter border
+    borderColor: '#888',
     borderRadius: 10,
     marginBottom: 15,
     width: '100%',
-    backgroundColor: '#222', // 🔥 Dark gray background for options
+    backgroundColor: '#222',
   },
   selectedOption: {
-    backgroundColor: '#444', // 🔥 Darker background for selected option
+    backgroundColor: '#444',
     borderColor: 'red',
   },
   optionText: {
     fontSize: 16,
-    color: 'white', // 🔥 Make text white
+    color: 'white',
   },
   checkmark: {
     color: 'red',
@@ -113,7 +151,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     marginVertical: 40,
-    color: '#aaa', // 🔥 Light gray for readability
+    color: '#aaa',
   },
   nextButton: {
     backgroundColor: 'red',
