@@ -17,6 +17,7 @@ import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 import quotesData from '../../assets/Quote.json';
+import questsData from '../../assets/Quest.json'; // Import Quest data
 
 const { width } = Dimensions.get('window');
 
@@ -31,7 +32,9 @@ export default function Homepage() {
     question3: null,
     question4: null,
   });
-  const [dailyQuotes, setDailyQuotes] = useState(['', '', '']); // Changed to 3 quotes
+  const [dailyQuote, setDailyQuote] = useState(''); // Changed to single quote
+  const [dailyTasks, setDailyTasks] = useState(['', '']); // Two daily tasks
+  const [weeklyTrial, setWeeklyTrial] = useState(null); // Weekly trial quest
   const [profileImage, setProfileImage] = useState(null);
 
   // Function to load user choices from AsyncStorage
@@ -86,52 +89,90 @@ export default function Homepage() {
     }
   };
 
-  // Function to load quotes
-  const loadQuotes = async () => {
+  // Function to load quests and quotes with an option to refresh weekly trial or not
+  const loadQuestsAndQuotes = async (refreshWeeklyTrial = true) => {
     try {
-      // Extract 3 random quotes from the data (changed from 5)
-      const randomQuotes = [];
+      // Select 3 random quests from the quests data
+      const selectedQuests = [];
+      const questsCopy = [...questsData]; // Create a copy to avoid modifying the original
+      
       for (let i = 0; i < 3; i++) {
+        if (questsCopy.length === 0) break;
+        
+        const randomIndex = Math.floor(Math.random() * questsCopy.length);
+        const randomQuest = questsCopy.splice(randomIndex, 1)[0]; // Remove and get the selected quest
+        
+        selectedQuests.push(randomQuest);
+      }
+      
+      // First quest for Weekly Trial - only update if refreshWeeklyTrial is true
+      if (selectedQuests.length > 0 && refreshWeeklyTrial) {
+        const formattedQuest = `${selectedQuests[0].task} (${selectedQuests[0].duration_minutes} min) - ${selectedQuests[0].category}`;
+        setWeeklyTrial(formattedQuest);
+      }
+      
+      // Next 2 quests for Daily Tasks - always refresh these
+      const tasks = [];
+      for (let i = 1; i < 3; i++) {
+        if (i < selectedQuests.length) {
+          const quest = selectedQuests[i];
+          const formattedQuest = `${quest.task} (${quest.duration_minutes} min) - ${quest.category}`;
+          tasks.push(formattedQuest);
+        } else {
+          tasks.push("No task available");
+        }
+      }
+      setDailyTasks(tasks);
+      
+      // Select 1 random quote for Daily Quote - always refresh this
+      if (quotesData.length > 0) {
         const randomIndex = Math.floor(Math.random() * quotesData.length);
         const randomQuote = quotesData[randomIndex];
         
-        // Extract the quote text from the object
         if (randomQuote && randomQuote.quote) {
-          randomQuotes.push(randomQuote.quote);
+          setDailyQuote(randomQuote.quote);
         } else {
-          randomQuotes.push("Quote not available");
+          setDailyQuote("Quote not available");
         }
+      } else {
+        setDailyQuote("The unexamined life is not worth living - Socrates");
+      }
+    } catch (err) {
+      console.error('Error loading quests and quotes:', err);
+      
+      // Set defaults in case of error - but respect the refreshWeeklyTrial parameter
+      if (refreshWeeklyTrial) {
+        setWeeklyTrial("Working out in the gym (60 min) - Physical");
       }
       
-      setDailyQuotes(randomQuotes);
-    } catch (err) {
-      console.error('Error loading quotes:', err);
-      console.error('Error details:', JSON.stringify(err, null, 2));
-      // Set default quotes in case of error - now 3 quotes
-      setDailyQuotes([
-        "The unexamined life is not worth living - Socrates",
-        "We are what we repeatedly do. Excellence, then, is not an act, but a habit - Aristotle",
-        "You have power over your mind - not outside events. Realize this, and you will find strength - Marcus Aurelius"
+      setDailyTasks([
+        "Meditation (30 min) - Mental",
+        "Reading (30 min) - Knowledge"
       ]);
+      setDailyQuote("The unexamined life is not worth living - Socrates");
     }
   };
 
   // Function to refresh all data
   const handleRefresh = () => {
     loadUserChoices();
-    loadQuotes();
+    loadQuestsAndQuotes(false); // Pass false to not refresh weekly trial
   };
 
   // Load all stored choices from AsyncStorage when component mounts
   useEffect(() => {
     loadUserChoices();
-    loadQuotes();
+    loadQuestsAndQuotes();
   }, []);
 
-  const handleQuoteChange = (index, newQuote) => {
-    const updatedQuotes = [...dailyQuotes];
-    updatedQuotes[index] = newQuote;
-    setDailyQuotes(updatedQuotes);
+  const handleTaskChange = (index, newTask) => {
+    const updatedTasks = [...dailyTasks];
+    updatedTasks[index] = newTask;
+    setDailyTasks(updatedTasks);
+  };
+
+  const handleQuoteChange = (newQuote) => {
+    setDailyQuote(newQuote);
   };
 
     // Back to previous page
@@ -147,7 +188,6 @@ export default function Homepage() {
   
   return (
     <>
-      {/* Custom Header with Red Background and Lower Title */}
       <Stack.Screen 
         options={{
           headerStyle: {
@@ -182,7 +222,7 @@ export default function Homepage() {
               <View style={styles.headerButtons}>
                 {/* Refresh Button */}
                 <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
-                  <Text style={styles.refreshButtonText}>↻ Refresh</Text>
+                  <Text style={styles.refreshButtonText}>↻</Text>
                 </TouchableOpacity>
                 
                 {/* User Profile Image or Default Icon */}
@@ -211,36 +251,32 @@ export default function Homepage() {
               {/* Add spacer to create more distance */}
               <View style={styles.spacerView} />
               
-              {/* Weekly Trial */}
+              {/* Weekly Trial with Random Quest */}
               <View style={styles.optionContainer}>
                 <Text style={styles.optionTitle}>Weekly Trial</Text>
                 <View style={styles.optionContent}>
-                  {Object.entries(userChoices).some(([, choice]) => choice) ? (
-                    Object.entries(userChoices).map(([question, choice]) => (
-                      choice && (
-                        <Text key={question} style={styles.userChoiceText}>
-                          {`Q${question.replace('question', '')}: ${choice}`}
-                        </Text>
-                      )
-                    ))
+                  {weeklyTrial ? (
+                    <Text style={styles.userChoiceText}>{weeklyTrial}</Text>
                   ) : (
-                    <Text style={styles.noChoicesText}>No choices made yet</Text>
+                    <Text style={styles.noChoicesText}>No quest available</Text>
                   )}
+                  
+
                 </View>
               </View>
 
-              {/* Daily Quotes */}
-              {dailyQuotes.map((quote, index) => (
-                <View key={index} style={styles.optionContainer}>
-                  <Text style={styles.optionTitle}>Daily Quote</Text>
+              {/* Daily Tasks (2 boxes) */}
+              {dailyTasks.map((task, index) => (
+                <View key={`task-${index}`} style={styles.optionContainer}>
+                  <Text style={styles.optionTitle}>Daily Task {index + 1}</Text>
                   <View style={styles.optionContent}>
                     <TextInput
                       style={styles.quoteInput}
-                      value={quote}
-                      onChangeText={(text) => handleQuoteChange(index, text)}
+                      value={task}
+                      onChangeText={(text) => handleTaskChange(index, text)}
                       multiline={true}
                       textAlign="center"
-                      placeholder="Enter a quote"
+                      placeholder="Enter a task"
                       placeholderTextColor="#aaa"
                     />
                   </View>
@@ -250,6 +286,20 @@ export default function Homepage() {
               {/* Extra space at bottom for keyboard */}
               <View style={styles.keyboardSpace} />
             </ScrollView>
+
+            {/* Daily Quote Box - Now positioned above bottom nav with red theme */}
+            <View style={styles.redQuoteContainer}>
+              <Text style={styles.redQuoteTitle}>Daily Quote</Text>
+              <TextInput
+                style={styles.redQuoteInput}
+                value={dailyQuote}
+                onChangeText={handleQuoteChange}
+                multiline={true}
+                textAlign="center"
+                placeholder="Enter a quote"
+                placeholderTextColor="#ffcccc"
+              />
+            </View>
 
             {/* Bottom Navigation Icons */}
             <View style={styles.bottomNav}>
@@ -305,7 +355,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flexGrow: 1,
-    paddingBottom: 30,
+    paddingBottom: 10, // Reduced from 30 to give space for quote box
   },
   optionContainer: {
     backgroundColor: 'white',
@@ -336,6 +386,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black', 
   },
+  userChoicesSection: {
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  userChoicesHeader: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: 'black',
+  },
   quoteInput: {
     fontSize: 14, // Reduced from 16 to 14
     paddingVertical: 0, // Reduced from 10 to 8
@@ -347,7 +409,7 @@ const styles = StyleSheet.create({
   bottomNav: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 15,
+    paddingVertical: 12,
     paddingHorizontal: 40,
     borderTopWidth: 1,
     borderColor: 'gray',
@@ -390,7 +452,34 @@ const styles = StyleSheet.create({
   },
   spacerView: {
     height: 30, // Adjust this value to control the amount of space
-  }
+  },
+  redQuoteContainer: {
+    backgroundColor: 'rgba(255, 0, 0, 0.1)',
+    borderRadius: 10,
+    margin: 5,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#ff3333',
+    overflow: 'hidden',
+  },
+  redQuoteTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    paddingVertical: 8,
+    backgroundColor: 'rgba(255, 0, 0, 0.2)',
+    color: 'white',
+  },
+  redQuoteInput: {
+    fontSize: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    textAlign: 'center',
+    color: 'white',
+    width: '100%',
+    lineHeight: 18,
+    minHeight: 60,
+  },
 });
 
 export const unstable_settings = {

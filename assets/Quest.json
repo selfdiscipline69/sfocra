@@ -1,0 +1,92 @@
+[
+    {
+      "category": "Physical",
+      "task": "Working out in the gym",
+      "duration_minutes": 60
+    },
+    {
+      "category": "Physical",
+      "task": "Running",
+      "duration_minutes": 20
+    },
+    {
+      "category": "Physical",
+      "task": "Stretching",
+      "duration_minutes": 10
+    },
+    {
+      "category": "Physical",
+      "task": "Yoga session",
+      "duration_minutes": 30
+    },
+    {
+      "category": "Physical",
+      "task": "Cycling",
+      "duration_minutes": 45
+    },
+    {
+      "category": "Physical",
+      "task": "Bodyweight exercises (push-ups, squats, etc.)",
+      "duration_minutes": 25
+    },
+    {
+      "category": "Mental",
+      "task": "Meditation",
+      "duration_minutes": 30
+    },
+    {
+      "category": "Mental",
+      "task": "Walking",
+      "duration_minutes": 20
+    },
+    {
+      "category": "Mental",
+      "task": "Journaling emotions and thoughts",
+      "duration_minutes": 15
+    },
+    {
+      "category": "Mental",
+      "task": "Deep breathing exercises",
+      "duration_minutes": 10
+    },
+    {
+      "category": "Mental",
+      "task": "Mindfulness practice (e.g., mindful eating)",
+      "duration_minutes": 20
+    },
+    {
+      "category": "Mental",
+      "task": "Gratitude reflection",
+      "duration_minutes": 10
+    },
+    {
+      "category": "Knowledge",
+      "task": "Reading (book, article, etc.)",
+      "duration_minutes": 30
+    },
+    {
+      "category": "Knowledge",
+      "task": "Online course or tutorial",
+      "duration_minutes": 30
+    },
+    {
+      "category": "Knowledge",
+      "task": "Self-reflection on knowledge gained",
+      "duration_minutes": 20
+    },
+    {
+      "category": "Knowledge",
+      "task": "Learning a new language (e.g., via app)",
+      "duration_minutes": 25
+    },
+    {
+      "category": "Knowledge",
+      "task": "Watching educational documentary",
+      "duration_minutes": 45
+    },
+    {
+      "category": "Knowledge",
+      "task": "Practicing a skill (e.g., coding, drawing)",
+      "duration_minutes": 40
+    }
+  ]
