@@ -6,8 +6,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Question3() {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
+  const [userToken, setUserToken] = useState('');
 
-  // Load saved selection on mount
+  // Load saved selection and user token when component mounts
   useEffect(() => {
     const loadSelection = async () => {
       try {
@@ -15,8 +16,12 @@ export default function Question3() {
         if (savedSelection !== null) {
           setSelected(savedSelection);
         }
+        const token = await AsyncStorage.getItem('userToken');
+        if (token !== null) {
+          setUserToken(token);
+        }
       } catch (e) {
-        console.error('Error loading selection:', e);
+        console.error('Error loading data:', e);
       }
     };
     loadSelection();
@@ -72,6 +77,9 @@ export default function Question3() {
         The way you measure progress defines the legacy you will leave behind.
       </Text>
 
+      {/* User Token */}
+      <Text style={styles.tokenText}>User Token: {userToken}</Text>
+
       {/* Next Button */}
       <TouchableOpacity
         style={styles.nextButton}
@@ -79,6 +87,14 @@ export default function Question3() {
         disabled={!selected}
       >
         <Text style={styles.nextText}>Next</Text>
+      </TouchableOpacity>
+
+      {/* Back Button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.back()}
+      >
+        <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>
     </View>
   );
@@ -151,6 +167,12 @@ const styles = StyleSheet.create({
     marginVertical: 40,
     color: '#aaa',
   },
+  tokenText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
   nextButton: {
     backgroundColor: 'red',
     paddingVertical: 15,
@@ -163,5 +185,18 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  backButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: 'gray',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  backText: {
+    color: 'white',
+    fontSize: 16,
   },
 });

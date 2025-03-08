@@ -82,6 +82,14 @@ export default function Question4() {
       >
         <Text style={styles.nextText}>Finish</Text>
       </TouchableOpacity>
+      
+      {/* Back Button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.back()}
+      >
+        <Text style={styles.backText}>Back</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -168,5 +176,18 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  backButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: 'gray',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  backText: {
+    color: 'white',
+    fontSize: 16,
   },
 });

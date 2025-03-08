@@ -1,68 +1,56 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Animated, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect } from 'react';
-
 
 export default function SignupScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const shakeAnimation = useRef(new Animated.Value(0)).current;
 
-// Clear inputs on initial load/refresh
-useEffect(() => {
-  const clearInputs = async () => {
-    setEmail('');
-    setPassword('');
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
-  clearInputs();
-}, []); // Empty dependency array means it runs once on mount
 
-// Save user data to AsyncStorage
-const saveUserData = async () => {
-  try {
-    await AsyncStorage.setItem('userEmail', email);
-    await AsyncStorage.setItem('userPassword', password);
-    return true;
-  } catch (err) {
-    console.log('Failed to save user data', err);
-    return false;
-  }
-};
+  const shake = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnimation, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: -10, duration: 100, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: 0, duration: 100, useNativeDriver: true }),
+    ]).start();
+  };
 
-// Verify login credentials
-const verifyLogin = async () => {
-  try {
-    const storedEmail = await AsyncStorage.getItem('userEmail');
-    const storedPassword = await AsyncStorage.getItem('userPassword');
-    
-    if (email === storedEmail && password === storedPassword) {
-      router.replace('/question1');
-    } else {
-      console.log('Invalid credentials');
-      // You might want to add some user feedback here
-      alert('Invalid email or password');
+  const handleLogin = async () => {
+    if (!validateEmail(email)) {
+      setErrorMessage('Please enter a valid email address');
+      shake();
+      return;
     }
-  } catch (err) {
-    console.log('Error verifying login', err);
-  }
-};
 
-// Handle login button press
-const handleLogin = async () => {
-  // If no stored credentials exist, save them and proceed
-  const storedEmail = await AsyncStorage.getItem('userEmail');
-  if (!storedEmail) {
-    const saved = await saveUserData();
-    if (saved) {
+    const token = `${email}_${password}`;
+    try {
+      await AsyncStorage.setItem('userEmail', email);
+      await AsyncStorage.setItem('userPassword', password);
+      await AsyncStorage.setItem('userToken', token);
       router.replace('/question1');
+    } catch (err) {
+      console.log('Failed to save user data', err);
     }
-  } else {
-    // If credentials exist, verify them
-    await verifyLogin();
-  }
-};
+  };
+
+  // Clear inputs on initial load/refresh
+  useEffect(() => {
+    const clearInputs = async () => {
+      setEmail('');
+      setPassword('');
+    };
+    clearInputs();
+  }, []); // Empty dependency array means it runs once on mount
 
   return (
     <View style={styles.container}>
@@ -70,28 +58,36 @@ const handleLogin = async () => {
       <View style={styles.spacer} />
 
       {/* Email Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Email Address"
-        placeholderTextColor="#aaa"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        placeholderTextColor="white" // 👈 Ensure placeholder is visible
-      />
+      <Animated.View style={[styles.inputContainer, { transform: [{ translateX: shakeAnimation }] }]}>
+        <TextInput
+          style={styles.input}
+          placeholder="Email Address"
+          placeholderTextColor="#aaa"
+          value={email}
+          onChangeText={(text) => {
+            setEmail(text);
+            setErrorMessage('');
+          }}
+          keyboardType="email-address"
+        />
+      </Animated.View>
+      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
       {/* Password Input */}
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
           placeholder="Password"
-          placeholderTextColor="white" // 👈 Ensure placeholder is visible
+          placeholderTextColor="white"
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
+          secureTextEntry={secureTextEntry}
         />
-        <TouchableOpacity style={styles.eyeIcon}>
-          <Text style={{ color: 'white' }}>👁️</Text>
+        <TouchableOpacity
+          style={styles.eyeIcon}
+          onPress={() => setSecureTextEntry(!secureTextEntry)}
+        >
+          <Text style={{ color: 'white' }}>{secureTextEntry ? '👁️' : '👁️'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -101,7 +97,7 @@ const handleLogin = async () => {
       </TouchableOpacity>
 
       {/* Login Button */}
-      <TouchableOpacity style={styles.loginButton} onPress={() => router.replace('/question1')}>
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginText}>Login</Text>
       </TouchableOpacity>
 
@@ -135,22 +131,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black', // 👈 Ensures full black background
+    backgroundColor: 'black',
     paddingHorizontal: 20,
   },
   spacer: {
-    flex: 1, // Pushes content downward
+    flex: 1,
   },
-  input: {
+  inputContainer: {
     width: '100%',
-    height: 50,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
-    paddingHorizontal: 15,
     marginBottom: 15,
+  },
+  input: {
+    height: 50,
+    paddingHorizontal: 15,
     fontSize: 16,
-    color: 'white', // 👈 Makes entered text white
+    color: 'white',
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -166,7 +168,7 @@ const styles = StyleSheet.create({
     height: 50,
     paddingHorizontal: 15,
     fontSize: 16,
-    color: 'white', // 👈 Ensures password text is white
+    color: 'white',
   },
   eyeIcon: {
     padding: 10,
@@ -191,7 +193,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   registerContainer: {
-    flexDirection: 'row', // Ensures text is on the same line
+    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
   },
@@ -210,25 +212,19 @@ const styles = StyleSheet.create({
   },
   socialContainer: {
     flexDirection: 'row',
-    gap: 20, // 👈 Added more spacing between social icons
+    gap: 20,
     marginBottom: 30,
   },
   socialButton: {
-    width: 60, // 👈 Made buttons slightly larger
-    height: 60, // 👈 Increased size
+    width: 60,
+    height: 60,
     borderRadius: 30,
     backgroundColor: '#f1f1f1',
     justifyContent: 'center',
     alignItems: 'center',
   },
   icon: {
-    width: 30, // 👈 Increased icon size
+    width: 30,
     height: 30,
   },
 });
-
-/*
-function useEffect(arg0: () => void, arg1: never[]) {
-  throw new Error('Function not implemented.');
-}
-  */

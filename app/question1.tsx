@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // Updated import
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,17 +6,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Question1() {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
+  const [userToken, setUserToken] = useState('');
 
-  // Load saved selection when component mounts
+  // Load saved selection and user token when component mounts
   useEffect(() => {
     const loadSelection = async () => {
       try {
-        const savedSelection = await AsyncStorage.getItem('question1Selection');
-        if (savedSelection !== null) {
-          setSelected(savedSelection);
+        const token = await AsyncStorage.getItem('userToken');
+        if (token !== null) {
+          setUserToken(token);
+          const savedSelection = await AsyncStorage.getItem(`question1Choice_${token}`);
+          if (savedSelection !== null) {
+            setSelected(savedSelection);
+          }
+        } else {
+          // Clear selections for first-time login
+          await AsyncStorage.removeItem('question1Choice');
+          setSelected(null);
         }
       } catch (e) {
-        console.error('Error loading selection:', e);
+        console.error('Error loading data:', e);
       }
     };
     loadSelection();
@@ -25,7 +34,7 @@ export default function Question1() {
   // Function to save selection to AsyncStorage
   const handleSelection = async (option) => {
     try {
-      await AsyncStorage.setItem('question1Selection', option);
+      await AsyncStorage.setItem(`question1Choice_${userToken}`, option);
       setSelected(option);
     } catch (e) {
       console.error('Error saving selection:', e);
@@ -36,8 +45,20 @@ export default function Question1() {
   const handleNext = async () => {
     if (selected) {
       try {
-        await AsyncStorage.setItem('question1Selection', selected);
+        await AsyncStorage.setItem(`question1Choice_${userToken}`, selected);
         router.push('/question2');
+      } catch (e) {
+        console.error('Error saving before navigation:', e);
+      }
+    }
+  };
+
+  // Optional: Function to handle navigation with saved data
+  const handleBack = async () => {
+    if (selected) {
+      try {
+        await AsyncStorage.setItem(`question1Choice_${userToken}`, selected);
+        router.push('/signup');
       } catch (e) {
         console.error('Error saving before navigation:', e);
       }
@@ -61,7 +82,7 @@ export default function Question1() {
           <TouchableOpacity
             key={option}
             style={[styles.option, selected === option && styles.selectedOption]}
-            onPress={() => handleSelection(option)} // Updated to use handleSelection
+            onPress={() => handleSelection(option)}
           >
             <Text style={styles.optionText}>{option}</Text>
             {selected === option && <Text style={styles.checkmark}>✔</Text>}
@@ -74,13 +95,24 @@ export default function Question1() {
         </Text>
       </View>
 
+      {/* User Token */}
+      <Text style={styles.tokenText}>User Token: {userToken}</Text>
+
       {/* Next Button */}
       <TouchableOpacity
         style={styles.nextButton}
-        onPress={handleNext} // Updated to use handleNext
+        onPress={handleNext}
         disabled={!selected}
       >
         <Text style={styles.nextText}>Next</Text>
+      </TouchableOpacity>
+
+      {/* Back Button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={handleBack}
+      >
+        <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>
     </View>
   );
@@ -153,6 +185,12 @@ const styles = StyleSheet.create({
     marginVertical: 40,
     color: '#aaa',
   },
+  tokenText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
   nextButton: {
     backgroundColor: 'red',
     paddingVertical: 15,
@@ -165,5 +203,18 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  backButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: 'gray',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  backText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
