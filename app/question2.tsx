@@ -6,19 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Question2() {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
-  const [userToken, setUserToken] = useState('');
 
-  // Load saved selection and user token when component mounts
+  // Load saved selection when component mounts
   useEffect(() => {
     const loadSelection = async () => {
       try {
         const savedSelection = await AsyncStorage.getItem('question2Choice');
         if (savedSelection !== null) {
           setSelected(savedSelection);
-        }
-        const token = await AsyncStorage.getItem('userToken');
-        if (token !== null) {
-          setUserToken(token);
         }
       } catch (e) {
         console.error('Error loading data:', e);
@@ -37,7 +32,7 @@ export default function Question2() {
     }
   };
 
-  // Optional: Function to handle navigation with saved data
+  // Function to handle navigation to the next question
   const handleNext = async () => {
     if (selected) {
       try {
@@ -49,16 +44,14 @@ export default function Question2() {
     }
   };
 
-    // Back to previous page
-    const handleBack = async () => {
-      if (1) {
-        try {
-          router.push('question1');
-        } catch (e) {
-          console.error('Error saving before navigation:', e);
-        }
-      }
-    };
+  // Function to navigate back to Question 1
+  const handleBack = async () => {
+    try {
+      router.push('/question1');
+    } catch (e) {
+      console.error('Error navigating back:', e);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -66,6 +59,14 @@ export default function Question2() {
       <View style={styles.progressBar}>
         <View style={[styles.progress, { width: '50%' }]} />
       </View>
+
+      {/* Back Button - Positioned at the top left */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={handleBack}
+      >
+        <Text style={styles.backText}>Back</Text>
+      </TouchableOpacity>
 
       {/* Question */}
       <Text style={styles.questionTitle}>How shall your journey unfold?</Text>
@@ -88,9 +89,6 @@ export default function Question2() {
         Your chosen challenge style determines how your quests will be structured in your journey.
       </Text>
 
-      {/* User Token */}
-      <Text style={styles.tokenText}>User Token: {userToken}</Text>
-
       {/* Next Button */}
       <TouchableOpacity
         style={styles.nextButton}
@@ -98,14 +96,6 @@ export default function Question2() {
         disabled={!selected}
       >
         <Text style={styles.nextText}>Next</Text>
-      </TouchableOpacity>
-
-      {/* Back Button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={handleBack}
-      >
-        <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>
     </View>
   );
@@ -173,12 +163,6 @@ const styles = StyleSheet.create({
     marginVertical: 40,
     color: '#aaa',
   },
-  tokenText: {
-    color: 'white',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
   nextButton: {
     backgroundColor: 'red',
     paddingVertical: 15,
@@ -194,9 +178,9 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: 'gray',
+    bottom: 30,
+    right: 20,  
+    backgroundColor: 'black',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,

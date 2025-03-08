@@ -191,7 +191,7 @@ export default function Homepage() {
       <Stack.Screen 
         options={{
           headerStyle: {
-            backgroundColor: 'red',
+            backgroundColor: 'black',
             height: 70, // Reduced height
           },
           headerTitleStyle: {
@@ -358,9 +358,10 @@ const styles = StyleSheet.create({
     paddingBottom: 10, // Reduced from 30 to give space for quote box
   },
   optionContainer: {
-    backgroundColor: 'white',
+    backgroundColor: 'black',
     borderRadius: 10,
     marginBottom: 15,
+    borderColor: "gray",
     overflow: 'hidden',
     width: width - 10, // Using absolute width - 10 as requested
   },
@@ -369,7 +370,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     paddingVertical: 10,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#222', 
+    color: 'white',
   },
   optionContent: {
     padding: 15,
@@ -378,7 +380,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginVertical: 1,
     lineHeight: 18,
-    color: 'black', 
+    color: 'white', 
   },
   noChoicesText: {
     fontSize: 14,
@@ -402,9 +404,10 @@ const styles = StyleSheet.create({
     fontSize: 14, // Reduced from 16 to 14
     paddingVertical: 0, // Reduced from 10 to 8
     textAlign: 'center',
-    color: '#333',
+    color: 'white',
     width: '100%',
-    lineHeight: 18, // Added line height for better readability
+    lineHeight: 18,
+    backgroundColor: 'black' // Added line height for better readability
   },
   bottomNav: {
     flexDirection: 'row',
