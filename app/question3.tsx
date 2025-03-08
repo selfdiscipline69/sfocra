@@ -49,6 +49,17 @@ export default function Question3() {
     }
   };
 
+    // Back to previous page
+    const handleBack = async () => {
+      if (1) {
+        try {
+          router.push('question2');
+        } catch (e) {
+          console.error('Error saving before navigation:', e);
+        }
+      }
+    };
+
   return (
     <View style={styles.container}>
       {/* Progress Bar */}
@@ -92,7 +103,7 @@ export default function Question3() {
       {/* Back Button */}
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => router.back()}
+        onPress={handleBack}
       >
         <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>

@@ -25,6 +25,24 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
+## Installing Additional Packages
+
+Some features in this app require additional packages to be installed:
+
+1. Install expo-image-picker (required for profile photo uploads):
+
+   ```bash
+   npx expo install expo-image-picker
+   ```
+
+2. After installing new packages, restart your app with:
+
+   ```bash
+   npx expo start --clear
+   ```
+
+This clears the cache and ensures new packages are properly included in your bundle.
+
 ## Get a fresh project
 
 When you're ready, run:
@@ -63,6 +81,32 @@ If you're developing on a Windows PC and want to test your app on a physical iOS
 
 - Test on actual iOS hardware with real-world performance
 - Access to native features (camera, notifications, sensors)
+- Experience iOS-specific UI elements and behaviors
+- No Mac required for iOS testing
+
+### Troubleshooting
+
+- **Connection issues**: Try restarting the Expo server with `--tunnel` flag
+- **QR code not scanning**: Check your camera permissions
+- **App fails to load**: Verify your network connection or restart Expo Go
+- **"Could not connect to server"**: Check your Windows firewall settings
+
+Note: While this method allows iOS testing, you cannot create an iOS build file (IPA) without a Mac.
+
+## Learn more
+
+To learn more about developing your project with Expo, look at the following resources:
+
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+
+## Join the community
+
+Join our community of developers creating universal apps.
+
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
 - Experience iOS-specific UI elements and behaviors
 - No Mac required for iOS testing
 
