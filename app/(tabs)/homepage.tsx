@@ -174,17 +174,6 @@ export default function Homepage() {
   const handleQuoteChange = (newQuote) => {
     setDailyQuote(newQuote);
   };
-
-    // Back to previous page
-    const handleBack = async () => {
-      if (1) {
-        try {
-          router.push('../question4');
-        } catch (e) {
-          console.error('Error saving before navigation:', e);
-        }
-      }
-    };
   
   return (
     <>
@@ -226,20 +215,25 @@ export default function Homepage() {
                 </TouchableOpacity>
                 
                 {/* User Profile Image or Default Icon */}
-                <TouchableOpacity 
-                  onPress={() => router.push('/(tabs)/settings')} 
-                  style={styles.profileIconButton}
-                  accessibilityLabel="Settings"
-                >
-                  {profileImage ? (
-                    <Image 
-                      source={{ uri: profileImage }} 
-                      style={styles.profileIcon} 
-                    />
-                  ) : (
-                    <View style={styles.profileIcon} />
+                <View style={styles.profileSection}>
+                  <TouchableOpacity 
+                    onPress={() => router.push('/(tabs)/settings')} 
+                    style={styles.profileIconButton}
+                    accessibilityLabel="Settings"
+                  >
+                    {profileImage ? (
+                      <Image 
+                        source={{ uri: profileImage }} 
+                        style={styles.profileIcon} 
+                      />
+                    ) : (
+                      <View style={styles.profileIcon} />
+                    )}
+                  </TouchableOpacity>
+                  {!profileImage && ( // Only show text if no profile image exists
+                    <Text style={styles.changeProfileText}>Click here to change pfp</Text>
                   )}
-                </TouchableOpacity>
+                </View>
               </View>
             </View>
 
@@ -433,7 +427,7 @@ const styles = StyleSheet.create({
   },
   headerButtons: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start', // Changed from center to flex-start
   },
   refreshButton: {
     marginRight: 10,
@@ -479,6 +473,16 @@ const styles = StyleSheet.create({
     width: '100%',
     lineHeight: 18,
     minHeight: 60,
+  },
+  profileSection: {
+    alignItems: 'center',
+  },
+  changeProfileText: {
+    color: 'gray',
+    fontSize: 8,
+    marginTop: 4,
+    textAlign: 'center',
+    width: 60,
   },
 });
 
