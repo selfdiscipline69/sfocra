@@ -6,19 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Question3() {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
-  const [userToken, setUserToken] = useState('');
 
-  // Load saved selection and user token when component mounts
+  // Load saved selection when component mounts
   useEffect(() => {
     const loadSelection = async () => {
       try {
         const savedSelection = await AsyncStorage.getItem('question3Choice');
         if (savedSelection !== null) {
           setSelected(savedSelection);
-        }
-        const token = await AsyncStorage.getItem('userToken');
-        if (token !== null) {
-          setUserToken(token);
         }
       } catch (e) {
         console.error('Error loading data:', e);
@@ -49,16 +44,14 @@ export default function Question3() {
     }
   };
 
-    // Back to previous page
-    const handleBack = async () => {
-      if (1) {
-        try {
-          router.push('question2');
-        } catch (e) {
-          console.error('Error saving before navigation:', e);
-        }
-      }
-    };
+  // Back to previous page
+  const handleBack = async () => {
+    try {
+      router.push('/question2');
+    } catch (e) {
+      console.error('Error navigating back:', e);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -87,9 +80,6 @@ export default function Question3() {
       <Text style={styles.description}>
         The way you measure progress defines the legacy you will leave behind.
       </Text>
-
-      {/* User Token */}
-      <Text style={styles.tokenText}>User Token: {userToken}</Text>
 
       {/* Next Button */}
       <TouchableOpacity
@@ -129,11 +119,6 @@ const styles = StyleSheet.create({
   progress: {
     height: '100%',
     backgroundColor: 'red',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   questionTitle: {
     fontSize: 22,
@@ -178,12 +163,6 @@ const styles = StyleSheet.create({
     marginVertical: 40,
     color: '#aaa',
   },
-  tokenText: {
-    color: 'white',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
   nextButton: {
     backgroundColor: 'red',
     paddingVertical: 15,
@@ -199,9 +178,9 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: 'gray',
+    bottom: 20, 
+    right: 20,  
+    backgroundColor: 'black',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
