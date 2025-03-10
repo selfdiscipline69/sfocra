@@ -1,0 +1,524 @@
+{
+  "classes": [
+    {
+      "path": "Mind",
+      "difficulty": "Daily Trials",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Disciplined Sage",
+      "description": "A methodical scholar who faces daily mental challenges head-on and embraces the consequences of failure.",
+      "quests": {
+        "format": "Daily intellectual challenges with strict consequences",
+        "examples": [
+          "Master a new concept within 24 hours",
+          "Complete a logic puzzle before sunrise",
+          "Memorize and recall 20 new facts"
+        ]
+      }
+    },
+    {
+      "path": "Mind",
+      "difficulty": "Daily Trials",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Autonomous Scholar",
+      "description": "A self-governing intellectual who designs their own system of accountability.",
+      "quests": {
+        "format": "Daily mental exercises with self-imposed consequences",
+        "examples": [
+          "Solve a complex problem and define your own stake",
+          "Research a new topic with personal accountability metrics",
+          "Create and complete a knowledge assessment"
+        ]
+      }
+    },
+    {
+      "path": "Mind",
+      "difficulty": "Daily Trials",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Free Thinker",
+      "description": "An unburdened intellectual who focuses on growth without the weight of failure.",
+      "quests": {
+        "format": "Daily mental challenges with no penalties",
+        "examples": [
+          "Explore a new field of knowledge",
+          "Practice a mental technique",
+          "Analyze and understand a complex concept"
+        ]
+      }
+    },
+
+    {
+      "path": "Body",
+      "difficulty": "Spartan Trials",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Elite Warrior",
+      "description": "An uncompromising physical specimen who thrives under extreme pressure and strict accountability.",
+      "quests": {
+        "format": "Extremely demanding physical challenges with severe consequences",
+        "examples": [
+          "Complete a hero's challenge workout with additional penalties for failure",
+          "Maintain perfect form through an advanced strength circuit",
+          "Achieve new personal records under time constraints"
+        ]
+      }
+    },
+    {
+      "path": "Body",
+      "difficulty": "Epic Missions",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Sovereign Champion",
+      "description": "A self-directed physical powerhouse who designs meaningful challenges and accountability.",
+      "quests": {
+        "format": "Multi-day physical objectives with customized stakes",
+        "examples": [
+          "Complete a week-long training regimen with personal consequence system",
+          "Build a streak of consistent workouts with self-defined penalties",
+          "Master a new physical skill with accountability metrics you design"
+        ]
+      }
+    },
+
+    {
+      "path": "Balanced",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Harmonized Guardian",
+      "description": "A well-rounded hero who tackles significant challenges over time with full accountability.",
+      "quests": {
+        "format": "Season-long holistic challenges with defined consequences",
+        "examples": [
+          "Complete a 90-day mind-body transformation with strict milestones",
+          "Master both physical techniques and mental disciplines in parallel",
+          "Build balanced habits across multiple domains with clear accountability"
+        ]
+      }
+    }
+  ],
+  
+  "classMapping": {
+    "Mind": {
+      "Daily Trials": {
+        "Leveling System": {
+          "Yes, Bring It On": "Disciplined Sage",
+          "Choose My Own Punishments": "Autonomous Scholar",
+          "Without Consequence": "Free Thinker"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Consistent Mystic",
+          "Choose My Own Punishments": "Self-Guided Philosopher",
+          "Without Consequence": "Liberated Intellectual"
+        },
+        "Both": {
+          "Yes, Bring It On": "Methodical Genius",
+          "Choose My Own Punishments": "Adaptable Theorist",
+          "Without Consequence": "Unbounded Thinker"
+        }
+      },
+      "Epic Missions": {
+        "Leveling System": {
+          "Yes, Bring It On": "Archmage",
+          "Choose My Own Punishments": "Deliberate Savant",
+          "Without Consequence": "Boundless Scholar"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Disciplined Oracle",
+          "Choose My Own Punishments": "Strategic Mentor",
+          "Without Consequence": "Enlightened Guide"
+        },
+        "Both": {
+          "Yes, Bring It On": "Grand Strategist",
+          "Choose My Own Punishments": "Sovereign Intellectual",
+          "Without Consequence": "Transcendent Sage"
+        }
+      },
+      "Relentless Campaign": {
+        "Leveling System": {
+          "Yes, Bring It On": "Mind Conqueror",
+          "Choose My Own Punishments": "Self-Sovereign Genius",
+          "Without Consequence": "Unfettered Mastermind"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Persistent Visionary",
+          "Choose My Own Punishments": "Autonomous Philosopher",
+          "Without Consequence": "Liberated Theorist"
+        },
+        "Both": {
+          "Yes, Bring It On": "Intellectual Warlord",
+          "Choose My Own Punishments": "Sovereign Thinker",
+          "Without Consequence": "Limitless Scholar"
+        }
+      },
+      "Seasonal Conquests": {
+        "Leveling System": {
+          "Yes, Bring It On": "Seasonal Sorcerer",
+          "Choose My Own Punishments": "Cyclic Philosopher",
+          "Without Consequence": "Temporal Sage"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Ritual Master",
+          "Choose My Own Punishments": "Pattern Keeper",
+          "Without Consequence": "Flow Theorist"
+        },
+        "Both": {
+          "Yes, Bring It On": "Mind Cultivator",
+          "Choose My Own Punishments": "Seasonal Strategist",
+          "Without Consequence": "Unbound Philosopher"
+        }
+      },
+      "Spartan Trials": {
+        "Leveling System": {
+          "Yes, Bring It On": "Mind Warrior",
+          "Choose My Own Punishments": "Unyielding Thinker",
+          "Without Consequence": "Ascended Intellect"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Disciplined Mystic",
+          "Choose My Own Punishments": "Self-Forged Scholar",
+          "Without Consequence": "Enlightened Sage"
+        },
+        "Both": {
+          "Yes, Bring It On": "Mental Gladiator",
+          "Choose My Own Punishments": "Self-Sovereign Mystic",
+          "Without Consequence": "Transcendent Theorist"
+        }
+      }
+    },
+    
+    "Body": {
+      "Daily Trials": {
+        "Leveling System": {
+          "Yes, Bring It On": "Disciplined Athlete",
+          "Choose My Own Punishments": "Self-Driven Warrior",
+          "Without Consequence": "Free-Form Fighter"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Consistent Champion",
+          "Choose My Own Punishments": "Rhythm Warrior",
+          "Without Consequence": "Flowing Athlete"
+        },
+        "Both": {
+          "Yes, Bring It On": "Complete Warrior",
+          "Choose My Own Punishments": "Balanced Fighter",
+          "Without Consequence": "Unconstrained Champion"
+        }
+      },
+      "Epic Missions": {
+        "Leveling System": {
+          "Yes, Bring It On": "Epic Champion",
+          "Choose My Own Punishments": "Self-Governed Hero",
+          "Without Consequence": "Boundless Warrior"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Consistent Hero",
+          "Choose My Own Punishments": "Sovereign Champion",
+          "Without Consequence": "Liberated Athlete"
+        },
+        "Both": {
+          "Yes, Bring It On": "Complete Guardian",
+          "Choose My Own Punishments": "Autonomous Warrior",
+          "Without Consequence": "Unfettered Champion"
+        }
+      },
+      "Relentless Campaign": {
+        "Leveling System": {
+          "Yes, Bring It On": "Relentless Berserker",
+          "Choose My Own Punishments": "Self-Driven Gladiator",
+          "Without Consequence": "Unbound Warrior"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Persistent Champion",
+          "Choose My Own Punishments": "Rhythm Master",
+          "Without Consequence": "Free-Form Hero"
+        },
+        "Both": {
+          "Yes, Bring It On": "Complete Warlord",
+          "Choose My Own Punishments": "Self-Sovereign Warrior",
+          "Without Consequence": "Unrestricted Champion"
+        }
+      },
+      "Seasonal Conquests": {
+        "Leveling System": {
+          "Yes, Bring It On": "Seasonal Warrior",
+          "Choose My Own Punishments": "Cyclic Champion",
+          "Without Consequence": "Temporal Athlete"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Ritual Warrior",
+          "Choose My Own Punishments": "Pattern Champion",
+          "Without Consequence": "Flow Athlete"
+        },
+        "Both": {
+          "Yes, Bring It On": "Holistic Guardian",
+          "Choose My Own Punishments": "Seasonal Hero",
+          "Without Consequence": "Unbounded Warrior"
+        }
+      },
+      "Spartan Trials": {
+        "Leveling System": {
+          "Yes, Bring It On": "Spartan Warrior",
+          "Choose My Own Punishments": "Self-Forged Champion",
+          "Without Consequence": "Ascended Hero"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Iron Disciplined Fighter",
+          "Choose My Own Punishments": "Self-Governed Gladiator",
+          "Without Consequence": "Unleashed Warrior"
+        },
+        "Both": {
+          "Yes, Bring It On": "Elite Warrior",
+          "Choose My Own Punishments": "Supreme Champion",
+          "Without Consequence": "Transcendent Hero"
+        }
+      }
+    },
+    
+    "Balanced": {
+      "Daily Trials": {
+        "Leveling System": {
+          "Yes, Bring It On": "Balanced Knight",
+          "Choose My Own Punishments": "Self-Directed Ranger",
+          "Without Consequence": "Free-Form Monk"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Consistent Paladin",
+          "Choose My Own Punishments": "Rhythm Ranger",
+          "Without Consequence": "Flowing Monk"
+        },
+        "Both": {
+          "Yes, Bring It On": "Complete Paladin",
+          "Choose My Own Punishments": "Balanced Ranger",
+          "Without Consequence": "Unconstrained Monk"
+        }
+      },
+      "Epic Missions": {
+        "Leveling System": {
+          "Yes, Bring It On": "Epic Paladin",
+          "Choose My Own Punishments": "Self-Governed Ranger",
+          "Without Consequence": "Boundless Monk"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Consistent Knight",
+          "Choose My Own Punishments": "Sovereign Ranger",
+          "Without Consequence": "Liberated Monk"
+        },
+        "Both": {
+          "Yes, Bring It On": "Complete Guardian",
+          "Choose My Own Punishments": "Autonomous Paladin",
+          "Without Consequence": "Unfettered Ranger"
+        }
+      },
+      "Relentless Campaign": {
+        "Leveling System": {
+          "Yes, Bring It On": "Relentless Paladin",
+          "Choose My Own Punishments": "Self-Driven Ranger",
+          "Without Consequence": "Unbound Monk"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Persistent Knight",
+          "Choose My Own Punishments": "Rhythm Paladin",
+          "Without Consequence": "Free-Form Ranger"
+        },
+        "Both": {
+          "Yes, Bring It On": "Complete Warden",
+          "Choose My Own Punishments": "Self-Sovereign Paladin",
+          "Without Consequence": "Unrestricted Ranger"
+        }
+      },
+      "Seasonal Conquests": {
+        "Leveling System": {
+          "Yes, Bring It On": "Seasonal Paladin",
+          "Choose My Own Punishments": "Cyclic Ranger",
+          "Without Consequence": "Temporal Monk"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Ritual Knight",
+          "Choose My Own Punishments": "Pattern Paladin",
+          "Without Consequence": "Flow Ranger"
+        },
+        "Both": {
+          "Yes, Bring It On": "Harmonized Guardian",
+          "Choose My Own Punishments": "Seasonal Paladin",
+          "Without Consequence": "Unbounded Ranger"
+        }
+      },
+      "Spartan Trials": {
+        "Leveling System": {
+          "Yes, Bring It On": "Spartan Knight",
+          "Choose My Own Punishments": "Self-Forged Paladin",
+          "Without Consequence": "Ascended Ranger"
+        },
+        "Streaks & Habits": {
+          "Yes, Bring It On": "Iron Disciplined Monk",
+          "Choose My Own Punishments": "Self-Governed Knight",
+          "Without Consequence": "Unleashed Paladin"
+        },
+        "Both": {
+          "Yes, Bring It On": "Elite Paladin",
+          "Choose My Own Punishments": "Supreme Ranger",
+          "Without Consequence": "Transcendent Monk"
+        }
+      }
+    }
+  },
+  
+  "questTemplates": {
+    "Mind": {
+      "Daily Trials": {
+        "format": "Daily intellectual challenges",
+        "examples": [
+          "Learn a new concept",
+          "Solve a puzzle",
+          "Read and summarize an article"
+        ]
+      },
+      "Epic Missions": {
+        "format": "Multi-day intellectual projects",
+        "examples": [
+          "Master a complex topic",
+          "Create an in-depth analysis",
+          "Develop a comprehensive theory"
+        ]
+      },
+      "Relentless Campaign": {
+        "format": "Continuous intellectual development",
+        "examples": [
+          "Build a knowledge system",
+          "Complete a series of connected challenges",
+          "Develop expertise in a field"
+        ]
+      },
+      "Seasonal Conquests": {
+        "format": "Quarterly intellectual goals",
+        "examples": [
+          "Learn a new language to conversational level",
+          "Master a complex subject area",
+          "Complete a major intellectual project"
+        ]
+      },
+      "Spartan Trials": {
+        "format": "Extremely challenging mental feats",
+        "examples": [
+          "Learn a semester's worth of material in a week",
+          "Solve previously unsolvable problems",
+          "Memorize and recall extraordinary amounts of information"
+        ]
+      }
+    },
+    "Body": {
+      "Daily Trials": {
+        "format": "Daily physical challenges",
+        "examples": [
+          "Complete a workout routine",
+          "Achieve a specific exercise goal",
+          "Maintain physical discipline"
+        ]
+      },
+      "Epic Missions": {
+        "format": "Multi-day physical objectives",
+        "examples": [
+          "Train for a specific event",
+          "Master a difficult technique",
+          "Achieve a significant strength milestone"
+        ]
+      },
+      "Relentless Campaign": {
+        "format": "Continuous physical development",
+        "examples": [
+          "Progressive strength training program",
+          "Endurance building regimen",
+          "Comprehensive athletic development"
+        ]
+      },
+      "Seasonal Conquests": {
+        "format": "Quarterly physical goals",
+        "examples": [
+          "Train for and complete a marathon",
+          "Master a martial art form",
+          "Transform body composition"
+        ]
+      },
+      "Spartan Trials": {
+        "format": "Extremely challenging physical feats",
+        "examples": [
+          "Complete a hero's challenge workout",
+          "Push physical limits to new extremes",
+          "Achieve elite-level performance metrics"
+        ]
+      }
+    },
+    "Balanced": {
+      "Daily Trials": {
+        "format": "Daily mind-body challenges",
+        "examples": [
+          "Combined mental and physical exercises",
+          "Meditation and movement practices",
+          "Balanced skill development"
+        ]
+      },
+      "Epic Missions": {
+        "format": "Multi-day holistic objectives",
+        "examples": [
+          "Complete projects requiring both mental and physical mastery",
+          "Develop integrated skills across domains",
+          "Achieve balance in challenging circumstances"
+        ]
+      },
+      "Relentless Campaign": {
+        "format": "Continuous holistic development",
+        "examples": [
+          "Progressive mind-body training",
+          "Integrated development program",
+          "Comprehensive personal growth"
+        ]
+      },
+      "Seasonal Conquests": {
+        "format": "Quarterly holistic goals",
+        "examples": [
+          "Complete a life-changing 90-day challenge",
+          "Master both physical and mental disciplines",
+          "Transform habits across multiple domains"
+        ]
+      },
+      "Spartan Trials": {
+        "format": "Extremely challenging holistic feats",
+        "examples": [
+          "Complete elite-level mind-body challenges",
+          "Achieve mastery in complementary disciplines",
+          "Demonstrate extraordinary balance under pressure"
+        ]
+      }
+    }
+  },
+  
+  "consequenceModifiers": {
+    "Yes, Bring It On": {
+      "description": "System-imposed consequences for missed quests",
+      "examples": [
+        "Experience level reduction",
+        "Temporary stat penalties",
+        "Additional required challenges"
+      ]
+    },
+    "Choose My Own Punishments": {
+      "description": "Self-defined consequences for missed quests",
+      "examples": [
+        "Create your own penalty system",
+        "Set personal stakes for each challenge",
+        "Design appropriate make-up tasks"
+      ]
+    },
+    "Without Consequence": {
+      "description": "No penalties for missed quests",
+      "examples": [
+        "Focus solely on progress and achievements",
+        "Restart challenges without penalty",
+        "Maintain positive reinforcement only"
+      ]
+    }
+  }
+}
