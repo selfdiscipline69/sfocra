@@ -99,21 +99,24 @@ export default function Question1() {
 
   return (
     <View style={styles.container}>
-      {/* Progress Bar */}
-      <View style={styles.progressBar}>
-        <View style={[styles.progress, { width: '25%' }]} />
+      {/* Top Section with Progress Bar and Back Button */}
+      <View style={styles.topSection}>
+        {/* Progress Bar */}
+        <View style={styles.progressBar}>
+          <View style={[styles.progress, { width: '25%' }]} />
+        </View>
+
+        {/* Back Button - Now below the progress bar */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={handleBack}
+        >
+          <Text style={styles.backText}>Back</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Back Button - Positioned at the top left, below the progress bar */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={handleBack}
-      >
-        <Text style={styles.backText}>Back</Text>
-      </TouchableOpacity>
-
-      {/* Main Content */}
-      <View style={styles.content}>
+      {/* Question Content */}
+      <View style={styles.questionContent}>
         <Text style={styles.questionTitle}>Every hero has a calling. What is yours?</Text>
         <Text style={styles.subtext}>Choose your path.</Text>
 
@@ -155,18 +158,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 50,
   },
+  topSection: {
+    width: '100%',
+  },
   progressBar: {
     height: 5,
     backgroundColor: '#555',
     borderRadius: 10,
     overflow: 'hidden',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   progress: {
     height: '100%',
     backgroundColor: 'red',
   },
-  content: {
+  backButton: {
+    alignSelf: 'flex-start',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  backText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  questionContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -230,18 +247,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 30,
-    left: 20,
-    backgroundColor: 'transparent',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  backText: {
-    color: 'white',
-    fontSize: 16,
   },
 });

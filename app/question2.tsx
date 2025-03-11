@@ -105,39 +105,45 @@ export default function Question2() {
 
   return (
     <View style={styles.container}>
-      {/* Progress Bar */}
-      <View style={styles.progressBar}>
-        <View style={[styles.progress, { width: '50%' }]} />
+      {/* Top Section with Progress Bar and Back Button */}
+      <View style={styles.topSection}>
+        {/* Progress Bar */}
+        <View style={styles.progressBar}>
+          <View style={[styles.progress, { width: '50%' }]} />
+        </View>
+
+        {/* Back Button - Now below the progress bar */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={handleBack}
+        >
+          <Text style={styles.backText}>Back</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Back Button - Positioned at the top left */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={handleBack}
-      >
-        <Text style={styles.backText}>Back</Text>
-      </TouchableOpacity>
+      {/* Question Content */}
+      <View style={styles.questionContent}>
+        {/* Question */}
+        <Text style={styles.questionTitle}>How shall your journey unfold?</Text>
+        <Text style={styles.subtext}>Choose your difficulty.</Text>
 
-      {/* Question */}
-      <Text style={styles.questionTitle}>How shall your journey unfold?</Text>
-      <Text style={styles.subtext}>Choose your difficulty.</Text>
+        {/* Options */}
+        {['Daily Trials', 'Epic Missions', 'Relentless Campaign', 'Seasonal Conquests', 'Spartan Trials'].map((option) => (
+          <TouchableOpacity
+            key={option}
+            style={[styles.option, selected === option && styles.selectedOption]}
+            onPress={() => handleSelection(option)}
+          >
+            <Text style={styles.optionText}>{option}</Text>
+            {selected === option && <Text style={styles.checkmark}>✔</Text>}
+          </TouchableOpacity>
+        ))}
 
-      {/* Options */}
-      {['Daily Trials', 'Epic Missions', 'Relentless Campaign', 'Seasonal Conquests', 'Spartan Trials'].map((option) => (
-        <TouchableOpacity
-          key={option}
-          style={[styles.option, selected === option && styles.selectedOption]}
-          onPress={() => handleSelection(option)}
-        >
-          <Text style={styles.optionText}>{option}</Text>
-          {selected === option && <Text style={styles.checkmark}>✔</Text>}
-        </TouchableOpacity>
-      ))}
-
-      {/* Description */}
-      <Text style={styles.description}>
-        Your chosen challenge style determines how your quests will be structured in your journey.
-      </Text>
+        {/* Description */}
+        <Text style={styles.description}>
+          Your chosen challenge style determines how your quests will be structured in your journey.
+        </Text>
+      </View>
 
       {/* Next Button */}
       <TouchableOpacity
@@ -159,16 +165,34 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 50,
   },
+  topSection: {
+    width: '100%',
+  },
   progressBar: {
     height: 5,
     backgroundColor: '#555',
     borderRadius: 10,
     overflow: 'hidden',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   progress: {
     height: '100%',
     backgroundColor: 'red',
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  backText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  questionContent: {
+    flex: 1,
+    justifyContent: 'center',
   },
   questionTitle: {
     fontSize: 22,
@@ -229,18 +253,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 30,
-    left: 20,
-    backgroundColor: 'transparent',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  backText: {
-    color: 'white',
-    fontSize: 16,
   },
 });
