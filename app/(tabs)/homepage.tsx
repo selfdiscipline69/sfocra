@@ -202,9 +202,9 @@ export default function Homepage() {
             {/* Profile Section */}
             <View style={styles.header}>
               <View>
+                {/* Daily Quote now appears at the top */}
                 <Text style={styles.description}>
-                  A warrior does not wait for the perfect moment; they forge it with their own hands. 
-                  Every step, every struggle, every victory—this is how legends are made.
+                  {dailyQuote}
                 </Text>
               </View>
               
@@ -281,20 +281,6 @@ export default function Homepage() {
               <View style={styles.keyboardSpace} />
             </ScrollView>
 
-            {/* Daily Quote Box - Now positioned above bottom nav with red theme */}
-            <View style={styles.redQuoteContainer}>
-              <Text style={styles.redQuoteTitle}>Daily Quote</Text>
-              <TextInput
-                style={styles.redQuoteInput}
-                value={dailyQuote}
-                onChangeText={handleQuoteChange}
-                multiline={true}
-                textAlign="center"
-                placeholder="Enter a quote"
-                placeholderTextColor="#ffcccc"
-              />
-            </View>
-
             {/* Bottom Navigation Icons */}
             <View style={styles.bottomNav}>
               <TouchableOpacity onPress={() => router.push('/(tabs)/performance')}>
@@ -336,10 +322,11 @@ const styles = StyleSheet.create({
     marginTop: 5, // Added small margin at top
   },
   description: {
-    color: 'gray',
+    color: 'white', // Changed from gray to white for better visibility
     fontSize: 14,
     marginRight: 10,
     width: width * 0.6,
+    fontStyle: 'italic', // Added italic to make it look like a quote
   },
   profileIcon: {
     width: 40,

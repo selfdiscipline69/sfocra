@@ -1,11 +1,42 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRouter, Stack } from 'expo-router';
 
 export default function PerformanceScreen() {
+  const router = useRouter();
+  
+  const handleBack = () => {
+    router.push('/(tabs)/homepage');
+  };
+  
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Performance Page - Graphs & Analytics</Text>
-    </View>
+    <>
+      <Stack.Screen 
+        options={{
+          headerStyle: {
+            backgroundColor: 'black',
+            height: 100,
+          },
+          headerTitleStyle: {
+            fontSize: 20,
+            color: 'white',
+          },
+          headerTitle: "Performance",
+        }} 
+      />
+      
+      <View style={styles.container}>
+        <Text style={styles.text}>Performance Page - Graphs & Analytics</Text>
+        
+        {/* Back Button */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={handleBack}
+        >
+          <Text style={styles.backText}>Back</Text>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 }
 
@@ -52,4 +83,19 @@ const styles = StyleSheet.create({
       right: 0,
       backgroundColor: 'black',
     },
-  });
+    backButton: {
+      backgroundColor: 'gray',
+      borderRadius: 10,
+      padding: 15,
+      alignItems: 'center',
+      position: 'absolute',
+      bottom: 30,
+      left: 20,
+      right: 20,
+    },
+    backText: {
+      color: 'white',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+});
