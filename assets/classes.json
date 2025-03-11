@@ -1,105 +1,1491 @@
 {
   "classes": [
     {
+      "key": "1-1-1-1",
       "path": "Mind",
       "difficulty": "Daily Trials",
       "tracking": "Leveling System",
       "consequence": "Yes, Bring It On",
       "class": "Disciplined Sage",
-      "description": "A methodical scholar who faces daily mental challenges head-on and embraces the consequences of failure.",
-      "quests": {
-        "format": "Daily intellectual challenges with strict consequences",
-        "examples": [
-          "Master a new concept within 24 hours",
-          "Complete a logic puzzle before sunrise",
-          "Memorize and recall 20 new facts"
-        ]
-      }
+      "description": "A mind focused hero who faces daily trials with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Daily intellectual challenges with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
     },
     {
+      "key": "1-1-1-2",
       "path": "Mind",
       "difficulty": "Daily Trials",
       "tracking": "Leveling System",
       "consequence": "Choose My Own Punishments",
       "class": "Autonomous Scholar",
-      "description": "A self-governing intellectual who designs their own system of accountability.",
-      "quests": {
-        "format": "Daily mental exercises with self-imposed consequences",
-        "examples": [
-          "Solve a complex problem and define your own stake",
-          "Research a new topic with personal accountability metrics",
-          "Create and complete a knowledge assessment"
-        ]
-      }
+      "description": "A mind focused hero who faces daily trials with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Daily intellectual challenges with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
     },
     {
+      "key": "1-1-1-3",
       "path": "Mind",
       "difficulty": "Daily Trials",
       "tracking": "Leveling System",
       "consequence": "Without Consequence",
       "class": "Free Thinker",
-      "description": "An unburdened intellectual who focuses on growth without the weight of failure.",
-      "quests": {
-        "format": "Daily mental challenges with no penalties",
-        "examples": [
-          "Explore a new field of knowledge",
-          "Practice a mental technique",
-          "Analyze and understand a complex concept"
-        ]
-      }
+      "description": "A mind focused hero who faces daily trials with leveling system tracking and embraces without consequence.",
+      "quest_format": "Daily intellectual challenges with no penalties",
+      "consequence_description": "No penalties for missed quests"
     },
-
     {
-      "path": "Body",
+      "key": "1-1-2-1",
+      "path": "Mind",
+      "difficulty": "Daily Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Consistent Mystic",
+      "description": "A mind focused hero who faces daily trials with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Daily intellectual challenges with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-1-2-2",
+      "path": "Mind",
+      "difficulty": "Daily Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Guided Philosopher",
+      "description": "A mind focused hero who faces daily trials with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Daily intellectual challenges with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-1-2-3",
+      "path": "Mind",
+      "difficulty": "Daily Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Liberated Intellectual",
+      "description": "A mind focused hero who faces daily trials with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Daily intellectual challenges with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-1-3-1",
+      "path": "Mind",
+      "difficulty": "Daily Trials",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Methodical Genius",
+      "description": "A mind focused hero who faces daily trials with both tracking and embraces yes, bring it on.",
+      "quest_format": "Daily intellectual challenges with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-1-3-2",
+      "path": "Mind",
+      "difficulty": "Daily Trials",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Adaptable Theorist",
+      "description": "A mind focused hero who faces daily trials with both tracking and embraces choose my own punishments.",
+      "quest_format": "Daily intellectual challenges with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-1-3-3",
+      "path": "Mind",
+      "difficulty": "Daily Trials",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Unbounded Thinker",
+      "description": "A mind focused hero who faces daily trials with both tracking and embraces without consequence.",
+      "quest_format": "Daily intellectual challenges with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-2-1-1",
+      "path": "Mind",
+      "difficulty": "Epic Missions",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Archmage",
+      "description": "A mind focused hero who faces epic missions with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Multi-day intellectual projects with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-2-1-2",
+      "path": "Mind",
+      "difficulty": "Epic Missions",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Deliberate Savant",
+      "description": "A mind focused hero who faces epic missions with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Multi-day intellectual projects with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-2-1-3",
+      "path": "Mind",
+      "difficulty": "Epic Missions",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Boundless Scholar",
+      "description": "A mind focused hero who faces epic missions with leveling system tracking and embraces without consequence.",
+      "quest_format": "Multi-day intellectual projects with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-2-2-1",
+      "path": "Mind",
+      "difficulty": "Epic Missions",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Disciplined Oracle",
+      "description": "A mind focused hero who faces epic missions with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Multi-day intellectual projects with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-2-2-2",
+      "path": "Mind",
+      "difficulty": "Epic Missions",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Strategic Mentor",
+      "description": "A mind focused hero who faces epic missions with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Multi-day intellectual projects with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-2-2-3",
+      "path": "Mind",
+      "difficulty": "Epic Missions",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Enlightened Guide",
+      "description": "A mind focused hero who faces epic missions with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Multi-day intellectual projects with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-2-3-1",
+      "path": "Mind",
+      "difficulty": "Epic Missions",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Grand Strategist",
+      "description": "A mind focused hero who faces epic missions with both tracking and embraces yes, bring it on.",
+      "quest_format": "Multi-day intellectual projects with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-2-3-2",
+      "path": "Mind",
+      "difficulty": "Epic Missions",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Sovereign Intellectual",
+      "description": "A mind focused hero who faces epic missions with both tracking and embraces choose my own punishments.",
+      "quest_format": "Multi-day intellectual projects with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-2-3-3",
+      "path": "Mind",
+      "difficulty": "Epic Missions",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Transcendent Sage",
+      "description": "A mind focused hero who faces epic missions with both tracking and embraces without consequence.",
+      "quest_format": "Multi-day intellectual projects with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-3-1-1",
+      "path": "Mind",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Mind Conqueror",
+      "description": "A mind focused hero who faces relentless campaign with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Continuous intellectual development with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-3-1-2",
+      "path": "Mind",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Sovereign Genius",
+      "description": "A mind focused hero who faces relentless campaign with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Continuous intellectual development with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-3-1-3",
+      "path": "Mind",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Unfettered Mastermind",
+      "description": "A mind focused hero who faces relentless campaign with leveling system tracking and embraces without consequence.",
+      "quest_format": "Continuous intellectual development with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-3-2-1",
+      "path": "Mind",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Persistent Visionary",
+      "description": "A mind focused hero who faces relentless campaign with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Continuous intellectual development with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-3-2-2",
+      "path": "Mind",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Autonomous Philosopher",
+      "description": "A mind focused hero who faces relentless campaign with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Continuous intellectual development with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-3-2-3",
+      "path": "Mind",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Liberated Theorist",
+      "description": "A mind focused hero who faces relentless campaign with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Continuous intellectual development with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-3-3-1",
+      "path": "Mind",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Intellectual Warlord",
+      "description": "A mind focused hero who faces relentless campaign with both tracking and embraces yes, bring it on.",
+      "quest_format": "Continuous intellectual development with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-3-3-2",
+      "path": "Mind",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Sovereign Thinker",
+      "description": "A mind focused hero who faces relentless campaign with both tracking and embraces choose my own punishments.",
+      "quest_format": "Continuous intellectual development with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-3-3-3",
+      "path": "Mind",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Limitless Scholar",
+      "description": "A mind focused hero who faces relentless campaign with both tracking and embraces without consequence.",
+      "quest_format": "Continuous intellectual development with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-4-1-1",
+      "path": "Mind",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Seasonal Sorcerer",
+      "description": "A mind focused hero who faces seasonal conquests with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Quarterly intellectual goals with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-4-1-2",
+      "path": "Mind",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Cyclic Philosopher",
+      "description": "A mind focused hero who faces seasonal conquests with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Quarterly intellectual goals with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-4-1-3",
+      "path": "Mind",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Temporal Sage",
+      "description": "A mind focused hero who faces seasonal conquests with leveling system tracking and embraces without consequence.",
+      "quest_format": "Quarterly intellectual goals with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-4-2-1",
+      "path": "Mind",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Ritual Master",
+      "description": "A mind focused hero who faces seasonal conquests with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Quarterly intellectual goals with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-4-2-2",
+      "path": "Mind",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Pattern Keeper",
+      "description": "A mind focused hero who faces seasonal conquests with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Quarterly intellectual goals with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-4-2-3",
+      "path": "Mind",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Flow Theorist",
+      "description": "A mind focused hero who faces seasonal conquests with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Quarterly intellectual goals with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-4-3-1",
+      "path": "Mind",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Mind Cultivator",
+      "description": "A mind focused hero who faces seasonal conquests with both tracking and embraces yes, bring it on.",
+      "quest_format": "Quarterly intellectual goals with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-4-3-2",
+      "path": "Mind",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Seasonal Strategist",
+      "description": "A mind focused hero who faces seasonal conquests with both tracking and embraces choose my own punishments.",
+      "quest_format": "Quarterly intellectual goals with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-4-3-3",
+      "path": "Mind",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Unbound Philosopher",
+      "description": "A mind focused hero who faces seasonal conquests with both tracking and embraces without consequence.",
+      "quest_format": "Quarterly intellectual goals with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-5-1-1",
+      "path": "Mind",
+      "difficulty": "Spartan Trials",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Mind Warrior",
+      "description": "A mind focused hero who faces spartan trials with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Extremely challenging mental feats with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-5-1-2",
+      "path": "Mind",
+      "difficulty": "Spartan Trials",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Unyielding Thinker",
+      "description": "A mind focused hero who faces spartan trials with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Extremely challenging mental feats with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-5-1-3",
+      "path": "Mind",
+      "difficulty": "Spartan Trials",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Ascended Intellect",
+      "description": "A mind focused hero who faces spartan trials with leveling system tracking and embraces without consequence.",
+      "quest_format": "Extremely challenging mental feats with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-5-2-1",
+      "path": "Mind",
+      "difficulty": "Spartan Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Disciplined Mystic",
+      "description": "A mind focused hero who faces spartan trials with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Extremely challenging mental feats with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "1-5-2-2",
+      "path": "Mind",
+      "difficulty": "Spartan Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Forged Scholar",
+      "description": "A mind focused hero who faces spartan trials with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Extremely challenging mental feats with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-5-2-3",
+      "path": "Mind",
+      "difficulty": "Spartan Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Enlightened Sage",
+      "description": "A mind focused hero who faces spartan trials with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Extremely challenging mental feats with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "1-5-3-1",
+      "path": "Mind",
       "difficulty": "Spartan Trials",
       "tracking": "Both",
       "consequence": "Yes, Bring It On",
-      "class": "Elite Warrior",
-      "description": "An uncompromising physical specimen who thrives under extreme pressure and strict accountability.",
-      "quests": {
-        "format": "Extremely demanding physical challenges with severe consequences",
-        "examples": [
-          "Complete a hero's challenge workout with additional penalties for failure",
-          "Maintain perfect form through an advanced strength circuit",
-          "Achieve new personal records under time constraints"
-        ]
-      }
+      "class": "Mental Gladiator",
+      "description": "A mind focused hero who faces spartan trials with both tracking and embraces yes, bring it on.",
+      "quest_format": "Extremely challenging mental feats with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
     },
     {
+      "key": "1-5-3-2",
+      "path": "Mind",
+      "difficulty": "Spartan Trials",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Sovereign Mystic",
+      "description": "A mind focused hero who faces spartan trials with both tracking and embraces choose my own punishments.",
+      "quest_format": "Extremely challenging mental feats with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "1-5-3-3",
+      "path": "Mind",
+      "difficulty": "Spartan Trials",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Transcendent Theorist",
+      "description": "A mind focused hero who faces spartan trials with both tracking and embraces without consequence.",
+      "quest_format": "Extremely challenging mental feats with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-1-1-1",
+      "path": "Body",
+      "difficulty": "Daily Trials",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Disciplined Athlete",
+      "description": "A body focused hero who faces daily trials with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Daily physical challenges with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-1-1-2",
+      "path": "Body",
+      "difficulty": "Daily Trials",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Driven Warrior",
+      "description": "A body focused hero who faces daily trials with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Daily physical challenges with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-1-1-3",
+      "path": "Body",
+      "difficulty": "Daily Trials",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Free-Form Fighter",
+      "description": "A body focused hero who faces daily trials with leveling system tracking and embraces without consequence.",
+      "quest_format": "Daily physical challenges with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-1-2-1",
+      "path": "Body",
+      "difficulty": "Daily Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Consistent Champion",
+      "description": "A body focused hero who faces daily trials with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Daily physical challenges with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-1-2-2",
+      "path": "Body",
+      "difficulty": "Daily Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Rhythm Warrior",
+      "description": "A body focused hero who faces daily trials with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Daily physical challenges with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-1-2-3",
+      "path": "Body",
+      "difficulty": "Daily Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Flowing Athlete",
+      "description": "A body focused hero who faces daily trials with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Daily physical challenges with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-1-3-1",
+      "path": "Body",
+      "difficulty": "Daily Trials",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Complete Warrior",
+      "description": "A body focused hero who faces daily trials with both tracking and embraces yes, bring it on.",
+      "quest_format": "Daily physical challenges with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-1-3-2",
+      "path": "Body",
+      "difficulty": "Daily Trials",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Balanced Fighter",
+      "description": "A body focused hero who faces daily trials with both tracking and embraces choose my own punishments.",
+      "quest_format": "Daily physical challenges with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-1-3-3",
+      "path": "Body",
+      "difficulty": "Daily Trials",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Unconstrained Champion",
+      "description": "A body focused hero who faces daily trials with both tracking and embraces without consequence.",
+      "quest_format": "Daily physical challenges with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-2-1-1",
+      "path": "Body",
+      "difficulty": "Epic Missions",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Epic Champion",
+      "description": "A body focused hero who faces epic missions with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Multi-day physical objectives with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-2-1-2",
+      "path": "Body",
+      "difficulty": "Epic Missions",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Governed Hero",
+      "description": "A body focused hero who faces epic missions with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Multi-day physical objectives with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-2-1-3",
+      "path": "Body",
+      "difficulty": "Epic Missions",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Boundless Warrior",
+      "description": "A body focused hero who faces epic missions with leveling system tracking and embraces without consequence.",
+      "quest_format": "Multi-day physical objectives with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-2-2-1",
+      "path": "Body",
+      "difficulty": "Epic Missions",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Consistent Hero",
+      "description": "A body focused hero who faces epic missions with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Multi-day physical objectives with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-2-2-2",
       "path": "Body",
       "difficulty": "Epic Missions",
       "tracking": "Streaks & Habits",
       "consequence": "Choose My Own Punishments",
       "class": "Sovereign Champion",
-      "description": "A self-directed physical powerhouse who designs meaningful challenges and accountability.",
-      "quests": {
-        "format": "Multi-day physical objectives with customized stakes",
-        "examples": [
-          "Complete a week-long training regimen with personal consequence system",
-          "Build a streak of consistent workouts with self-defined penalties",
-          "Master a new physical skill with accountability metrics you design"
-        ]
-      }
+      "description": "A body focused hero who faces epic missions with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Multi-day physical objectives with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
     },
-
     {
+      "key": "2-2-2-3",
+      "path": "Body",
+      "difficulty": "Epic Missions",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Liberated Athlete",
+      "description": "A body focused hero who faces epic missions with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Multi-day physical objectives with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-2-3-1",
+      "path": "Body",
+      "difficulty": "Epic Missions",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Complete Guardian",
+      "description": "A body focused hero who faces epic missions with both tracking and embraces yes, bring it on.",
+      "quest_format": "Multi-day physical objectives with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-2-3-2",
+      "path": "Body",
+      "difficulty": "Epic Missions",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Autonomous Warrior",
+      "description": "A body focused hero who faces epic missions with both tracking and embraces choose my own punishments.",
+      "quest_format": "Multi-day physical objectives with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-2-3-3",
+      "path": "Body",
+      "difficulty": "Epic Missions",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Unfettered Champion",
+      "description": "A body focused hero who faces epic missions with both tracking and embraces without consequence.",
+      "quest_format": "Multi-day physical objectives with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-3-1-1",
+      "path": "Body",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Relentless Berserker",
+      "description": "A body focused hero who faces relentless campaign with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Continuous physical development with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-3-1-2",
+      "path": "Body",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Driven Gladiator",
+      "description": "A body focused hero who faces relentless campaign with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Continuous physical development with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-3-1-3",
+      "path": "Body",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Unbound Warrior",
+      "description": "A body focused hero who faces relentless campaign with leveling system tracking and embraces without consequence.",
+      "quest_format": "Continuous physical development with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-3-2-1",
+      "path": "Body",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Persistent Champion",
+      "description": "A body focused hero who faces relentless campaign with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Continuous physical development with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-3-2-2",
+      "path": "Body",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Rhythm Master",
+      "description": "A body focused hero who faces relentless campaign with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Continuous physical development with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-3-2-3",
+      "path": "Body",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Free-Form Hero",
+      "description": "A body focused hero who faces relentless campaign with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Continuous physical development with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-3-3-1",
+      "path": "Body",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Complete Warlord",
+      "description": "A body focused hero who faces relentless campaign with both tracking and embraces yes, bring it on.",
+      "quest_format": "Continuous physical development with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-3-3-2",
+      "path": "Body",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Sovereign Warrior",
+      "description": "A body focused hero who faces relentless campaign with both tracking and embraces choose my own punishments.",
+      "quest_format": "Continuous physical development with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-3-3-3",
+      "path": "Body",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Unrestricted Champion",
+      "description": "A body focused hero who faces relentless campaign with both tracking and embraces without consequence.",
+      "quest_format": "Continuous physical development with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-4-1-1",
+      "path": "Body",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Seasonal Warrior",
+      "description": "A body focused hero who faces seasonal conquests with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Quarterly physical goals with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-4-1-2",
+      "path": "Body",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Cyclic Champion",
+      "description": "A body focused hero who faces seasonal conquests with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Quarterly physical goals with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-4-1-3",
+      "path": "Body",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Temporal Athlete",
+      "description": "A body focused hero who faces seasonal conquests with leveling system tracking and embraces without consequence.",
+      "quest_format": "Quarterly physical goals with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-4-2-1",
+      "path": "Body",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Ritual Warrior",
+      "description": "A body focused hero who faces seasonal conquests with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Quarterly physical goals with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-4-2-2",
+      "path": "Body",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Pattern Champion",
+      "description": "A body focused hero who faces seasonal conquests with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Quarterly physical goals with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-4-2-3",
+      "path": "Body",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Flow Athlete",
+      "description": "A body focused hero who faces seasonal conquests with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Quarterly physical goals with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-4-3-1",
+      "path": "Body",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Holistic Guardian",
+      "description": "A body focused hero who faces seasonal conquests with both tracking and embraces yes, bring it on.",
+      "quest_format": "Quarterly physical goals with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-4-3-2",
+      "path": "Body",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Seasonal Hero",
+      "description": "A body focused hero who faces seasonal conquests with both tracking and embraces choose my own punishments.",
+      "quest_format": "Quarterly physical goals with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-4-3-3",
+      "path": "Body",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Unbounded Warrior",
+      "description": "A body focused hero who faces seasonal conquests with both tracking and embraces without consequence.",
+      "quest_format": "Quarterly physical goals with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-5-1-1",
+      "path": "Body",
+      "difficulty": "Spartan Trials",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Spartan Warrior",
+      "description": "A body focused hero who faces spartan trials with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Extremely challenging physical feats with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-5-1-2",
+      "path": "Body",
+      "difficulty": "Spartan Trials",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Forged Champion",
+      "description": "A body focused hero who faces spartan trials with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Extremely challenging physical feats with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-5-1-3",
+      "path": "Body",
+      "difficulty": "Spartan Trials",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Ascended Hero",
+      "description": "A body focused hero who faces spartan trials with leveling system tracking and embraces without consequence.",
+      "quest_format": "Extremely challenging physical feats with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-5-2-1",
+      "path": "Body",
+      "difficulty": "Spartan Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Iron Disciplined Fighter",
+      "description": "A body focused hero who faces spartan trials with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Extremely challenging physical feats with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-5-2-2",
+      "path": "Body",
+      "difficulty": "Spartan Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Governed Gladiator",
+      "description": "A body focused hero who faces spartan trials with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Extremely challenging physical feats with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-5-2-3",
+      "path": "Body",
+      "difficulty": "Spartan Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Unleashed Warrior",
+      "description": "A body focused hero who faces spartan trials with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Extremely challenging physical feats with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "2-5-3-1",
+      "path": "Body",
+      "difficulty": "Spartan Trials",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Elite Warrior",
+      "description": "A body focused hero who faces spartan trials with both tracking and embraces yes, bring it on.",
+      "quest_format": "Extremely challenging physical feats with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "2-5-3-2",
+      "path": "Body",
+      "difficulty": "Spartan Trials",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Supreme Champion",
+      "description": "A body focused hero who faces spartan trials with both tracking and embraces choose my own punishments.",
+      "quest_format": "Extremely challenging physical feats with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "2-5-3-3",
+      "path": "Body",
+      "difficulty": "Spartan Trials",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Transcendent Hero",
+      "description": "A body focused hero who faces spartan trials with both tracking and embraces without consequence.",
+      "quest_format": "Extremely challenging physical feats with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-1-1-1",
+      "path": "Balanced",
+      "difficulty": "Daily Trials",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Balanced Knight",
+      "description": "A balanced focused hero who faces daily trials with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Daily mind-body challenges with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-1-1-2",
+      "path": "Balanced",
+      "difficulty": "Daily Trials",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Directed Ranger",
+      "description": "A balanced focused hero who faces daily trials with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Daily mind-body challenges with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-1-1-3",
+      "path": "Balanced",
+      "difficulty": "Daily Trials",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Free-Form Monk",
+      "description": "A balanced focused hero who faces daily trials with leveling system tracking and embraces without consequence.",
+      "quest_format": "Daily mind-body challenges with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-1-2-1",
+      "path": "Balanced",
+      "difficulty": "Daily Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Consistent Paladin",
+      "description": "A balanced focused hero who faces daily trials with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Daily mind-body challenges with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-1-2-2",
+      "path": "Balanced",
+      "difficulty": "Daily Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Rhythm Ranger",
+      "description": "A balanced focused hero who faces daily trials with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Daily mind-body challenges with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-1-2-3",
+      "path": "Balanced",
+      "difficulty": "Daily Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Flowing Monk",
+      "description": "A balanced focused hero who faces daily trials with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Daily mind-body challenges with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-1-3-1",
+      "path": "Balanced",
+      "difficulty": "Daily Trials",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Complete Paladin",
+      "description": "A balanced focused hero who faces daily trials with both tracking and embraces yes, bring it on.",
+      "quest_format": "Daily mind-body challenges with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-1-3-2",
+      "path": "Balanced",
+      "difficulty": "Daily Trials",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Balanced Ranger",
+      "description": "A balanced focused hero who faces daily trials with both tracking and embraces choose my own punishments.",
+      "quest_format": "Daily mind-body challenges with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-1-3-3",
+      "path": "Balanced",
+      "difficulty": "Daily Trials",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Unconstrained Monk",
+      "description": "A balanced focused hero who faces daily trials with both tracking and embraces without consequence.",
+      "quest_format": "Daily mind-body challenges with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-2-1-1",
+      "path": "Balanced",
+      "difficulty": "Epic Missions",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Epic Paladin",
+      "description": "A balanced focused hero who faces epic missions with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Multi-day holistic objectives with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-2-1-2",
+      "path": "Balanced",
+      "difficulty": "Epic Missions",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Governed Ranger",
+      "description": "A balanced focused hero who faces epic missions with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Multi-day holistic objectives with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-2-1-3",
+      "path": "Balanced",
+      "difficulty": "Epic Missions",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Boundless Monk",
+      "description": "A balanced focused hero who faces epic missions with leveling system tracking and embraces without consequence.",
+      "quest_format": "Multi-day holistic objectives with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-2-2-1",
+      "path": "Balanced",
+      "difficulty": "Epic Missions",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Consistent Knight",
+      "description": "A balanced focused hero who faces epic missions with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Multi-day holistic objectives with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-2-2-2",
+      "path": "Balanced",
+      "difficulty": "Epic Missions",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Sovereign Ranger",
+      "description": "A balanced focused hero who faces epic missions with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Multi-day holistic objectives with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-2-2-3",
+      "path": "Balanced",
+      "difficulty": "Epic Missions",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Liberated Monk",
+      "description": "A balanced focused hero who faces epic missions with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Multi-day holistic objectives with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-2-3-1",
+      "path": "Balanced",
+      "difficulty": "Epic Missions",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Complete Guardian",
+      "description": "A balanced focused hero who faces epic missions with both tracking and embraces yes, bring it on.",
+      "quest_format": "Multi-day holistic objectives with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-2-3-2",
+      "path": "Balanced",
+      "difficulty": "Epic Missions",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Autonomous Paladin",
+      "description": "A balanced focused hero who faces epic missions with both tracking and embraces choose my own punishments.",
+      "quest_format": "Multi-day holistic objectives with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-2-3-3",
+      "path": "Balanced",
+      "difficulty": "Epic Missions",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Unfettered Ranger",
+      "description": "A balanced focused hero who faces epic missions with both tracking and embraces without consequence.",
+      "quest_format": "Multi-day holistic objectives with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-3-1-1",
+      "path": "Balanced",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Relentless Paladin",
+      "description": "A balanced focused hero who faces relentless campaign with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Continuous holistic development with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-3-1-2",
+      "path": "Balanced",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Driven Ranger",
+      "description": "A balanced focused hero who faces relentless campaign with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Continuous holistic development with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-3-1-3",
+      "path": "Balanced",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Unbound Monk",
+      "description": "A balanced focused hero who faces relentless campaign with leveling system tracking and embraces without consequence.",
+      "quest_format": "Continuous holistic development with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-3-2-1",
+      "path": "Balanced",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Persistent Knight",
+      "description": "A balanced focused hero who faces relentless campaign with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Continuous holistic development with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-3-2-2",
+      "path": "Balanced",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Rhythm Paladin",
+      "description": "A balanced focused hero who faces relentless campaign with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Continuous holistic development with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-3-2-3",
+      "path": "Balanced",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Free-Form Ranger",
+      "description": "A balanced focused hero who faces relentless campaign with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Continuous holistic development with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-3-3-1",
+      "path": "Balanced",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Complete Warden",
+      "description": "A balanced focused hero who faces relentless campaign with both tracking and embraces yes, bring it on.",
+      "quest_format": "Continuous holistic development with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-3-3-2",
+      "path": "Balanced",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Sovereign Paladin",
+      "description": "A balanced focused hero who faces relentless campaign with both tracking and embraces choose my own punishments.",
+      "quest_format": "Continuous holistic development with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-3-3-3",
+      "path": "Balanced",
+      "difficulty": "Relentless Campaign",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Unrestricted Ranger",
+      "description": "A balanced focused hero who faces relentless campaign with both tracking and embraces without consequence.",
+      "quest_format": "Continuous holistic development with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-4-1-1",
+      "path": "Balanced",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Seasonal Paladin",
+      "description": "A balanced focused hero who faces seasonal conquests with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Quarterly holistic goals with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-4-1-2",
+      "path": "Balanced",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Cyclic Ranger",
+      "description": "A balanced focused hero who faces seasonal conquests with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Quarterly holistic goals with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-4-1-3",
+      "path": "Balanced",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Temporal Monk",
+      "description": "A balanced focused hero who faces seasonal conquests with leveling system tracking and embraces without consequence.",
+      "quest_format": "Quarterly holistic goals with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-4-2-1",
+      "path": "Balanced",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Ritual Knight",
+      "description": "A balanced focused hero who faces seasonal conquests with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Quarterly holistic goals with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-4-2-2",
+      "path": "Balanced",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Pattern Paladin",
+      "description": "A balanced focused hero who faces seasonal conquests with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Quarterly holistic goals with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-4-2-3",
+      "path": "Balanced",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Flow Ranger",
+      "description": "A balanced focused hero who faces seasonal conquests with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Quarterly holistic goals with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-4-3-1",
       "path": "Balanced",
       "difficulty": "Seasonal Conquests",
       "tracking": "Both",
       "consequence": "Yes, Bring It On",
       "class": "Harmonized Guardian",
-      "description": "A well-rounded hero who tackles significant challenges over time with full accountability.",
-      "quests": {
-        "format": "Season-long holistic challenges with defined consequences",
-        "examples": [
-          "Complete a 90-day mind-body transformation with strict milestones",
-          "Master both physical techniques and mental disciplines in parallel",
-          "Build balanced habits across multiple domains with clear accountability"
-        ]
-      }
+      "description": "A balanced focused hero who faces seasonal conquests with both tracking and embraces yes, bring it on.",
+      "quest_format": "Quarterly holistic goals with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-4-3-2",
+      "path": "Balanced",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Seasonal Paladin",
+      "description": "A balanced focused hero who faces seasonal conquests with both tracking and embraces choose my own punishments.",
+      "quest_format": "Quarterly holistic goals with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-4-3-3",
+      "path": "Balanced",
+      "difficulty": "Seasonal Conquests",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Unbounded Ranger",
+      "description": "A balanced focused hero who faces seasonal conquests with both tracking and embraces without consequence.",
+      "quest_format": "Quarterly holistic goals with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-5-1-1",
+      "path": "Balanced",
+      "difficulty": "Spartan Trials",
+      "tracking": "Leveling System",
+      "consequence": "Yes, Bring It On",
+      "class": "Spartan Knight",
+      "description": "A balanced focused hero who faces spartan trials with leveling system tracking and embraces yes, bring it on.",
+      "quest_format": "Extremely challenging holistic feats with strict consequences",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-5-1-2",
+      "path": "Balanced",
+      "difficulty": "Spartan Trials",
+      "tracking": "Leveling System",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Forged Paladin",
+      "description": "A balanced focused hero who faces spartan trials with leveling system tracking and embraces choose my own punishments.",
+      "quest_format": "Extremely challenging holistic feats with self-imposed consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-5-1-3",
+      "path": "Balanced",
+      "difficulty": "Spartan Trials",
+      "tracking": "Leveling System",
+      "consequence": "Without Consequence",
+      "class": "Ascended Ranger",
+      "description": "A balanced focused hero who faces spartan trials with leveling system tracking and embraces without consequence.",
+      "quest_format": "Extremely challenging holistic feats with no penalties",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-5-2-1",
+      "path": "Balanced",
+      "difficulty": "Spartan Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Yes, Bring It On",
+      "class": "Iron Disciplined Monk",
+      "description": "A balanced focused hero who faces spartan trials with streaks & habits tracking and embraces yes, bring it on.",
+      "quest_format": "Extremely challenging holistic feats with strict consequences for broken streaks",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-5-2-2",
+      "path": "Balanced",
+      "difficulty": "Spartan Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Choose My Own Punishments",
+      "class": "Self-Governed Knight",
+      "description": "A balanced focused hero who faces spartan trials with streaks & habits tracking and embraces choose my own punishments.",
+      "quest_format": "Extremely challenging holistic feats with self-imposed streak consequences",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-5-2-3",
+      "path": "Balanced",
+      "difficulty": "Spartan Trials",
+      "tracking": "Streaks & Habits",
+      "consequence": "Without Consequence",
+      "class": "Unleashed Paladin",
+      "description": "A balanced focused hero who faces spartan trials with streaks & habits tracking and embraces without consequence.",
+      "quest_format": "Extremely challenging holistic feats with flexible streaks",
+      "consequence_description": "No penalties for missed quests"
+    },
+    {
+      "key": "3-5-3-1",
+      "path": "Balanced",
+      "difficulty": "Spartan Trials",
+      "tracking": "Both",
+      "consequence": "Yes, Bring It On",
+      "class": "Elite Paladin",
+      "description": "A balanced focused hero who faces spartan trials with both tracking and embraces yes, bring it on.",
+      "quest_format": "Extremely challenging holistic feats with strict consequences and dual tracking",
+      "consequence_description": "System-imposed consequences for missed quests"
+    },
+    {
+      "key": "3-5-3-2",
+      "path": "Balanced",
+      "difficulty": "Spartan Trials",
+      "tracking": "Both",
+      "consequence": "Choose My Own Punishments",
+      "class": "Supreme Ranger",
+      "description": "A balanced focused hero who faces spartan trials with both tracking and embraces choose my own punishments.",
+      "quest_format": "Extremely challenging holistic feats with self-imposed consequences and comprehensive tracking",
+      "consequence_description": "Self-defined consequences for missed quests"
+    },
+    {
+      "key": "3-5-3-3",
+      "path": "Balanced",
+      "difficulty": "Spartan Trials",
+      "tracking": "Both",
+      "consequence": "Without Consequence",
+      "class": "Transcendent Monk",
+      "description": "A balanced focused hero who faces spartan trials with both tracking and embraces without consequence.",
+      "quest_format": "Extremely challenging holistic feats with no penalties and dual tracking",
+      "consequence_description": "No penalties for missed quests"
     }
   ],
-  
   "classMapping": {
     "Mind": {
       "Daily Trials": {
@@ -188,7 +1574,6 @@
         }
       }
     },
-    
     "Body": {
       "Daily Trials": {
         "Leveling System": {
@@ -276,7 +1661,6 @@
         }
       }
     },
-    
     "Balanced": {
       "Daily Trials": {
         "Leveling System": {
@@ -365,160 +1749,92 @@
       }
     }
   },
-  
   "questTemplates": {
     "Mind": {
       "Daily Trials": {
-        "format": "Daily intellectual challenges",
-        "examples": [
-          "Learn a new concept",
-          "Solve a puzzle",
-          "Read and summarize an article"
-        ]
+        "format": "Daily intellectual challenges"
       },
       "Epic Missions": {
-        "format": "Multi-day intellectual projects",
-        "examples": [
-          "Master a complex topic",
-          "Create an in-depth analysis",
-          "Develop a comprehensive theory"
-        ]
+        "format": "Multi-day intellectual projects"
       },
       "Relentless Campaign": {
-        "format": "Continuous intellectual development",
-        "examples": [
-          "Build a knowledge system",
-          "Complete a series of connected challenges",
-          "Develop expertise in a field"
-        ]
+        "format": "Continuous intellectual development"
       },
       "Seasonal Conquests": {
-        "format": "Quarterly intellectual goals",
-        "examples": [
-          "Learn a new language to conversational level",
-          "Master a complex subject area",
-          "Complete a major intellectual project"
-        ]
+        "format": "Quarterly intellectual goals"
       },
       "Spartan Trials": {
-        "format": "Extremely challenging mental feats",
-        "examples": [
-          "Learn a semester's worth of material in a week",
-          "Solve previously unsolvable problems",
-          "Memorize and recall extraordinary amounts of information"
-        ]
+        "format": "Extremely challenging mental feats"
       }
     },
     "Body": {
       "Daily Trials": {
-        "format": "Daily physical challenges",
-        "examples": [
-          "Complete a workout routine",
-          "Achieve a specific exercise goal",
-          "Maintain physical discipline"
-        ]
+        "format": "Daily physical challenges"
       },
       "Epic Missions": {
-        "format": "Multi-day physical objectives",
-        "examples": [
-          "Train for a specific event",
-          "Master a difficult technique",
-          "Achieve a significant strength milestone"
-        ]
+        "format": "Multi-day physical objectives"
       },
       "Relentless Campaign": {
-        "format": "Continuous physical development",
-        "examples": [
-          "Progressive strength training program",
-          "Endurance building regimen",
-          "Comprehensive athletic development"
-        ]
+        "format": "Continuous physical development"
       },
       "Seasonal Conquests": {
-        "format": "Quarterly physical goals",
-        "examples": [
-          "Train for and complete a marathon",
-          "Master a martial art form",
-          "Transform body composition"
-        ]
+        "format": "Quarterly physical goals"
       },
       "Spartan Trials": {
-        "format": "Extremely challenging physical feats",
-        "examples": [
-          "Complete a hero's challenge workout",
-          "Push physical limits to new extremes",
-          "Achieve elite-level performance metrics"
-        ]
+        "format": "Extremely challenging physical feats"
       }
     },
     "Balanced": {
       "Daily Trials": {
-        "format": "Daily mind-body challenges",
-        "examples": [
-          "Combined mental and physical exercises",
-          "Meditation and movement practices",
-          "Balanced skill development"
-        ]
+        "format": "Daily mind-body challenges"
       },
       "Epic Missions": {
-        "format": "Multi-day holistic objectives",
-        "examples": [
-          "Complete projects requiring both mental and physical mastery",
-          "Develop integrated skills across domains",
-          "Achieve balance in challenging circumstances"
-        ]
+        "format": "Multi-day holistic objectives"
       },
       "Relentless Campaign": {
-        "format": "Continuous holistic development",
-        "examples": [
-          "Progressive mind-body training",
-          "Integrated development program",
-          "Comprehensive personal growth"
-        ]
+        "format": "Continuous holistic development"
       },
       "Seasonal Conquests": {
-        "format": "Quarterly holistic goals",
-        "examples": [
-          "Complete a life-changing 90-day challenge",
-          "Master both physical and mental disciplines",
-          "Transform habits across multiple domains"
-        ]
+        "format": "Quarterly holistic goals"
       },
       "Spartan Trials": {
-        "format": "Extremely challenging holistic feats",
-        "examples": [
-          "Complete elite-level mind-body challenges",
-          "Achieve mastery in complementary disciplines",
-          "Demonstrate extraordinary balance under pressure"
-        ]
+        "format": "Extremely challenging holistic feats"
       }
     }
   },
-  
   "consequenceModifiers": {
     "Yes, Bring It On": {
-      "description": "System-imposed consequences for missed quests",
-      "examples": [
-        "Experience level reduction",
-        "Temporary stat penalties",
-        "Additional required challenges"
-      ]
+      "description": "System-imposed consequences for missed quests"
     },
     "Choose My Own Punishments": {
-      "description": "Self-defined consequences for missed quests",
-      "examples": [
-        "Create your own penalty system",
-        "Set personal stakes for each challenge",
-        "Design appropriate make-up tasks"
-      ]
+      "description": "Self-defined consequences for missed quests"
     },
     "Without Consequence": {
-      "description": "No penalties for missed quests",
-      "examples": [
-        "Focus solely on progress and achievements",
-        "Restart challenges without penalty",
-        "Maintain positive reinforcement only"
-      ]
+      "description": "No penalties for missed quests"
+    }
+  },
+  "util": {
+    "pathMap": {
+      "1": "Mind",
+      "2": "Body",
+      "3": "Balanced"
+    },
+    "difficultyMap": {
+      "1": "Daily Trials",
+      "2": "Epic Missions",
+      "3": "Relentless Campaign",
+      "4": "Seasonal Conquests",
+      "5": "Spartan Trials"
+    },
+    "trackingMap": {
+      "1": "Leveling System",
+      "2": "Streaks & Habits",
+      "3": "Both"
+    },
+    "consequenceMap": {
+      "1": "Yes, Bring It On",
+      "2": "Choose My Own Punishments",
+      "3": "Without Consequence"
     }
   }
 }
