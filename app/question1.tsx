@@ -6,12 +6,34 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Question1() {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
+  const [userToken, setUserToken] = useState(null);
 
-  // Load saved selection when component mounts
+  // Path mapping to align with classes.json format (P value)
+  const pathToCode = {
+    'Mind': 1,
+    'Body': 2,
+    'Balanced': 3
+  };
+
+  // Load user token and saved selection when component mounts
   useEffect(() => {
-    const loadSelection = async () => {
+    const loadData = async () => {
       try {
-        const savedSelection = await AsyncStorage.getItem('question1Choice');
+        // Get user token
+        const token = await AsyncStorage.getItem('userToken');
+        setUserToken(token);
+        
+        // First try to load with token-specific key
+        let savedSelection = null;
+        if (token) {
+          savedSelection = await AsyncStorage.getItem(`question1Choice_${token}`);
+        }
+        
+        // Fall back to non-token specific key if needed
+        if (savedSelection === null) {
+          savedSelection = await AsyncStorage.getItem('question1Choice');
+        }
+        
         if (savedSelection !== null) {
           setSelected(savedSelection);
         } else {
@@ -21,13 +43,25 @@ export default function Question1() {
         console.error('Error loading data:', e);
       }
     };
-    loadSelection();
+    loadData();
   }, []);
 
   // Function to save selection to AsyncStorage
   const handleSelection = async (option) => {
     try {
+      // Get the numeric code for the selected path
+      const pathCode = pathToCode[option];
+      
+      // Store both the human-readable choice and the code
       await AsyncStorage.setItem('question1Choice', option);
+      await AsyncStorage.setItem('question1Code', String(pathCode));
+      
+      // If we have a user token, also store with token-specific keys
+      if (userToken) {
+        await AsyncStorage.setItem(`question1Choice_${userToken}`, option);
+        await AsyncStorage.setItem(`question1Code_${userToken}`, String(pathCode));
+      }
+      
       setSelected(option);
     } catch (e) {
       console.error('Error saving selection:', e);
@@ -38,7 +72,19 @@ export default function Question1() {
   const handleNext = async () => {
     if (selected) {
       try {
+        // Get the numeric code for the selected path
+        const pathCode = pathToCode[selected];
+        
+        // Store both the human-readable choice and the code before navigation
         await AsyncStorage.setItem('question1Choice', selected);
+        await AsyncStorage.setItem('question1Code', String(pathCode));
+        
+        // If we have a user token, also store with token-specific keys
+        if (userToken) {
+          await AsyncStorage.setItem(`question1Choice_${userToken}`, selected);
+          await AsyncStorage.setItem(`question1Code_${userToken}`, String(pathCode));
+        }
+        
         router.push('/question2');
       } catch (e) {
         console.error('Error saving before navigation:', e);
@@ -48,33 +94,29 @@ export default function Question1() {
 
   // Function to handle navigation back
   const handleBack = async () => {
-    if (selected) {
-      try {
-        await AsyncStorage.setItem('question1Choice', selected);
-        router.push('/signup');
-      } catch (e) {
-        console.error('Error saving before navigation:', e);
-      }
-    }
+    router.push('/signup');
   };
 
   return (
     <View style={styles.container}>
-      {/* Progress Bar */}
-      <View style={styles.progressBar}>
-        <View style={[styles.progress, { width: '25%' }]} />
+      {/* Top Section with Progress Bar and Back Button */}
+      <View style={styles.topSection}>
+        {/* Progress Bar */}
+        <View style={styles.progressBar}>
+          <View style={[styles.progress, { width: '25%' }]} />
+        </View>
+
+        {/* Back Button - Now below the progress bar */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={handleBack}
+        >
+          <Text style={styles.backText}>Back</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Back Button - Positioned at the top left, below the progress bar */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={handleBack}
-      >
-        <Text style={styles.backText}>Back</Text>
-      </TouchableOpacity>
-
-      {/* Main Content */}
-      <View style={styles.content}>
+      {/* Question Content */}
+      <View style={styles.questionContent}>
         <Text style={styles.questionTitle}>Every hero has a calling. What is yours?</Text>
         <Text style={styles.subtext}>Choose your path.</Text>
 
@@ -98,7 +140,7 @@ export default function Question1() {
 
       {/* Next Button */}
       <TouchableOpacity
-        style={styles.nextButton}
+        style={[styles.nextButton, !selected && styles.disabledButton]}
         onPress={handleNext}
         disabled={!selected}
       >
@@ -116,18 +158,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 50,
   },
+  topSection: {
+    width: '100%',
+  },
   progressBar: {
     height: 5,
     backgroundColor: '#555',
     borderRadius: 10,
     overflow: 'hidden',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   progress: {
     height: '100%',
     backgroundColor: 'red',
   },
-  content: {
+  backButton: {
+    alignSelf: 'flex-start',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  backText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  questionContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -183,22 +239,13 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 30,
   },
+  disabledButton: {
+    backgroundColor: '#555',
+    opacity: 0.7,
+  },
   nextText: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  backButton: {
-    position: 'absolute',
-    bottom: 20,  
-    right: 20,  
-    backgroundColor: 'black',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  backText: {
-    color: 'white',
-    fontSize: 16,
   },
 });
