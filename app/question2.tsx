@@ -6,26 +6,64 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Question2() {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
+  const [userToken, setUserToken] = useState(null);
 
-  // Load saved selection when component mounts
+  // Difficulty mapping to align with classes.json format (D value)
+  const difficultyToCode = {
+    'Daily Trials': 1,
+    'Epic Missions': 2,
+    'Relentless Campaign': 3,
+    'Seasonal Conquests': 4,
+    'Spartan Trials': 5
+  };
+
+  // Load user token and saved selection when component mounts
   useEffect(() => {
-    const loadSelection = async () => {
+    const loadData = async () => {
       try {
-        const savedSelection = await AsyncStorage.getItem('question2Choice');
+        // Get user token
+        const token = await AsyncStorage.getItem('userToken');
+        setUserToken(token);
+        
+        // First try to load with token-specific key
+        let savedSelection = null;
+        if (token) {
+          savedSelection = await AsyncStorage.getItem(`question2Choice_${token}`);
+        }
+        
+        // Fall back to non-token specific key if needed
+        if (savedSelection === null) {
+          savedSelection = await AsyncStorage.getItem('question2Choice');
+        }
+        
         if (savedSelection !== null) {
           setSelected(savedSelection);
+        } else {
+          setSelected(null);
         }
       } catch (e) {
         console.error('Error loading data:', e);
       }
     };
-    loadSelection();
+    loadData();
   }, []);
 
   // Function to save selection to AsyncStorage
   const handleSelection = async (option) => {
     try {
+      // Get the numeric code for the selected difficulty
+      const difficultyCode = difficultyToCode[option];
+      
+      // Store both the human-readable choice and the code
       await AsyncStorage.setItem('question2Choice', option);
+      await AsyncStorage.setItem('question2Code', String(difficultyCode));
+      
+      // If we have a user token, also store with token-specific keys
+      if (userToken) {
+        await AsyncStorage.setItem(`question2Choice_${userToken}`, option);
+        await AsyncStorage.setItem(`question2Code_${userToken}`, String(difficultyCode));
+      }
+      
       setSelected(option);
     } catch (e) {
       console.error('Error saving selection:', e);
@@ -36,7 +74,19 @@ export default function Question2() {
   const handleNext = async () => {
     if (selected) {
       try {
+        // Get the numeric code for the selected difficulty
+        const difficultyCode = difficultyToCode[selected];
+        
+        // Store both the human-readable choice and the code before navigation
         await AsyncStorage.setItem('question2Choice', selected);
+        await AsyncStorage.setItem('question2Code', String(difficultyCode));
+        
+        // If we have a user token, also store with token-specific keys
+        if (userToken) {
+          await AsyncStorage.setItem(`question2Choice_${userToken}`, selected);
+          await AsyncStorage.setItem(`question2Code_${userToken}`, String(difficultyCode));
+        }
+        
         router.push('/question3');
       } catch (e) {
         console.error('Error saving before navigation:', e);
@@ -91,7 +141,7 @@ export default function Question2() {
 
       {/* Next Button */}
       <TouchableOpacity
-        style={styles.nextButton}
+        style={[styles.nextButton, !selected && styles.disabledButton]}
         onPress={handleNext}
         disabled={!selected}
       >
@@ -171,6 +221,10 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 30,
   },
+  disabledButton: {
+    backgroundColor: '#555',
+    opacity: 0.7,
+  },
   nextText: {
     color: 'white',
     fontSize: 18,
@@ -178,9 +232,9 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    bottom: 30,
-    right: 20,  
-    backgroundColor: 'black',
+    top: 30,
+    left: 20,
+    backgroundColor: 'transparent',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,

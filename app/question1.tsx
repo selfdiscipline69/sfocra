@@ -6,12 +6,34 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Question1() {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
+  const [userToken, setUserToken] = useState(null);
 
-  // Load saved selection when component mounts
+  // Path mapping to align with classes.json format (P value)
+  const pathToCode = {
+    'Mind': 1,
+    'Body': 2,
+    'Balanced': 3
+  };
+
+  // Load user token and saved selection when component mounts
   useEffect(() => {
-    const loadSelection = async () => {
+    const loadData = async () => {
       try {
-        const savedSelection = await AsyncStorage.getItem('question1Choice');
+        // Get user token
+        const token = await AsyncStorage.getItem('userToken');
+        setUserToken(token);
+        
+        // First try to load with token-specific key
+        let savedSelection = null;
+        if (token) {
+          savedSelection = await AsyncStorage.getItem(`question1Choice_${token}`);
+        }
+        
+        // Fall back to non-token specific key if needed
+        if (savedSelection === null) {
+          savedSelection = await AsyncStorage.getItem('question1Choice');
+        }
+        
         if (savedSelection !== null) {
           setSelected(savedSelection);
         } else {
@@ -21,13 +43,25 @@ export default function Question1() {
         console.error('Error loading data:', e);
       }
     };
-    loadSelection();
+    loadData();
   }, []);
 
   // Function to save selection to AsyncStorage
   const handleSelection = async (option) => {
     try {
+      // Get the numeric code for the selected path
+      const pathCode = pathToCode[option];
+      
+      // Store both the human-readable choice and the code
       await AsyncStorage.setItem('question1Choice', option);
+      await AsyncStorage.setItem('question1Code', String(pathCode));
+      
+      // If we have a user token, also store with token-specific keys
+      if (userToken) {
+        await AsyncStorage.setItem(`question1Choice_${userToken}`, option);
+        await AsyncStorage.setItem(`question1Code_${userToken}`, String(pathCode));
+      }
+      
       setSelected(option);
     } catch (e) {
       console.error('Error saving selection:', e);
@@ -38,7 +72,19 @@ export default function Question1() {
   const handleNext = async () => {
     if (selected) {
       try {
+        // Get the numeric code for the selected path
+        const pathCode = pathToCode[selected];
+        
+        // Store both the human-readable choice and the code before navigation
         await AsyncStorage.setItem('question1Choice', selected);
+        await AsyncStorage.setItem('question1Code', String(pathCode));
+        
+        // If we have a user token, also store with token-specific keys
+        if (userToken) {
+          await AsyncStorage.setItem(`question1Choice_${userToken}`, selected);
+          await AsyncStorage.setItem(`question1Code_${userToken}`, String(pathCode));
+        }
+        
         router.push('/question2');
       } catch (e) {
         console.error('Error saving before navigation:', e);
@@ -48,14 +94,7 @@ export default function Question1() {
 
   // Function to handle navigation back
   const handleBack = async () => {
-    if (selected) {
-      try {
-        await AsyncStorage.setItem('question1Choice', selected);
-        router.push('/signup');
-      } catch (e) {
-        console.error('Error saving before navigation:', e);
-      }
-    }
+    router.push('/signup');
   };
 
   return (
@@ -98,7 +137,7 @@ export default function Question1() {
 
       {/* Next Button */}
       <TouchableOpacity
-        style={styles.nextButton}
+        style={[styles.nextButton, !selected && styles.disabledButton]}
         onPress={handleNext}
         disabled={!selected}
       >
@@ -183,6 +222,10 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 30,
   },
+  disabledButton: {
+    backgroundColor: '#555',
+    opacity: 0.7,
+  },
   nextText: {
     color: 'white',
     fontSize: 18,
@@ -190,9 +233,9 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    bottom: 20,  
-    right: 20,  
-    backgroundColor: 'black',
+    top: 30,
+    left: 20,
+    backgroundColor: 'transparent',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,

@@ -1,4 +1,36 @@
 {
+  "_description": {
+    "key_format": "P-D-T-C format where:",
+    "P": "Path (1=Mind, 2=Body, 3=Balanced)",
+    "D": "Difficulty (1=Daily Trials, 2=Epic Missions, 3=Relentless Campaign, 4=Seasonal Conquests, 5=Spartan Trials)",
+    "T": "Tracking (1=Leveling System, 2=Streaks & Habits, 3=Both)",
+    "C": "Consequence (1=Yes Bring It On, 2=Choose My Own Punishments, 3=Without Consequence)",
+    "example": "2-5-3-1 represents Body path, Spartan Trials difficulty, Both tracking types, with Yes Bring It On consequences"
+  },
+  "util": {
+    "pathMap": {
+      "1": "Mind",
+      "2": "Body",
+      "3": "Balanced"
+    },
+    "difficultyMap": {
+      "1": "Daily Trials",
+      "2": "Epic Missions",
+      "3": "Relentless Campaign",
+      "4": "Seasonal Conquests",
+      "5": "Spartan Trials"
+    },
+    "trackingMap": {
+      "1": "Leveling System",
+      "2": "Streaks & Habits",
+      "3": "Both"
+    },
+    "consequenceMap": {
+      "1": "Yes, Bring It On",
+      "2": "Choose My Own Punishments",
+      "3": "Without Consequence"
+    }
+  },
   "classes": [
     {
       "key": "1-1-1-1",
@@ -1811,30 +1843,6 @@
     },
     "Without Consequence": {
       "description": "No penalties for missed quests"
-    }
-  },
-  "util": {
-    "pathMap": {
-      "1": "Mind",
-      "2": "Body",
-      "3": "Balanced"
-    },
-    "difficultyMap": {
-      "1": "Daily Trials",
-      "2": "Epic Missions",
-      "3": "Relentless Campaign",
-      "4": "Seasonal Conquests",
-      "5": "Spartan Trials"
-    },
-    "trackingMap": {
-      "1": "Leveling System",
-      "2": "Streaks & Habits",
-      "3": "Both"
-    },
-    "consequenceMap": {
-      "1": "Yes, Bring It On",
-      "2": "Choose My Own Punishments",
-      "3": "Without Consequence"
     }
   }
 }
