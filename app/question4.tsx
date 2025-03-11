@@ -68,7 +68,7 @@ export default function Question4() {
     }
   };
 
-  // Handle navigation with save - this is the final question, so we go to homepage
+  // Handle navigation with save - now navigating directly to User_Classification
   const handleNext = async () => {
     if (selected) {
       try {
@@ -85,10 +85,13 @@ export default function Question4() {
           await AsyncStorage.setItem(`question4Code_${userToken}`, String(consequenceCode));
         }
         
-        // Navigate to the classification page instead of homepage
-        router.push('/User_Classification');
+        // Make sure this is the only navigation occurring
+        console.log("Navigating to User_Classification");
+        await router.push({
+          pathname: '/User_Classification'
+        });
       } catch (e) {
-        console.error('Error saving before navigation:', e);
+        console.error('Error during navigation:', e);
       }
     }
   };

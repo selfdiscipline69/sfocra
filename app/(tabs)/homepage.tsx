@@ -17,7 +17,8 @@ import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 import quotesData from '../../assets/Quote.json';
-import questsData from '../../assets/Quest.json'; // Import Quest data
+import questsData from '../../assets/Quest.json'; 
+import WeeklyTrialBox from '../components/WeeklyTrialBox';
 
 const { width } = Dimensions.get('window');
 
@@ -26,6 +27,8 @@ export default function Homepage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [userToken, setUserToken] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userHandle, setUserHandle] = useState('');
   const [userChoices, setUserChoices] = useState({
     question1: null,
     question2: null,
@@ -36,6 +39,7 @@ export default function Homepage() {
   const [dailyTasks, setDailyTasks] = useState(['', '']); // Two daily tasks
   const [weeklyTrial, setWeeklyTrial] = useState(null); // Weekly trial quest
   const [profileImage, setProfileImage] = useState(null);
+  const [additionalTasks, setAdditionalTasks] = useState([]); // Add state for additional tasks
 
   // Function to load user choices from AsyncStorage
   const loadUserChoices = async () => {
@@ -47,6 +51,13 @@ export default function Homepage() {
       
       if (storedEmail !== null) setEmail(storedEmail);
       if (storedPassword !== null) setPassword(storedPassword);
+      
+      // Load user name and username
+      const storedName = await AsyncStorage.getItem('userFullName');
+      const storedHandle = await AsyncStorage.getItem('userUsername');
+      
+      if (storedName) setUserName(storedName);
+      if (storedHandle) setUserHandle(storedHandle);
       
       // Initialize an object to store choices
       const choices = {
@@ -78,6 +89,12 @@ export default function Homepage() {
       if (userToken) {
         const storedImage = await AsyncStorage.getItem(`profileImage_${userToken}`);
         if (storedImage !== null) setProfileImage(storedImage);
+        
+        // Load additional tasks from addTask screen
+        const savedAdditionalTasks = await AsyncStorage.getItem(`additionalTasks_${userToken}`);
+        if (savedAdditionalTasks) {
+          setAdditionalTasks(JSON.parse(savedAdditionalTasks));
+        }
       }
 
       // Update state with all found choices
@@ -174,6 +191,19 @@ export default function Homepage() {
   const handleQuoteChange = (newQuote) => {
     setDailyQuote(newQuote);
   };
+
+  // Add function to handle changes to additional tasks text
+  const handleAdditionalTaskChange = (index, newText) => {
+    const updatedTasks = [...additionalTasks];
+    updatedTasks[index].text = newText;
+    setAdditionalTasks(updatedTasks);
+    
+    // Save to AsyncStorage
+    if (userToken) {
+      AsyncStorage.setItem(`additionalTasks_${userToken}`, JSON.stringify(updatedTasks))
+        .catch(err => console.error('Error saving additional tasks:', err));
+    }
+  };
   
   return (
     <>
@@ -197,108 +227,119 @@ export default function Homepage() {
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 20}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.innerContainer}>
-            {/* Profile Section */}
-            <View style={styles.header}>
-              <View>
-                {/* Daily Quote now appears at the top */}
-                <Text style={styles.description}>
-                  {dailyQuote}
-                </Text>
-              </View>
-              
-              <View style={styles.headerButtons}>
-                {/* Refresh Button */}
-                <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
-                  <Text style={styles.refreshButtonText}>↻</Text>
-                </TouchableOpacity>
-                
-                {/* User Profile Image or Default Icon */}
-                <View style={styles.profileSection}>
-                  <TouchableOpacity 
-                    onPress={() => router.push('/(tabs)/settings')} 
-                    style={styles.profileIconButton}
-                    accessibilityLabel="Settings"
-                  >
-                    {profileImage ? (
-                      <Image 
-                        source={{ uri: profileImage }} 
-                        style={styles.profileIcon} 
-                      />
-                    ) : (
-                      <View style={styles.profileIcon} />
-                    )}
-                  </TouchableOpacity>
-                  {!profileImage && ( // Only show text if no profile image exists
-                    <Text style={styles.changeProfileText}>Click here to change pfp</Text>
-                  )}
-                </View>
-              </View>
-            </View>
-
-            {/* Content */}
-            <ScrollView 
-              contentContainerStyle={styles.content}
-              showsVerticalScrollIndicator={false}
-            >
-              {/* Add spacer to create more distance */}
-              <View style={styles.spacerView} />
-              
-              {/* Weekly Trial with Random Quest */}
-              <View style={styles.optionContainer}>
-                <Text style={styles.optionTitle}>Weekly Trial</Text>
-                <View style={styles.optionContent}>
-                  {weeklyTrial ? (
-                    <Text style={styles.userChoiceText}>{weeklyTrial}</Text>
-                  ) : (
-                    <Text style={styles.noChoicesText}>No quest available</Text>
-                  )}
-                  
-
-                </View>
-              </View>
-
-              {/* Daily Tasks (2 boxes) */}
-              {dailyTasks.map((task, index) => (
-                <View key={`task-${index}`} style={styles.optionContainer}>
-                  <Text style={styles.optionTitle}>Daily Task {index + 1}</Text>
-                  <View style={styles.optionContent}>
-                    <TextInput
-                      style={styles.quoteInput}
-                      value={task}
-                      onChangeText={(text) => handleTaskChange(index, text)}
-                      multiline={true}
-                      textAlign="center"
-                      placeholder="Enter a task"
-                      placeholderTextColor="#aaa"
-                    />
-                  </View>
-                </View>
-              ))}
-              
-              {/* Extra space at bottom for keyboard */}
-              <View style={styles.keyboardSpace} />
-            </ScrollView>
-
-            {/* Bottom Navigation Icons */}
-            <View style={styles.bottomNav}>
-              <TouchableOpacity onPress={() => router.push('/(tabs)/performance')}>
-                <Text style={styles.icon}>📈</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push('/(tabs)/addTask')}>
-                <Text style={styles.icon}>➕</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                onPress={() => router.push('/(tabs)/settings')}
-                accessibilityLabel="Settings"
-              >
-                <Text style={styles.icon}>⚙️</Text>
-              </TouchableOpacity>
+        <View style={styles.innerContainer}>
+          {/* Profile Section */}
+          <View style={styles.header}>
+            <View>
+              {/* Daily Quote now appears at the top */}
+              <Text style={styles.description}>
+                {dailyQuote}
+              </Text>
             </View>
             
+            <View style={styles.headerButtons}>
+              {/* User Profile Image or Default Icon - Moved left */}
+              <View style={styles.profileSection}>
+                <TouchableOpacity 
+                  onPress={() => router.push('/(tabs)/settings')} 
+                  style={styles.profileIconButton}
+                  accessibilityLabel="Settings"
+                >
+                  {profileImage ? (
+                    <Image 
+                      source={{ uri: profileImage }} 
+                      style={styles.profileIcon} 
+                    />
+                  ) : (
+                    <View style={styles.profileIcon} />
+                  )}
+                </TouchableOpacity>
+                
+                {/* Username display under profile icon */}
+                <Text style={styles.usernameText}>
+                  {userHandle || '@username'}
+                </Text>
+              </View>
+            </View>
           </View>
-        </TouchableWithoutFeedback>
+
+          {/* Content */}
+          <ScrollView 
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={true}  // Changed to true to show scroll indicator
+            scrollEnabled={true}  // Explicitly enable scrolling
+            style={styles.scrollView}  // Added a specific style for ScrollView
+          >
+            <View style={styles.spacerView} />
+            
+            {/* Weekly Trial with WeeklyTrialBox component */}
+            <WeeklyTrialBox title="Weekly Trial">
+              {weeklyTrial ? (
+                <Text style={styles.userChoiceText}>{weeklyTrial}</Text>
+              ) : (
+                <Text style={styles.noChoicesText}>No quest available</Text>
+              )}
+            </WeeklyTrialBox>
+
+            {/* Daily Tasks */}
+            {dailyTasks.map((task, index) => (
+              <WeeklyTrialBox key={`task-${index}`} title={`Daily Task ${index + 1}`}>
+                <TextInput
+                  style={styles.quoteInput}
+                  value={task}
+                  onChangeText={(text) => handleTaskChange(index, text)}
+                  multiline={true}
+                  textAlign="center"
+                  placeholder="Enter a task"
+                  placeholderTextColor="#aaa"
+                />
+              </WeeklyTrialBox>
+            ))}
+            
+            {/* Additional Tasks */}
+            {additionalTasks.length > 0 && (
+              <>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionHeaderText}>Additional Tasks</Text>
+                </View>
+                
+                {additionalTasks.map((task, index) => (
+                  <WeeklyTrialBox key={`additional-${index}`} title={`Extra Task ${index + 1}`}>
+                    <TextInput
+                      style={styles.quoteInput}
+                      value={task.text}
+                      onChangeText={(text) => handleAdditionalTaskChange(index, text)}
+                      multiline={true}
+                      textAlign="center"
+                      placeholder="Task details"
+                      placeholderTextColor="#aaa"
+                    />
+                  </WeeklyTrialBox>
+                ))}
+              </>
+            )}
+            
+            {/* Extra space at bottom for keyboard */}
+            <View style={styles.keyboardSpace} />
+          </ScrollView>
+
+          {/* Bottom Navigation Icons */}
+          <View style={styles.bottomNav}>
+            <TouchableOpacity onPress={() => router.push('/(tabs)/performance')}>
+              <Text style={styles.icon}>📈</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/(tabs)/addTask')}>
+              <Text style={styles.icon}>➕</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => router.push('/(tabs)/settings')}
+              accessibilityLabel="Settings"
+            >
+              <Text style={styles.icon}>⚙️</Text>
+            </TouchableOpacity>
+          </View>
+          
+        </View>
       </KeyboardAvoidingView>
     </>
   );
@@ -313,6 +354,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 5,
     paddingTop: 20, 
+    position: 'relative',  // Added for precise positioning
   },
   header: {
     flexDirection: 'row',
@@ -329,33 +371,14 @@ const styles = StyleSheet.create({
     fontStyle: 'italic', // Added italic to make it look like a quote
   },
   profileIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 55, // Increased from 40
+    height: 55, // Increased from 40
+    borderRadius: 28, // Adjusted to maintain circular shape (width/2 + 0.5)
     backgroundColor: 'white', // Fallback color if no image
   },
   content: {
-    flexGrow: 1,
-    paddingBottom: 10, // Reduced from 30 to give space for quote box
-  },
-  optionContainer: {
-    backgroundColor: 'black',
-    borderRadius: 10,
-    marginBottom: 15,
-    borderColor: "gray",
-    overflow: 'hidden',
-    width: width - 10, // Using absolute width - 10 as requested
-  },
-  optionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    paddingVertical: 10,
-    backgroundColor: '#222', 
-    color: 'white',
-  },
-  optionContent: {
-    padding: 15,
+    paddingBottom: 80,  // Increased to ensure there's scrollable space at bottom
+    flexGrow: 1,  // This allows the content to grow but still be scrollable
   },
   userChoiceText: {
     fontSize: 14,
@@ -367,19 +390,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontStyle: 'italic',
     textAlign: 'center',
-    color: 'black', 
-  },
-  userChoicesSection: {
-    marginTop: 10,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-  },
-  userChoicesHeader: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: 'black',
+    color: 'white',
   },
   quoteInput: {
     fontSize: 14, // Reduced from 16 to 14
@@ -388,7 +399,7 @@ const styles = StyleSheet.create({
     color: 'white',
     width: '100%',
     lineHeight: 18,
-    backgroundColor: 'black' // Added line height for better readability
+    backgroundColor: 'transparent' // Added line height for better readability
   },
   bottomNav: {
     flexDirection: 'row',
@@ -416,53 +427,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   headerButtons: {
-    flexDirection: 'row',
-    alignItems: 'flex-start', // Changed from center to flex-start
-  },
-  refreshButton: {
-    marginRight: 10,
-    padding: 10,
-    borderRadius: 5,
-  },
-  refreshButtonText: {
-    color: 'white', // Change to white so the emoji is visible against black background
-    fontSize: 16,  // Increase size slightly for better visibility
+    alignItems: 'center',
+    marginRight: 25, // Added margin to move the profile section left
   },
   keyboardSpace: {
-    height: 80, // Extra space at bottom for keyboard
+    height: 100,  // Increased from 80 to provide more scrollable space
   },
   profileIconButton: {
-    padding: 10,
+    padding: 8, // Slightly reduced padding to accommodate larger icon
   },
   spacerView: {
     height: 30, // Adjust this value to control the amount of space
-  },
-  redQuoteContainer: {
-    backgroundColor: 'rgba(255, 0, 0, 0.1)',
-    borderRadius: 10,
-    margin: 5,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#ff3333',
-    overflow: 'hidden',
-  },
-  redQuoteTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    paddingVertical: 8,
-    backgroundColor: 'rgba(255, 0, 0, 0.2)',
-    color: 'white',
-  },
-  redQuoteInput: {
-    fontSize: 14,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    textAlign: 'center',
-    color: 'white',
-    width: '100%',
-    lineHeight: 18,
-    minHeight: 60,
   },
   profileSection: {
     alignItems: 'center',
@@ -474,8 +449,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: 60,
   },
+  usernameText: {
+    color: '#ddd',
+    fontSize: 12,
+    marginTop: 6, 
+    textAlign: 'center',
+    maxWidth: 150, // Increased from 70 to accommodate longer usernames without wrapping
+  },
+  sectionHeader: {
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  sectionHeaderText: {
+    color: '#999',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 5,
+  },
+  scrollView: {
+    flex: 1,  // Make sure ScrollView takes up available space
+    width: '100%',  // Ensure full width
+  },
 });
-
 export const unstable_settings = {
   // This removes the tab bar for this screen
   bottomTabs: {

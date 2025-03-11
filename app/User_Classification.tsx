@@ -84,16 +84,19 @@ export default function User_Classification() {
       }
     };
     
+    console.log("User Classification screen mounted");
     loadUserClassification();
   }, []);
 
-  // Handler for continuing to homepage
+  // Handler for continuing to user_info page instead of homepage
   const handleContinue = () => {
-    router.replace('/(tabs)/homepage');
+    console.log("Continuing to user_info page");
+    router.push('/user_info');
   };
 
-  // Handler for going back to Question 4
+  // Handler for going back to question4
   const handleBack = () => {
+    console.log("Navigating back to question4");
     router.push('/question4');
   };
 

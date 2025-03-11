@@ -12,7 +12,8 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   Image,
-  Alert
+  Alert,
+  Modal,
 } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -37,6 +38,14 @@ export default function AddTaskScreen() {
     daily: {},
     additional: {}
   });
+  const [modalVisible, setModalVisible] = useState(false);
+  const [randomTask, setRandomTask] = useState('');
+  const [customTask, setCustomTask] = useState('');
+  const [randomTaskDuration, setRandomTaskDuration] = useState(30);
+  const [customTaskDuration, setCustomTaskDuration] = useState('30');
+  const [randomTaskCategory, setRandomTaskCategory] = useState('General');
+  const [customTaskCategory, setCustomTaskCategory] = useState('General');
+  const [customTaskTime, setCustomTaskTime] = useState('');
 
   // Load user data and tasks on component mount
   useEffect(() => {
@@ -259,37 +268,82 @@ export default function AddTaskScreen() {
     }
   };
 
+  // Generate a random task for the modal
+  const generateRandomTask = () => {
+    if (questsData.length > 0) {
+      const randomIndex = Math.floor(Math.random() * questsData.length);
+      const randomQuest = questsData[randomIndex];
+      
+      setRandomTask(randomQuest.task || "Task");
+      setRandomTaskDuration(randomQuest.duration_minutes || 30);
+      setRandomTaskCategory(randomQuest.category || "General");
+      
+      return {
+        task: randomQuest.task || "Task",
+        duration: randomQuest.duration_minutes || 30,
+        category: randomQuest.category || "General"
+      };
+    }
+    return {
+      task: "New task",
+      duration: 30,
+      category: "General"
+    };
+  };
+
+  // Modified addNewTask function to show the modal
   const addNewTask = () => {
     try {
-      // Select random quest from the quests data
-      if (questsData.length > 0) {
-        const randomIndex = Math.floor(Math.random() * questsData.length);
-        const randomQuest = questsData[randomIndex];
-        
-        const formattedQuest = `${randomQuest.task || "Task"} (${randomQuest.duration_minutes || 30} min) - ${randomQuest.category || "General"}`;
-        const newTask = {
-          text: formattedQuest,
-          image: null,
-          completed: false,
-          showImage: false
-        };
-        
-        setAdditionalTasks(prev => [...prev, newTask]);
-        saveTasks();
-      } else {
-        // Fallback if no quest data available
-        const newTask = {
-          text: "New task",
-          image: null,
-          completed: false,
-          showImage: false
-        };
-        setAdditionalTasks(prev => [...prev, newTask]);
-        saveTasks();
-      }
+      const randomTaskInfo = generateRandomTask();
+      setRandomTask(randomTaskInfo.task);
+      setRandomTaskDuration(randomTaskInfo.duration);
+      setRandomTaskCategory(randomTaskInfo.category);
+      setCustomTask('');
+      setCustomTaskDuration('30');
+      setCustomTaskCategory('General');
+      setCustomTaskTime(''); // Reset the time field
+      setModalVisible(true);
     } catch (error) {
-      console.error('Error adding new task:', error);
+      console.error('Error preparing to add new task:', error);
     }
+  };
+
+  // Function to add the selected random task
+  const addRandomTask = () => {
+    const formattedQuest = `${randomTask} (${randomTaskDuration} min) - ${randomTaskCategory}`;
+    const newTask = {
+      text: formattedQuest,
+      image: null,
+      completed: false,
+      showImage: false
+    };
+    
+    setAdditionalTasks(prev => [...prev, newTask]);
+    saveTasks();
+    setModalVisible(false);
+  };
+
+  // Function to add the custom task
+  const addCustomTask = () => {
+    if (customTask.trim() === '') {
+      Alert.alert('Error', 'Please enter a task description');
+      return;
+    }
+    
+    const duration = parseInt(customTaskDuration) || 30;
+    // Include time in the formatted task if provided
+    const timeInfo = customTaskTime.trim() ? ` at ${customTaskTime}` : '';
+    const formattedQuest = `${customTask}${timeInfo} (${duration} min) - ${customTaskCategory}`;
+    const newTask = {
+      text: formattedQuest,
+      image: null,
+      completed: false,
+      showImage: false
+    };
+    
+    setAdditionalTasks(prev => [...prev, newTask]);
+    saveTasks();
+    setModalVisible(false);
   };
 
   // Add this function to handle task deletion
@@ -323,14 +377,14 @@ export default function AddTaskScreen() {
       <Stack.Screen 
         options={{
           headerStyle: {
-            backgroundColor: 'red',
+            backgroundColor: 'black',
             height: 100,
           },
           headerTitleStyle: {
             fontSize: 16,
             color: 'white',
           },
-          headerTitle: "Track Your Progress",
+          headerTitle: "Add Tasks",
         }} 
       />
 
@@ -512,6 +566,98 @@ export default function AddTaskScreen() {
               >
                 <Text style={styles.addTaskText}>+ Add New Extra Task</Text>
               </TouchableOpacity>
+
+              {/* Task Choice Modal */}
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+              >
+                <View style={styles.modalOverlay}>
+                  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.modalContent}>
+                      <Text style={styles.modalTitle}>Choose Your Task</Text>
+                      
+                      {/* Random Task Option */}
+                      <View style={styles.taskOptionContainer}>
+                        <Text style={styles.taskOptionTitle}>Suggested Task:</Text>
+                        <Text style={styles.taskOptionText}>
+                          {randomTask} ({randomTaskDuration} min) - {randomTaskCategory}
+                        </Text>
+                        <TouchableOpacity 
+                          style={styles.taskOptionButton}
+                          onPress={addRandomTask}
+                        >
+                          <Text style={styles.taskOptionButtonText}>Use This Task</Text>
+                        </TouchableOpacity>
+                      </View>
+                      
+                      <View style={styles.modalDivider} />
+                      
+                      {/* Custom Task Option - Updated with Time Field */}
+                      <View style={styles.taskOptionContainer}>
+                        <Text style={styles.taskOptionTitle}>Create Your Own:</Text>
+                        <TextInput
+                          style={styles.taskOptionInput}
+                          placeholder="Enter your task description"
+                          placeholderTextColor="#999"
+                          value={customTask}
+                          onChangeText={setCustomTask}
+                        />
+                        
+                        <View style={styles.taskDetailsRow}>
+                          <View style={styles.taskDetailItem}>
+                            <Text style={styles.taskDetailLabel}>Duration (min):</Text>
+                            <TextInput
+                              style={styles.taskDetailInput}
+                              keyboardType="numeric"
+                              value={customTaskDuration}
+                              onChangeText={setCustomTaskDuration}
+                            />
+                          </View>
+                          
+                          <View style={styles.taskDetailItem}>
+                            <Text style={styles.taskDetailLabel}>Category:</Text>
+                            <TextInput
+                              style={styles.taskDetailInput}
+                              value={customTaskCategory}
+                              onChangeText={setCustomTaskCategory}
+                            />
+                          </View>
+                        </View>
+                        
+                        {/* New Time Input Field */}
+                        <View style={styles.timeInputContainer}>
+                          <Text style={styles.taskDetailLabel}>Time (optional):</Text>
+                          <TextInput
+                            style={styles.taskDetailInput}
+                            placeholder="e.g., 8:00 AM"
+                            placeholderTextColor="#777"
+                            value={customTaskTime}
+                            onChangeText={setCustomTaskTime}
+                          />
+                        </View>
+                        
+                        <TouchableOpacity 
+                          style={styles.taskOptionButton}
+                          onPress={addCustomTask}
+                        >
+                          <Text style={styles.taskOptionButtonText}>Create Custom Task</Text>
+                        </TouchableOpacity>
+                      </View>
+                      
+                      {/* Cancel Button */}
+                      <TouchableOpacity 
+                        style={styles.cancelButton}
+                        onPress={() => setModalVisible(false)}
+                      >
+                        <Text style={styles.cancelButtonText}>Cancel</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
+              </Modal>
             </ScrollView>
 
             {/* Bottom Navigation Icons */}
@@ -696,6 +842,109 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: {
     fontSize: 16,
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#222',
+    width: '100%',
+    borderRadius: 15,
+    padding: 20,
+    alignItems: 'center',
+    maxHeight: '80%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  taskOptionContainer: {
+    width: '100%',
+    marginBottom: 15,
+    backgroundColor: '#333',
+    borderRadius: 10,
+    padding: 15,
+  },
+  taskOptionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 10,
+  },
+  taskOptionText: {
+    color: '#ddd',
+    fontSize: 14,
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  taskOptionInput: {
+    backgroundColor: '#444',
+    padding: 12,
+    borderRadius: 8,
+    color: 'white',
+    marginBottom: 15,
+    width: '100%',
+  },
+  taskDetailsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  taskDetailItem: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  taskDetailLabel: {
+    color: '#ddd',
+    fontSize: 12,
+    marginBottom: 5,
+  },
+  taskDetailInput: {
+    backgroundColor: '#444',
+    padding: 8,
+    borderRadius: 5,
+    color: 'white',
+  },
+  taskOptionButton: {
+    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  taskOptionButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  modalDivider: {
+    height: 1,
+    backgroundColor: '#555',
+    width: '100%',
+    marginVertical: 15,
+  },
+  cancelButton: {
+    marginTop: 10,
+    backgroundColor: '#555',
+    padding: 12,
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: 'white',
+    fontSize: 14,
+  },
+  timeInputContainer: {
+    marginBottom: 15,
+    width: '100%',
   },
 });
 

@@ -12,6 +12,7 @@ export default function RootLayout() {
       <Stack.Screen name="question2" />
       <Stack.Screen name="question3" />
       <Stack.Screen name="question4" />
+      <Stack.Screen name="user_info" />
 
       {/* Main App with Tabs (Only After Onboarding) */}
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

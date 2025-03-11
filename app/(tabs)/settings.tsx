@@ -4,88 +4,40 @@ import {
   Text, 
   TouchableOpacity, 
   StyleSheet, 
-  ScrollView, 
+  FlatList,
   Image,
-  Alert,
-  Dimensions
+  Dimensions,
+  Alert
 } from 'react-native';
-import { useRouter, Stack, useFocusEffect } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
-import { useCallback } from 'react';
 
 const { width } = Dimensions.get('window');
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [userToken, setUserToken] = useState('');
-  const [userChoices, setUserChoices] = useState({
-    question1: null,
-    question2: null,
-    question3: null,
-    question4: null,
-  });
   const [profileImage, setProfileImage] = useState(null);
+  const [userToken, setUserToken] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userHandle, setUserHandle] = useState('');
+  const [heroClass, setHeroClass] = useState({
+    className: '',
+    description: '',
+    questFormat: '',
+    consequenceDescription: ''
+  });
 
-  useFocusEffect(
-    useCallback(() => {
-      console.log("Settings screen focused"); // Debug log
-      loadUserData();
-      
-      return () => {
-        console.log("Settings screen blurred"); // Debug log
-      };
-    }, []) // Empty dependency array means it only depends on focus/blur events
-  );
+  useEffect(() => {
+    loadUserData();
+  }, []);
 
   // Function to load all user data from AsyncStorage
   const loadUserData = async () => {
     try {
-      console.log("Loading user data in settings..."); // Debug log
-      
-      // Load user auth info - IMPORTANT: load token AFTER email and password
-      const storedEmail = await AsyncStorage.getItem('userEmail');
-      const storedPassword = await AsyncStorage.getItem('userPassword');
-      
-      // Debug logs to trace the issue
-      console.log("Retrieved password from storage:", storedPassword);
-      
-      // Always get a fresh token since it might have changed
+      // Get user token
       const userToken = await AsyncStorage.getItem('userToken');
-      console.log("Retrieved token from storage:", userToken);
-      
-      // Update state with the latest values
-      if (storedEmail !== null) setEmail(storedEmail);
-      if (storedPassword !== null) setPassword(storedPassword);
-      setUserToken(userToken); // Store the token in state
-      
-      // Initialize an object to store choices
-      const choices = {
-        question1: null,
-        question2: null,
-        question3: null,
-        question4: null,
-      };
-      
-      // Try to load choices with both key patterns
-      for (let i = 1; i <= 4; i++) {
-        // First try with token-specific key
-        if (userToken) {
-          const choiceWithToken = await AsyncStorage.getItem(`question${i}Choice_${userToken}`);
-          if (choiceWithToken !== null) {
-            choices[`question${i}`] = choiceWithToken;
-            continue; // Skip to next question if found
-          }
-        }
-        
-        // Fall back to non-token-specific key if token-specific not found
-        const choiceWithoutToken = await AsyncStorage.getItem(`question${i}Choice`);
-        if (choiceWithoutToken !== null) {
-          choices[`question${i}`] = choiceWithoutToken;
-        }
-      }
+      setUserToken(userToken);
       
       // Load profile image if exists
       if (userToken) {
@@ -93,12 +45,29 @@ export default function SettingsScreen() {
         if (storedImage !== null) setProfileImage(storedImage);
       }
       
-      // Update state with all found choices
-      setUserChoices(choices);
+      // Load user name and handle with better fallbacks
+      const storedName = await AsyncStorage.getItem('userFullName');
+      const storedHandle = await AsyncStorage.getItem('userUsername');
       
-      console.log("Settings - Loaded choices:", choices); // Debug log to verify what was loaded
+      setUserName(storedName || 'Hero');
+      setUserHandle(storedHandle || '@hero');
+      
+      // Load hero class information
+      const userClass = await AsyncStorage.getItem('userClass');
+      const userClassDescription = await AsyncStorage.getItem('userClassDescription');
+      const userQuestFormat = await AsyncStorage.getItem('userQuestFormat');
+      const userConsequenceDescription = await AsyncStorage.getItem('userConsequenceDescription');
+      
+      setHeroClass({
+        className: userClass || 'Unknown',
+        description: userClassDescription || 'No description available.',
+        questFormat: userQuestFormat || 'No quest format available.',
+        consequenceDescription: userConsequenceDescription || 'No consequence description available.'
+      });
     } catch (err) {
       console.error('Error loading user data:', err);
+      setUserName('Hero');
+      setUserHandle('@hero');
     }
   };
 
@@ -139,175 +108,161 @@ export default function SettingsScreen() {
     }
   };
 
-  // Back to previous page
-  const handleBack = async () => {
-    try {
-      router.push('/(tabs)/homepage'); 
-    } catch (e) {
-      console.error('Error navigating back:', e);
-    }
+  // Add back button handler
+  const handleBack = () => {
+    router.push('/(tabs)/homepage');
   };
 
-  // Handle logout - redirect to the starting page
-  const handleLogout = () => {
-      if (1) {
-        try {
+  // Settings data for FlatList
+  const settingsData = [
+    { id: '1', title: 'Notifications', screen: '/(tabs)/homepage' },
+    { id: '2', title: 'Appearance', screen: '/(tabs)/homepage' },
+    { id: '3', title: 'Language', screen: '/(tabs)/homepage' },
+    { id: '4', title: 'Privacy & Security', screen: '/(tabs)/homepage' },
+    { id: '5', title: 'Storage', screen: '/(tabs)/homepage' },
+    { id: '6', title: 'Change Password', screen: '/(tabs)/change_pw' },
+    { id: '7', title: 'Logout', screen: '/', isSpecial: true },
+  ];
+
+  // Render each setting item
+  const renderSettingItem = ({ item }) => (
+    <TouchableOpacity 
+      style={[
+        styles.settingItem, 
+        item.isSpecial && styles.specialSettingItem
+      ]}
+      onPress={() => {
+        if (item.title === 'Logout') {
           router.replace('/');
-        } catch (e) {
-          console.error('Error saving before navigation:', e);
+        } else {
+          router.push(item.screen);
         }
-      }
-  };
+      }}
+    >
+      <Text style={[
+        styles.settingText,
+        item.isSpecial && styles.specialSettingText
+      ]}>
+        {item.title}
+      </Text>
+      <Text style={styles.arrowIcon}>➝</Text>
+    </TouchableOpacity>
+  );
 
-  // Handle account deletion
-  const handleDeleteAccount = async () => {
-    // Show confirmation dialog
-    Alert.alert(
-      "Delete Account",
-      "Are you sure you want to delete your account? This action cannot be undone.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        {
-          text: "Delete", 
-          style: "destructive",
-          onPress: async () => {
-            try {
-              if (userToken) {
-                // Remove all data associated with this token
-                await AsyncStorage.removeItem('userEmail');
-                await AsyncStorage.removeItem('userPassword');
-                await AsyncStorage.removeItem('userToken');
-                
-                // Remove profile image
-                await AsyncStorage.removeItem(`profileImage_${userToken}`);
-                
-                // Remove all question choices
-                for (let i = 1; i <= 4; i++) {
-                  await AsyncStorage.removeItem(`question${i}Choice_${userToken}`);
-                }
-                
-                console.log("Account deleted successfully");
-                
-                // Navigate back to starting page
-                router.replace('/');
-              } else {
-                Alert.alert("Error", "Could not delete account. User token not found.");
-              }
-            } catch (error) {
-              console.error("Error deleting account:", error);
-              Alert.alert("Error", "Failed to delete account. Please try again.");
-            }
-          }
-        }
-      ]
-    );
-  };
+  // Create header component for FlatList that includes profile section
+  const ListHeaderComponent = () => (
+    <>
+      <View style={styles.profileSection}>
+        {/* Profile Picture with Edit Icon */}
+        <TouchableOpacity style={styles.profileImageContainer} onPress={handleImagePick}>
+          <Image 
+            source={
+              profileImage 
+                ? { uri: profileImage } 
+                : require('../../assets/images/empty-icon.png')
+            } 
+            style={styles.profileImage} 
+          />
+          <View style={styles.editIconContainer}>
+            <Text style={styles.editIcon}>✎</Text>
+          </View>
+        </TouchableOpacity>
+        
+        {/* Name and Username - Now properly fallback to generic text if empty */}
+        <Text style={styles.userName}>{userName || 'Set your name'}</Text>
+        <Text style={styles.userHandle}>{userHandle || 'Set your username'}</Text>
+      </View>
+      
+      {/* Hero Class Information - Redesigned */}
+      <View style={styles.heroClassSection}>
+        <View style={styles.heroClassTitleContainer}>
+          <Text style={styles.heroClassPrefix}>⚔️ YOUR HERO CLASS</Text>
+          <Text style={styles.heroClassName}>{heroClass.className}</Text>
+        </View>
+        
+        <View style={styles.heroClassContentBox}>
+          <View style={styles.heroClassInfoSection}>
+            <Text style={styles.heroClassSubtitle}>📜 Description</Text>
+            <Text style={styles.heroClassText}>{heroClass.description}</Text>
+          </View>
+          
+          <View style={styles.heroClassDivider} />
+          
+          <View style={styles.heroClassInfoSection}>
+            <Text style={styles.heroClassSubtitle}>🎯 Quest Format</Text>
+            <Text style={styles.heroClassText}>{heroClass.questFormat}</Text>
+          </View>
+          
+          <View style={styles.heroClassDivider} />
+          
+          <View style={styles.heroClassInfoSection}>
+            <Text style={styles.heroClassSubtitle}>⚖️ Consequence System</Text>
+            <Text style={styles.heroClassText}>{heroClass.consequenceDescription}</Text>
+          </View>
+        </View>
+      </View>
+    </>
+  );
 
   return (
     <>
-      {/* Add the same header as homepage */}
       <Stack.Screen 
         options={{
           headerStyle: {
             backgroundColor: 'black',
-            height: 70,
           },
           headerTitleStyle: {
-            fontSize: 16,
+            fontSize: 18,
             color: 'white',
+            fontWeight: 'bold',
           },
-          headerTitle: "",
+          headerTitle: "Settings",
+          headerTitleAlign: 'center',
+          headerHeight: 70,
+          headerRight: () => (
+            <TouchableOpacity
+              style={styles.topRightBackButton}
+              onPress={handleBack}
+            >
+              <Text style={styles.topRightBackText}>Back</Text>
+            </TouchableOpacity>
+          ),
         }} 
       />
       
       <View style={styles.container}>
-        {/* User choices in upper left corner with title */}
-        <View style={styles.userChoicesContainer}>
-          <Text style={styles.destinyTitle}>Your Destiny</Text>
-          <View style={styles.choicesBox}>
-            {Object.entries(userChoices).some(([, choice]) => choice) ? (
-              Object.entries(userChoices).map(([question, choice]) => (
-                choice && (
-                  <Text key={question} style={styles.choiceText}>
-                    {`Q${question.replace('question', '')}: ${choice}`}
-                  </Text>
-                )
-              ))
-            ) : (
-              <Text style={styles.noChoiceText}>No choices made yet</Text>
-            )}
-          </View>
-        </View>
+        {/* Settings List with Profile Section as Header */}
+        <FlatList
+          data={settingsData}
+          renderItem={renderSettingItem}
+          keyExtractor={item => item.id}
+          style={styles.settingsList}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={ListHeaderComponent}
+          contentContainerStyle={styles.listContentContainer}
+        />
         
-        {/* Profile picture in upper right corner */}
-        <TouchableOpacity 
-          style={styles.profileImageContainer} 
-          onPress={handleImagePick}
-        >
-          <Image 
-            source={profileImage ? { uri: profileImage } : require('../../assets/images/empty-icon.png')} 
-            style={styles.profileImage} 
-          />
-          <Text style={styles.changePhotoText}>Change Photo</Text>
-        </TouchableOpacity>
-        
-        {/* User info in the middle */}
-        <View style={styles.userInfoContainer}>
-          <Text style={styles.settingsTitle}>Account Information</Text>
+        {/* Bottom Navigation Icons - Matching performance.tsx */}
+        <View style={styles.bottomNav}>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/performance')}>
+            <Text style={styles.icon}>📈</Text>
+          </TouchableOpacity>
           
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Email:</Text>
-            <Text style={styles.infoValue}>{email}</Text>
-          </View>
-          
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Password:</Text>
-            <Text style={styles.infoValue}>{password}</Text>
-          </View>
-        </View>
-        
-        {/* Additional settings options could go here */}
-        <ScrollView style={styles.settingsOptionsContainer}>
+          {/* Home button with text instead of plus icon */}
           <TouchableOpacity 
-            style={styles.optionButton}
-            onPress={() => router.push('/(tabs)/change_pw')}
+            style={styles.homeButton} 
+            onPress={() => router.push('/(tabs)/homepage')}
           >
-            <Text style={styles.optionText}>Change Password</Text>
+            <Text style={styles.homeButtonText}>Home</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.optionButton}>
-            <Text style={styles.optionText}>Notification Settings</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.optionButton}>
-            <Text style={styles.optionText}>Privacy Policy</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={styles.logoutButton}
-            onPress={handleLogout}
+          <TouchableOpacity 
+            onPress={() => router.push('/(tabs)/settings')}
+            accessibilityLabel="Settings"
           >
-            <Text style={styles.logoutText}>Logout</Text>
+            <Text style={styles.icon}>⚙️</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.deleteAccountButton}
-            onPress={handleDeleteAccount}
-          >
-            <Text style={styles.deleteAccountText}>Delete My Account</Text>
-          </TouchableOpacity>
-
-          {/* Back Button */}
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={handleBack}
-          >
-            <Text style={styles.backText}>Back</Text>
-          </TouchableOpacity>
-        </ScrollView>
+        </View>
       </View>
     </>
   );
@@ -317,133 +272,167 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-    padding: 20,
-    paddingTop: 60,
   },
-  userChoicesContainer: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    maxWidth: width * 0.7,
-    zIndex: 1,
-  },
-  destinyTitle: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  choicesBox: {
-    backgroundColor: 'rgba(50, 50, 50, 0.8)',
-    borderRadius: 10,
-    padding: 7,
-    borderWidth: 1,
-    borderColor: '#444',
-  },
-  choiceText: {
-    color: 'white',
-    fontSize: 12,
-    marginBottom: 4,
-  },
-  noChoiceText: {
-    color: '#aaa',
-    fontSize: 12,
-    fontStyle: 'italic',
+  profileSection: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+    marginTop: 10, // Add space to prevent overlap with header
   },
   profileImageContainer: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
-    alignItems: 'center',
+    position: 'relative',
+    marginBottom: 10,
   },
   profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: '#333',
   },
-  changePhotoText: {
-    color: 'white',
-    fontSize: 12,
-    marginTop: 5,
-    textAlign: 'center',
-  },
-  userInfoContainer: {
+  editIconContainer: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#0080ff',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 140,
-    width: '100%',
+    borderWidth: 2,
+    borderColor: 'black',
   },
-  settingsTitle: {
+  editIcon: {
     color: 'white',
-    fontSize: 24,
+    fontSize: 16,
+  },
+  userName: {
+    color: 'white',
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginTop: 10,
   },
-  infoCard: {
-    backgroundColor: '#222',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  infoLabel: {
+  userHandle: {
     color: 'gray',
     fontSize: 16,
   },
-  infoValue: {
-    color: 'white',
-    fontSize: 16,
+  settingsList: {
+    flex: 1,
   },
-  settingsOptionsContainer: {
-    marginTop: 20,
-    width: '100%',
+  listContentContainer: {
+    paddingHorizontal: 15,
   },
-  optionButton: {
-    backgroundColor: '#222',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-  },
-  optionText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  logoutButton: {
-    backgroundColor: '#870000',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
+  settingItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
   },
-  logoutText: {
+  specialSettingItem: {
+    borderBottomWidth: 0,
+    marginTop: 15,
+  },
+  settingText: {
     color: 'white',
     fontSize: 16,
+  },
+  specialSettingText: {
+    color: '#ff3b30',
     fontWeight: 'bold',
   },
-  deleteAccountButton: {
-    backgroundColor: '#600000', // Darker red than logout
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-    alignItems: 'center',
-  },
-  deleteAccountText: {
-    color: 'white',
+  arrowIcon: {
+    color: 'gray',
     fontSize: 16,
+  },
+  topRightBackButton: {
+    backgroundColor: 'transparent',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginRight: 10,
+    borderRadius: 5,
+  },
+  topRightBackText: {
+    color: 'white',
+    fontSize: 14,
     fontWeight: 'bold',
   },
-  backButton: {
-    backgroundColor: 'gray',
-    borderRadius: 10,
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderTopWidth: 1,
+    borderColor: 'gray',
+  },
+  icon: {
+    fontSize: 24,
+    color: 'white',
+  },
+  homeButton: {
+    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  homeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  heroClassSection: {
+    marginHorizontal: 10,
+    marginVertical: 15,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#111',
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  heroClassTitleContainer: {
     padding: 15,
-    marginTop: 10,
+    backgroundColor: 'rgba(255, 0, 0, 0.2)',
     alignItems: 'center',
   },
-  backText: {
-    color: 'white',
+  heroClassPrefix: {
+    color: '#999',
+    fontSize: 12,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+    marginBottom: 5,
+  },
+  heroClassName: {
+    color: 'red',
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  heroClassContentBox: {
+    padding: 15,
+  },
+  heroClassInfoSection: {
+    marginVertical: 5,
+  },
+  heroClassSubtitle: {
+    color: '#ff5555',
     fontSize: 16,
-  }
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  heroClassText: {
+    color: '#ddd',
+    fontSize: 14,
+    lineHeight: 20,
+    paddingLeft: 10,
+  },
+  heroClassDivider: {
+    height: 1,
+    backgroundColor: '#333',
+    marginVertical: 12,
+  },
 });
