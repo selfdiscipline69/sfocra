@@ -12,6 +12,7 @@ import {
 import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons'; // Import vector icons
 
 const { width } = Dimensions.get('window');
 
@@ -113,13 +114,10 @@ export default function SettingsScreen() {
     router.push('/(tabs)/homepage');
   };
 
-  // Settings data for FlatList
+  // Settings data for FlatList - update the Appearance screen path
   const settingsData = [
-    { id: '1', title: 'Notifications', screen: '/(tabs)/homepage' },
-    { id: '2', title: 'Appearance', screen: '/(tabs)/homepage' },
-    { id: '3', title: 'Language', screen: '/(tabs)/homepage' },
+    { id: '2', title: 'Appearance', screen: '/(tabs)/appearance' }, // Changed to new appearance screen
     { id: '4', title: 'Privacy & Security', screen: '/(tabs)/homepage' },
-    { id: '5', title: 'Storage', screen: '/(tabs)/homepage' },
     { id: '6', title: 'Change Password', screen: '/(tabs)/change_pw' },
     { id: '7', title: 'Logout', screen: '/', isSpecial: true },
   ];
@@ -242,10 +240,13 @@ export default function SettingsScreen() {
           contentContainerStyle={styles.listContentContainer}
         />
         
-        {/* Bottom Navigation Icons - Matching performance.tsx */}
+        {/* Updated Bottom Navigation Icons */}
         <View style={styles.bottomNav}>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/performance')}>
-            <Text style={styles.icon}>📈</Text>
+          <TouchableOpacity 
+            onPress={() => router.push('/(tabs)/performance')}
+            style={styles.navButton}
+          >
+            <FontAwesome5 name="chart-line" size={22} color="white" />
           </TouchableOpacity>
           
           {/* Home button with text instead of plus icon */}
@@ -258,9 +259,9 @@ export default function SettingsScreen() {
           
           <TouchableOpacity 
             onPress={() => router.push('/(tabs)/settings')}
-            accessibilityLabel="Settings"
+            style={[styles.navButton, styles.activeNavButton]}
           >
-            <Text style={styles.icon}>⚙️</Text>
+            <Ionicons name="settings-outline" size={24} color="white" />
           </TouchableOpacity>
         </View>
       </View>
@@ -367,6 +368,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderTopWidth: 1,
     borderColor: 'gray',
+  },
+  navButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40,
+  },
+  activeNavButton: {
+    // Optional: Add styling for the active nav button
+    opacity: 0.9,
   },
   icon: {
     fontSize: 24,

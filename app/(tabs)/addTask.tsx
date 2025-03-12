@@ -19,33 +19,55 @@ import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import questsData from '../../assets/Quest.json';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons'; // Import vector icons
 
 const { width } = Dimensions.get('window');
 
+// Define TypeScript interfaces for task types
+interface TaskItem {
+  text: string;
+  image: string | null;
+  completed: boolean;
+  showImage: boolean;
+}
+
+interface WeeklyTrialItem {
+  text: string;
+  image: string | null;
+  completed: boolean;
+  showImage: boolean;
+}
+
+interface VisibleImagesState {
+  weekly: boolean;
+  daily: Record<number, boolean>;
+  additional: Record<number, boolean>;
+}
+
 export default function AddTaskScreen() {
   const router = useRouter();
-  const [tasks, setTasks] = useState([]);
-  const [weeklyTrial, setWeeklyTrial] = useState({
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [weeklyTrial, setWeeklyTrial] = useState<WeeklyTrialItem>({
     text: '',
     image: null,
     completed: false,
     showImage: false
   });
-  const [additionalTasks, setAdditionalTasks] = useState([]);
-  const [userToken, setUserToken] = useState('');
-  const [visibleImages, setVisibleImages] = useState({
+  const [additionalTasks, setAdditionalTasks] = useState<TaskItem[]>([]);
+  const [userToken, setUserToken] = useState<string>('');
+  const [visibleImages, setVisibleImages] = useState<VisibleImagesState>({
     weekly: false,
     daily: {},
     additional: {}
   });
-  const [modalVisible, setModalVisible] = useState(false);
-  const [randomTask, setRandomTask] = useState('');
-  const [customTask, setCustomTask] = useState('');
-  const [randomTaskDuration, setRandomTaskDuration] = useState(30);
-  const [customTaskDuration, setCustomTaskDuration] = useState('30');
-  const [randomTaskCategory, setRandomTaskCategory] = useState('General');
-  const [customTaskCategory, setCustomTaskCategory] = useState('General');
-  const [customTaskTime, setCustomTaskTime] = useState('');
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [randomTask, setRandomTask] = useState<string>('');
+  const [customTask, setCustomTask] = useState<string>('');
+  const [randomTaskDuration, setRandomTaskDuration] = useState<number>(30);
+  const [customTaskDuration, setCustomTaskDuration] = useState<string>('30');
+  const [randomTaskCategory, setRandomTaskCategory] = useState<string>('General');
+  const [customTaskCategory, setCustomTaskCategory] = useState<string>('General');
+  const [customTaskTime, setCustomTaskTime] = useState<string>('');
 
   // Load user data and tasks on component mount
   useEffect(() => {
@@ -89,9 +111,9 @@ export default function AddTaskScreen() {
     try {
       // Get user token
       const token = await AsyncStorage.getItem('userToken');
-      setUserToken(token);
-
       if (token) {
+        setUserToken(token);
+
         // Load weekly trial - first try from our saved tasks
         const savedWeeklyTrial = await AsyncStorage.getItem(`weeklyTrial_${token}`);
         
@@ -130,7 +152,7 @@ export default function AddTaskScreen() {
           if (dailyTasksStr) {
             try {
               const parsedTasks = JSON.parse(dailyTasksStr);
-              const formattedTasks = Array.isArray(parsedTasks) ? parsedTasks.map(task => ({
+              const formattedTasks: TaskItem[] = Array.isArray(parsedTasks) ? parsedTasks.map(task => ({
                 text: task,
                 image: null,
                 completed: false,
@@ -179,26 +201,26 @@ export default function AddTaskScreen() {
     }
   };
 
-  const handleTaskChange = (index, text) => {
+  const handleTaskChange = (index: number, text: string) => {
     const updatedTasks = [...tasks];
     updatedTasks[index] = { ...updatedTasks[index], text };
     setTasks(updatedTasks);
     saveTasks();
   };
 
-  const handleAdditionalTaskChange = (index, text) => {
+  const handleAdditionalTaskChange = (index: number, text: string) => {
     const updated = [...additionalTasks];
     updated[index] = { ...updated[index], text };
     setAdditionalTasks(updated);
     saveTasks();
   };
 
-  const handleWeeklyTrialChange = (text) => {
+  const handleWeeklyTrialChange = (text: string) => {
     setWeeklyTrial(prev => ({ ...prev, text }));
     saveTasks();
   };
 
-  const pickImage = async (type, index) => {
+  const pickImage = async (type: string, index?: number) => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -217,7 +239,7 @@ export default function AddTaskScreen() {
             completed: true,
             showImage: false // Default to hidden
           }));
-        } else if (type === 'daily') {
+        } else if (type === 'daily' && typeof index === 'number') {
           const updatedTasks = [...tasks];
           updatedTasks[index] = { 
             ...updatedTasks[index], 
@@ -226,7 +248,7 @@ export default function AddTaskScreen() {
             showImage: false // Default to hidden
           };
           setTasks(updatedTasks);
-        } else if (type === 'additional') {
+        } else if (type === 'additional' && typeof index === 'number') {
           const updated = [...additionalTasks];
           updated[index] = { 
             ...updated[index], 
@@ -245,20 +267,20 @@ export default function AddTaskScreen() {
     }
   };
 
-  const toggleImageVisibility = (type, index) => {
+  const toggleImageVisibility = (type: string, index?: number) => {
     if (type === 'weekly') {
       setWeeklyTrial(prev => ({
         ...prev,
         showImage: !prev.showImage
       }));
-    } else if (type === 'daily') {
+    } else if (type === 'daily' && typeof index === 'number') {
       const updatedTasks = [...tasks];
       updatedTasks[index] = {
         ...updatedTasks[index],
         showImage: !updatedTasks[index].showImage
       };
       setTasks(updatedTasks);
-    } else if (type === 'additional') {
+    } else if (type === 'additional' && typeof index === 'number') {
       const updated = [...additionalTasks];
       updated[index] = {
         ...updated[index],
@@ -311,7 +333,7 @@ export default function AddTaskScreen() {
   // Function to add the selected random task
   const addRandomTask = () => {
     const formattedQuest = `${randomTask} (${randomTaskDuration} min) - ${randomTaskCategory}`;
-    const newTask = {
+    const newTask: TaskItem = {
       text: formattedQuest,
       image: null,
       completed: false,
@@ -334,7 +356,7 @@ export default function AddTaskScreen() {
     // Include time in the formatted task if provided
     const timeInfo = customTaskTime.trim() ? ` at ${customTaskTime}` : '';
     const formattedQuest = `${customTask}${timeInfo} (${duration} min) - ${customTaskCategory}`;
-    const newTask = {
+    const newTask: TaskItem = {
       text: formattedQuest,
       image: null,
       completed: false,
@@ -347,7 +369,7 @@ export default function AddTaskScreen() {
   };
 
   // Add this function to handle task deletion
-  const handleDeleteTask = (index) => {
+  const handleDeleteTask = (index: number) => {
     // Show confirmation alert before deleting
     Alert.alert(
       "Delete Task",
@@ -660,13 +682,16 @@ export default function AddTaskScreen() {
               </Modal>
             </ScrollView>
 
-            {/* Bottom Navigation Icons */}
+            {/* Bottom Navigation Icons - Updated to match settings.tsx */}
             <View style={styles.bottomNav}>
-              <TouchableOpacity onPress={() => router.push('/(tabs)/performance')}>
-                <Text style={styles.icon}>📈</Text>
+              <TouchableOpacity 
+                onPress={() => router.push('/(tabs)/performance')}
+                style={styles.navButton}
+              >
+                <FontAwesome5 name="chart-line" size={22} color="white" />
               </TouchableOpacity>
               
-              {/* Home button with text instead of emoji */}
+              {/* Home button */}
               <TouchableOpacity 
                 style={styles.homeButton} 
                 onPress={() => router.push('/(tabs)/homepage')}
@@ -676,9 +701,9 @@ export default function AddTaskScreen() {
               
               <TouchableOpacity 
                 onPress={() => router.push('/(tabs)/settings')}
-                accessibilityLabel="Settings"
+                style={styles.navButton}
               >
-                <Text style={styles.icon}>⚙️</Text>
+                <Ionicons name="settings-outline" size={24} color="white" />
               </TouchableOpacity>
             </View>
           </View>
@@ -945,6 +970,12 @@ const styles = StyleSheet.create({
   timeInputContainer: {
     marginBottom: 15,
     width: '100%',
+  },
+  navButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40,
   },
 });
 

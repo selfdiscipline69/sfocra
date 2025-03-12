@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons'; // Import vector icons
 
 export default function PerformanceScreen() {
   const router = useRouter();
@@ -38,13 +39,16 @@ export default function PerformanceScreen() {
       <View style={styles.container}>
         <Text style={styles.text}>Performance Page - Graphs & Analytics</Text>
         
-        {/* Bottom Navigation Icons */}
+        {/* Updated Bottom Navigation Icons - Simplified chart icon */}
         <View style={styles.bottomNav}>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/performance')}>
-            <Text style={styles.icon}>📈</Text>
+          <TouchableOpacity 
+            onPress={() => router.push('/(tabs)/performance')}
+            style={styles.navButton}
+          >
+            <FontAwesome5 name="chart-line" size={22} color="white" />
           </TouchableOpacity>
           
-          {/* Home button with text instead of emoji */}
+          {/* Home button */}
           <TouchableOpacity 
             style={styles.homeButton} 
             onPress={() => router.push('/(tabs)/homepage')}
@@ -54,9 +58,9 @@ export default function PerformanceScreen() {
           
           <TouchableOpacity 
             onPress={() => router.push('/(tabs)/settings')}
-            accessibilityLabel="Settings"
+            style={styles.navButton}
           >
-            <Text style={styles.icon}>⚙️</Text>
+            <Ionicons name="settings-outline" size={24} color="white" />
           </TouchableOpacity>
         </View>
       </View>
@@ -89,9 +93,11 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     backgroundColor: 'black',
   },
-  icon: {
-    fontSize: 24,
-    color: 'white',
+  navButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40,
   },
   homeButton: {
     backgroundColor: 'rgba(255, 0, 0, 0.8)',

@@ -11,7 +11,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Dimensions,
-  Image
+  Image,
 } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,27 +19,45 @@ import * as FileSystem from 'expo-file-system';
 import quotesData from '../../assets/Quote.json';
 import questsData from '../../assets/Quest.json'; 
 import WeeklyTrialBox from '../components/WeeklyTrialBox';
+import { useTheme } from '../context/ThemeContext';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
+// Define TypeScript interfaces for our data types
+interface UserChoices {
+  question1: string | null;
+  question2: string | null;
+  question3: string | null;
+  question4: string | null;
+}
+
+interface AdditionalTask {
+  text: string;
+  image?: string | null;
+  completed?: boolean;
+  showImage?: boolean;
+}
+
 export default function Homepage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [userToken, setUserToken] = useState('');
-  const [userName, setUserName] = useState('');
-  const [userHandle, setUserHandle] = useState('');
-  const [userChoices, setUserChoices] = useState({
+  const { theme } = useTheme();
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [userToken, setUserToken] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
+  const [userHandle, setUserHandle] = useState<string>('');
+  const [userChoices, setUserChoices] = useState<UserChoices>({
     question1: null,
     question2: null,
     question3: null,
     question4: null,
   });
-  const [dailyQuote, setDailyQuote] = useState(''); // Changed to single quote
-  const [dailyTasks, setDailyTasks] = useState(['', '']); // Two daily tasks
-  const [weeklyTrial, setWeeklyTrial] = useState(null); // Weekly trial quest
-  const [profileImage, setProfileImage] = useState(null);
-  const [additionalTasks, setAdditionalTasks] = useState([]); // Add state for additional tasks
+  const [dailyQuote, setDailyQuote] = useState<string>(''); 
+  const [dailyTasks, setDailyTasks] = useState<string[]>(['', '']);
+  const [weeklyTrial, setWeeklyTrial] = useState<string | null>(null); 
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [additionalTasks, setAdditionalTasks] = useState<AdditionalTask[]>([]);
 
   // Function to load user choices from AsyncStorage
   const loadUserChoices = async () => {
@@ -47,10 +65,10 @@ export default function Homepage() {
       const storedEmail = await AsyncStorage.getItem('userEmail');
       const storedPassword = await AsyncStorage.getItem('userPassword');
       const userToken = await AsyncStorage.getItem('userToken');
-      setUserToken(userToken);
       
       if (storedEmail !== null) setEmail(storedEmail);
       if (storedPassword !== null) setPassword(storedPassword);
+      if (userToken !== null) setUserToken(userToken);
       
       // Load user name and username
       const storedName = await AsyncStorage.getItem('userFullName');
@@ -60,7 +78,7 @@ export default function Homepage() {
       if (storedHandle) setUserHandle(storedHandle);
       
       // Initialize an object to store choices
-      const choices = {
+      const choices: UserChoices = {
         question1: null,
         question2: null,
         question3: null,
@@ -69,11 +87,12 @@ export default function Homepage() {
       
       // Try to load with both key patterns for each question
       for (let i = 1; i <= 4; i++) {
+        const questionKey = `question${i}` as keyof UserChoices;
         // First try with token-specific key
         if (userToken) {
           const choiceWithToken = await AsyncStorage.getItem(`question${i}Choice_${userToken}`);
           if (choiceWithToken !== null) {
-            choices[`question${i}`] = choiceWithToken;
+            choices[questionKey] = choiceWithToken;
             continue; // Skip to next question if found
           }
         }
@@ -81,7 +100,7 @@ export default function Homepage() {
         // Fall back to non-token-specific key if token-specific not found
         const choiceWithoutToken = await AsyncStorage.getItem(`question${i}Choice`);
         if (choiceWithoutToken !== null) {
-          choices[`question${i}`] = choiceWithoutToken;
+          choices[questionKey] = choiceWithoutToken;
         }
       }
       
@@ -126,6 +145,7 @@ export default function Homepage() {
       if (selectedQuests.length > 0 && refreshWeeklyTrial) {
         const formattedQuest = `${selectedQuests[0].task} (${selectedQuests[0].duration_minutes} min) - ${selectedQuests[0].category}`;
         setWeeklyTrial(formattedQuest);
+        await AsyncStorage.setItem('weeklyTrial', formattedQuest);
       }
       
       // Next 2 quests for Daily Tasks - always refresh these
@@ -140,6 +160,7 @@ export default function Homepage() {
         }
       }
       setDailyTasks(tasks);
+      await AsyncStorage.setItem('dailyTasks', JSON.stringify(tasks));
       
       // Select 1 random quote for Daily Quote - always refresh this
       if (quotesData.length > 0) {
@@ -182,26 +203,28 @@ export default function Homepage() {
     loadQuestsAndQuotes();
   }, []);
 
-  const handleTaskChange = (index, newTask) => {
+  const handleTaskChange = (index: number, newTask: string) => {
     const updatedTasks = [...dailyTasks];
     updatedTasks[index] = newTask;
     setDailyTasks(updatedTasks);
   };
 
-  const handleQuoteChange = (newQuote) => {
+  const handleQuoteChange = (newQuote: string) => {
     setDailyQuote(newQuote);
   };
 
   // Add function to handle changes to additional tasks text
-  const handleAdditionalTaskChange = (index, newText) => {
+  const handleAdditionalTaskChange = (index: number, newText: string) => {
     const updatedTasks = [...additionalTasks];
-    updatedTasks[index].text = newText;
-    setAdditionalTasks(updatedTasks);
-    
-    // Save to AsyncStorage
-    if (userToken) {
-      AsyncStorage.setItem(`additionalTasks_${userToken}`, JSON.stringify(updatedTasks))
-        .catch(err => console.error('Error saving additional tasks:', err));
+    if (updatedTasks[index]) {
+      updatedTasks[index].text = newText;
+      setAdditionalTasks(updatedTasks);
+      
+      // Save to AsyncStorage
+      if (userToken) {
+        AsyncStorage.setItem(`additionalTasks_${userToken}`, JSON.stringify(updatedTasks))
+          .catch(err => console.error('Error saving additional tasks:', err));
+      }
     }
   };
   
@@ -210,21 +233,19 @@ export default function Homepage() {
       <Stack.Screen 
         options={{
           headerStyle: {
-            backgroundColor: 'black',
-            height: 70, // Reduced height
+            backgroundColor: theme.background,
           },
           headerTitleStyle: {
             fontSize: 16,
-            color: 'white',
+            color: theme.text,
           },
           headerTitle: "",
-          //headerTitleAlign: 'center',
         }} 
       />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
+        style={[styles.container, { backgroundColor: theme.background }]}
         keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 20}
       >
         <View style={styles.innerContainer}>
@@ -232,7 +253,7 @@ export default function Homepage() {
           <View style={styles.header}>
             <View>
               {/* Daily Quote now appears at the top */}
-              <Text style={styles.description}>
+              <Text style={[styles.description, { color: theme.text }]}>
                 {dailyQuote}
               </Text>
             </View>
@@ -266,9 +287,9 @@ export default function Homepage() {
           {/* Content */}
           <ScrollView 
             contentContainerStyle={styles.content}
-            showsVerticalScrollIndicator={true}  // Changed to true to show scroll indicator
-            scrollEnabled={true}  // Explicitly enable scrolling
-            style={styles.scrollView}  // Added a specific style for ScrollView
+            showsVerticalScrollIndicator={true} 
+            scrollEnabled={true}
+            style={styles.scrollView}  
           >
             <View style={styles.spacerView} />
             
@@ -300,7 +321,7 @@ export default function Homepage() {
             {additionalTasks.length > 0 && (
               <>
                 <View style={styles.sectionHeader}>
-                  <Text style={styles.sectionHeaderText}>Additional Tasks</Text>
+                  <Text style={[styles.sectionHeaderText, { color: theme.subtext }]}>Additional Tasks</Text>
                 </View>
                 
                 {additionalTasks.map((task, index) => (
@@ -324,21 +345,28 @@ export default function Homepage() {
           </ScrollView>
 
           {/* Bottom Navigation Icons */}
-          <View style={styles.bottomNav}>
-            <TouchableOpacity onPress={() => router.push('/(tabs)/performance')}>
-              <Text style={styles.icon}>📈</Text>
+          <View style={[styles.bottomNav, { backgroundColor: theme.background, borderColor: theme.border }]}>
+            <TouchableOpacity 
+              onPress={() => router.push('/(tabs)/performance')}
+              style={styles.navButton}
+            >
+              <FontAwesome5 name="chart-line" size={22} color={theme.text} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/(tabs)/addTask')}>
-              <Text style={styles.icon}>➕</Text>
+            
+            <TouchableOpacity 
+              style={styles.homeButton}
+              onPress={() => router.push('/(tabs)/addTask')}
+            >
+              <Text style={styles.homeButtonText}>Add Task</Text>
             </TouchableOpacity>
+            
             <TouchableOpacity 
               onPress={() => router.push('/(tabs)/settings')}
-              accessibilityLabel="Settings"
+              style={styles.navButton}
             >
-              <Text style={styles.icon}>⚙️</Text>
+              <Ionicons name="settings-outline" size={24} color={theme.text} />
             </TouchableOpacity>
           </View>
-          
         </View>
       </KeyboardAvoidingView>
     </>
@@ -346,39 +374,38 @@ export default function Homepage() {
 }
 
 const styles = StyleSheet.create({
+  // Existing styles...
   container: {
     flex: 1,
-    backgroundColor: 'black',
   },
   innerContainer: {
     flex: 1,
     paddingHorizontal: 5,
     paddingTop: 20, 
-    position: 'relative',  // Added for precise positioning
+    position: 'relative',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15, // Reduced from 30 to 15
-    marginTop: 5, // Added small margin at top
+    marginBottom: 15,
+    marginTop: 5,
   },
   description: {
-    color: 'white', // Changed from gray to white for better visibility
     fontSize: 14,
     marginRight: 10,
     width: width * 0.6,
-    fontStyle: 'italic', // Added italic to make it look like a quote
+    fontStyle: 'italic',
   },
   profileIcon: {
-    width: 55, // Increased from 40
-    height: 55, // Increased from 40
-    borderRadius: 28, // Adjusted to maintain circular shape (width/2 + 0.5)
-    backgroundColor: 'white', // Fallback color if no image
+    width: 55,
+    height: 55,
+    borderRadius: 28,
+    backgroundColor: 'white',
   },
   content: {
-    paddingBottom: 80,  // Increased to ensure there's scrollable space at bottom
-    flexGrow: 1,  // This allows the content to grow but still be scrollable
+    paddingBottom: 80,
+    flexGrow: 1,
   },
   userChoiceText: {
     fontSize: 14,
@@ -393,86 +420,83 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   quoteInput: {
-    fontSize: 14, // Reduced from 16 to 14
-    paddingVertical: 0, // Reduced from 10 to 8
+    fontSize: 14,
+    paddingVertical: 0,
     textAlign: 'center',
     color: 'white',
     width: '100%',
     lineHeight: 18,
-    backgroundColor: 'transparent' // Added line height for better readability
+    backgroundColor: 'transparent'
   },
   bottomNav: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderTopWidth: 1,
-    borderColor: 'gray',
   },
-  icon: {
-    fontSize: 24,
-    color: 'white',
+  navButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40,
   },
-  backButton: {
-    position: 'absolute',
-    bottom: 20,
-    right: 100,
-    backgroundColor: 'gray',
-    paddingVertical: 10,
+  homeButton: {
+    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+    paddingVertical: 8,
     paddingHorizontal: 20,
-    borderRadius: 10,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  backText: {
+  homeButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   headerButtons: {
     alignItems: 'center',
-    marginRight: 25, // Added margin to move the profile section left
+    marginRight: 25,
   },
   keyboardSpace: {
-    height: 100,  // Increased from 80 to provide more scrollable space
+    height: 100,
   },
   profileIconButton: {
-    padding: 8, // Slightly reduced padding to accommodate larger icon
+    padding: 8,
   },
   spacerView: {
-    height: 30, // Adjust this value to control the amount of space
+    height: 30,
   },
   profileSection: {
     alignItems: 'center',
-  },
-  changeProfileText: {
-    color: 'gray',
-    fontSize: 8,
-    marginTop: 4,
-    textAlign: 'center',
-    width: 60,
   },
   usernameText: {
     color: '#ddd',
     fontSize: 12,
     marginTop: 6, 
     textAlign: 'center',
-    maxWidth: 150, // Increased from 70 to accommodate longer usernames without wrapping
+    maxWidth: 150,
   },
   sectionHeader: {
     marginTop: 10,
     marginBottom: 10,
   },
   sectionHeaderText: {
-    color: '#999',
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 5,
   },
   scrollView: {
-    flex: 1,  // Make sure ScrollView takes up available space
-    width: '100%',  // Ensure full width
+    flex: 1,
+    width: '100%',
   },
 });
+
 export const unstable_settings = {
-  // This removes the tab bar for this screen
   bottomTabs: {
     tabBarStyle: { display: 'none' },
   },
