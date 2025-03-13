@@ -4,53 +4,51 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from "../context/ThemeContext";
 
 interface WeeklyTrialBoxProps {
-  children?: React.ReactNode;
   title: string;
+  children: React.ReactNode;
+  rightElement?: React.ReactNode;
 }
 
-const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children }) => {
-  // Use the theme context to get the current theme
+const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children, rightElement }) => {
   const { theme } = useTheme();
   
   return (
     <LinearGradient
-      colors={theme.gradientColors as string[]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-      style={styles.boxContainer}
+      colors={['#333', '#222']}
+      style={styles.container}
     >
-      {/* Single unified content area with title at the top */}
-      <View style={styles.unifiedContainer}>
-        {/* Title */}
-        <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
-        
-        {/* Content directly below title with consistent spacing */}
-        <View style={styles.childrenContainer}>
-          {children}
-        </View>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>{title}</Text>
+        {rightElement}
+      </View>
+      <View style={styles.content}>
+        {children}
       </View>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  boxContainer: {
-    width: "100%",
+  container: {
+    backgroundColor: '#222',
     borderRadius: 10,
-    marginBottom: 15,
-    overflow: 'hidden',
-  },
-  unifiedContainer: {
     padding: 15,
+    marginBottom: 15,
+    width: '100%',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "left",
-    marginBottom: 12,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
   },
-  childrenContainer: {
-    marginTop: 5,
+  content: {
+    width: '100%',
   },
 });
 

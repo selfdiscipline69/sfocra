@@ -511,7 +511,18 @@ export default function Homepage() {
             <View style={styles.spacerView} />
             
             {/* Weekly Trial with WeeklyTrialBox component */}
-            <WeeklyTrialBox title="Weekly Trial">
+            <WeeklyTrialBox 
+              title="Weekly Trial"
+              rightElement={
+                <TouchableOpacity 
+                  onPress={() => loadQuestsAndQuotes(true)} 
+                  style={styles.refreshButton}
+                  accessibilityLabel="Refresh weekly trials"
+                >
+                  <Ionicons name="refresh" size={18} color="white" />
+                </TouchableOpacity>
+              }
+            >
               {weeklyTrial ? (
                 <Text style={styles.userChoiceText}>{weeklyTrial}</Text>
               ) : (
@@ -710,6 +721,10 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     width: '100%',
+  },
+  refreshButton: {
+    padding: 4,
+    marginLeft: 8,
   },
 });
 
