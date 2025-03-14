@@ -296,9 +296,19 @@ export default function Homepage() {
             {/* Weekly Trial with WeeklyTrialBox component */}
             <WeeklyTrialBox title="Weekly Trial">
               {weeklyTrial ? (
-                <Text style={styles.userChoiceText}>{weeklyTrial}</Text>
+                <Text style={[
+                  styles.userChoiceText, 
+                  { color: theme.mode === 'dark' ? 'white' : 'black' }
+                ]}>
+                  {weeklyTrial}
+                </Text>
               ) : (
-                <Text style={styles.noChoicesText}>No quest available</Text>
+                <Text style={[
+                  styles.noChoicesText, 
+                  { color: theme.mode === 'dark' ? 'white' : 'black' }
+                ]}>
+                  No quest available
+                </Text>
               )}
             </WeeklyTrialBox>
 
@@ -306,13 +316,16 @@ export default function Homepage() {
             {dailyTasks.map((task, index) => (
               <WeeklyTrialBox key={`task-${index}`} title={`Daily Task ${index + 1}`}>
                 <TextInput
-                  style={styles.quoteInput}
+                  style={[
+                    styles.quoteInput, 
+                    { color: theme.mode === 'dark' ? 'white' : 'black' }
+                  ]}
                   value={task}
                   onChangeText={(text) => handleTaskChange(index, text)}
                   multiline={true}
                   textAlign="center"
                   placeholder="Enter a task"
-                  placeholderTextColor="#aaa"
+                  placeholderTextColor={theme.mode === 'dark' ? "#aaa" : "#777"}
                 />
               </WeeklyTrialBox>
             ))}
@@ -321,19 +334,24 @@ export default function Homepage() {
             {additionalTasks.length > 0 && (
               <>
                 <View style={styles.sectionHeader}>
-                  <Text style={[styles.sectionHeaderText, { color: theme.subtext }]}>Additional Tasks</Text>
+                  <Text style={[styles.sectionHeaderText, { color: theme.subtext }]}>
+                    Additional Tasks
+                  </Text>
                 </View>
                 
                 {additionalTasks.map((task, index) => (
                   <WeeklyTrialBox key={`additional-${index}`} title={`Extra Task ${index + 1}`}>
                     <TextInput
-                      style={styles.quoteInput}
+                      style={[
+                        styles.quoteInput, 
+                        { color: theme.mode === 'dark' ? 'white' : 'black' }
+                      ]}
                       value={task.text}
                       onChangeText={(text) => handleAdditionalTaskChange(index, text)}
                       multiline={true}
                       textAlign="center"
                       placeholder="Task details"
-                      placeholderTextColor="#aaa"
+                      placeholderTextColor={theme.mode === 'dark' ? "#aaa" : "#777"}
                     />
                   </WeeklyTrialBox>
                 ))}
@@ -411,19 +429,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginVertical: 1,
     lineHeight: 18,
-    color: 'white', 
   },
   noChoicesText: {
     fontSize: 14,
     fontStyle: 'italic',
     textAlign: 'center',
-    color: 'white',
   },
   quoteInput: {
     fontSize: 14,
     paddingVertical: 0,
     textAlign: 'center',
-    color: 'white',
     width: '100%',
     lineHeight: 18,
     backgroundColor: 'transparent'

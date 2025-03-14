@@ -10,7 +10,13 @@ export default function TabLayout() {
       <Tabs.Screen name="performance" />
       <Tabs.Screen name="settings" />
       <Tabs.Screen name="addTask" />
-      <Tabs.Screen name="appearance" /> {/* Add the new screen */}
+      <Tabs.Screen name="appearance" />
+      <Tabs.Screen 
+        name="privacy"
+        options={{
+          href: "/(tabs)/privacy" // Explicitly set the href
+        }}
+      />
     </Tabs>
   );
 }

@@ -20,6 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import questsData from '../../assets/Quest.json';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons'; // Import vector icons
+import { useTheme } from '../context/ThemeContext'; // Import the theme hook
 
 const { width } = Dimensions.get('window');
 
@@ -46,6 +47,7 @@ interface VisibleImagesState {
 
 export default function AddTaskScreen() {
   const router = useRouter();
+  const { theme } = useTheme(); // Use the theme context
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [weeklyTrial, setWeeklyTrial] = useState<WeeklyTrialItem>({
     text: '',
@@ -114,16 +116,27 @@ export default function AddTaskScreen() {
       if (token) {
         setUserToken(token);
 
-        // Load weekly trial - first try from our saved tasks
+        // WEEKLY TRIAL HANDLING
         const savedWeeklyTrial = await AsyncStorage.getItem(`weeklyTrial_${token}`);
         
         if (savedWeeklyTrial) {
-          // We have a saved weekly trial with image
-          setWeeklyTrial(JSON.parse(savedWeeklyTrial));
+          // Use saved weekly trial with image
+          const parsedTrial = JSON.parse(savedWeeklyTrial);
+          if (parsedTrial.text && parsedTrial.text.trim() !== '') {
+            setWeeklyTrial(parsedTrial);
+          } else {
+            // Empty weekly trial
+            setWeeklyTrial({
+              text: '',
+              image: null,
+              completed: false,
+              showImage: false
+            });
+          }
         } else {
-          // Try to get from homepage's weekly trial
+          // Try homepage's weekly trial
           const weeklyTrialText = await AsyncStorage.getItem('weeklyTrial');
-          if (weeklyTrialText) {
+          if (weeklyTrialText && weeklyTrialText.trim() !== '') {
             setWeeklyTrial({
               text: weeklyTrialText,
               image: null,
@@ -131,9 +144,9 @@ export default function AddTaskScreen() {
               showImage: false
             });
           } else {
-            // Use fallback if nothing is found
+            // Empty weekly trial
             setWeeklyTrial({
-              text: "Working out in the gym (60 min) - Physical",
+              text: '',
               image: null,
               completed: false,
               showImage: false
@@ -141,51 +154,81 @@ export default function AddTaskScreen() {
           }
         }
 
-        // Load daily tasks
+        // DAILY TASKS HANDLING
         const savedDailyTasks = await AsyncStorage.getItem(`dailyTasks_${token}`);
         
         if (savedDailyTasks) {
-          setTasks(JSON.parse(savedDailyTasks));
+          const parsedTasks = JSON.parse(savedDailyTasks);
+          // Filter out empty tasks
+          const validTasks = Array.isArray(parsedTasks) ? 
+            parsedTasks.filter(task => task.text && task.text.trim() !== '') : [];
+          setTasks(validTasks);
         } else {
-          // Try to load from homepage
+          // Try homepage tasks
           const dailyTasksStr = await AsyncStorage.getItem('dailyTasks');
           if (dailyTasksStr) {
             try {
               const parsedTasks = JSON.parse(dailyTasksStr);
-              const formattedTasks: TaskItem[] = Array.isArray(parsedTasks) ? parsedTasks.map(task => ({
-                text: task,
-                image: null,
-                completed: false,
-                showImage: false
-              })) : [
-                { text: "No daily task available", image: null, completed: false, showImage: false },
-                { text: "No daily task available", image: null, completed: false, showImage: false }
-              ];
-              setTasks(formattedTasks);
+              // Only create tasks from non-empty strings
+              const validTasks: TaskItem[] = [];
+              
+              if (Array.isArray(parsedTasks)) {
+                for (const task of parsedTasks) {
+                  if (task && task.trim() !== '') {
+                    validTasks.push({
+                      text: task,
+                      image: null,
+                      completed: false,
+                      showImage: false
+                    });
+                  }
+                }
+              }
+              
+              setTasks(validTasks);
             } catch (e) {
               console.error('Error parsing daily tasks:', e);
-              setTasks([
-                { text: "No daily task available", image: null, completed: false, showImage: false },
-                { text: "No daily task available", image: null, completed: false, showImage: false }
-              ]);
+              setTasks([]);
             }
           } else {
-            // Initialize with two empty tasks if nothing is found
-            setTasks([
-              { text: "No daily task available", image: null, completed: false, showImage: false },
-              { text: "No daily task available", image: null, completed: false, showImage: false }
-            ]);
+            // Empty tasks array
+            setTasks([]);
           }
         }
 
-        // Load additional tasks
+        // ADDITIONAL TASKS HANDLING
         const savedAdditionalTasks = await AsyncStorage.getItem(`additionalTasks_${token}`);
         if (savedAdditionalTasks) {
-          setAdditionalTasks(JSON.parse(savedAdditionalTasks));
+          const parsedAdditionalTasks = JSON.parse(savedAdditionalTasks);
+          // Filter out empty tasks
+          const validAdditionalTasks = Array.isArray(parsedAdditionalTasks) ?
+            parsedAdditionalTasks.filter(task => task.text && task.text.trim() !== '') : [];
+          setAdditionalTasks(validAdditionalTasks);
+        } else {
+          setAdditionalTasks([]);
         }
+      } else {
+        // No token, set all empty
+        setTasks([]);
+        setWeeklyTrial({
+          text: '',
+          image: null,
+          completed: false,
+          showImage: false
+        });
+        setAdditionalTasks([]);
       }
     } catch (error) {
       console.error('Failed to load tasks:', error);
+      // Initialize with empty arrays in case of error
+      setTasks([]);
+      setWeeklyTrial({
+        text: '',
+        image: null,
+        completed: false,
+        showImage: false
+      });
+      setAdditionalTasks([]);
     }
   };
 
@@ -399,12 +442,12 @@ export default function AddTaskScreen() {
       <Stack.Screen 
         options={{
           headerStyle: {
-            backgroundColor: 'black',
+            backgroundColor: theme.background, // Use theme background
             height: 100,
           },
           headerTitleStyle: {
             fontSize: 16,
-            color: 'white',
+            color: theme.text, // Use theme text color
           },
           headerTitle: "Add Tasks",
         }} 
@@ -412,86 +455,101 @@ export default function AddTaskScreen() {
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
+        style={[styles.container, { backgroundColor: theme.background }]} // Apply theme background
         keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 20}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.innerContainer}>
-            <Text style={styles.instructionText}>
-              Upload photos to mark your journey
+            <Text style={[styles.instructionText, { color: theme.text }]}>
+              Upload photos to mark your completed tasks
             </Text>
             
             <ScrollView 
               contentContainerStyle={styles.content}
               showsVerticalScrollIndicator={false}
             >
-              {/* Weekly Trial Box */}
-              <View style={[
-                styles.taskContainer, 
-                weeklyTrial.completed ? styles.completedTaskWeekly : styles.weeklyTaskContainer
-              ]}>
-                <View style={styles.taskHeader}>
-                  <Text style={styles.taskTitle}>Weekly Trial</Text>
-                  <TouchableOpacity 
-                    style={styles.photoButton}
-                    onPress={() => pickImage('weekly')}
-                  >
-                    <Text style={styles.photoButtonText}>➕ Photo</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.taskContent}>
-                  <TextInput
-                    style={styles.taskInput}
-                    value={weeklyTrial.text}
-                    onChangeText={handleWeeklyTrialChange}
-                    multiline={true}
-                    textAlign="center"
-                    editable={false}
-                  />
-                  
-                  {weeklyTrial.image && weeklyTrial.showImage && (
-                    <View style={styles.imageContainer}>
-                      <Image 
-                        source={{ uri: weeklyTrial.image }} 
-                        style={styles.taskImage} 
-                      />
-                    </View>
-                  )}
-                  
-                  {weeklyTrial.image && (
+              {/* Weekly Trial Box - Only show if text is not empty */}
+              {weeklyTrial.text && weeklyTrial.text.trim() !== '' && (
+                <View style={[
+                  styles.taskContainer, 
+                  weeklyTrial.completed ? 
+                    [styles.completedTaskWeekly, { borderColor: theme.mode === 'dark' ? 'rgba(0, 180, 0, 0.4)' : 'rgba(0, 150, 0, 0.8)' }] : 
+                    [styles.weeklyTaskContainer, { 
+                      backgroundColor: theme.mode === 'dark' ? 'rgba(180, 0, 0, 0.2)' : 'rgba(255, 0, 0, 0.1)',
+                      borderColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.3)' : 'rgba(255, 0, 0, 0.2)' 
+                    }]
+                ]}>
+                  <View style={[styles.taskHeader, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.1)' }]}>
+                    <Text style={[styles.taskTitle, { color: theme.text }]}>Weekly Trial</Text>
                     <TouchableOpacity 
-                      style={styles.showProofButton}
-                      onPress={() => toggleImageVisibility('weekly')}
+                      style={[styles.photoButton, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)' }]}
+                      onPress={() => pickImage('weekly')}
                     >
-                      <Text style={styles.showProofText}>
-                        {weeklyTrial.showImage ? 'Hide Picture of Proof' : 'Show Picture of Proof'}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </View>
-
-              {/* Daily Tasks */}
-              {tasks.map((task, index) => (
-                <View 
-                  key={`daily-${index}`} 
-                  style={[
-                    styles.taskContainer, 
-                    task.completed ? styles.completedTaskDaily : styles.dailyTaskContainer
-                  ]}
-                >
-                  <View style={styles.taskHeader}>
-                    <Text style={styles.taskTitle}>Daily Task {index + 1}</Text>
-                    <TouchableOpacity 
-                      style={styles.photoButton}
-                      onPress={() => pickImage('daily', index)}
-                    >
-                      <Text style={styles.photoButtonText}>➕ Photo</Text>
+                      <Text style={[styles.photoButtonText, { color: theme.text }]}>➕ Photo</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.taskContent}>
                     <TextInput
-                      style={styles.taskInput}
+                      style={[styles.taskInput, { color: theme.text }]}
+                      value={weeklyTrial.text}
+                      onChangeText={handleWeeklyTrialChange}
+                      multiline={true}
+                      textAlign="center"
+                      editable={false}
+                    />
+                    
+                    {weeklyTrial.image && weeklyTrial.showImage && (
+                      <View style={styles.imageContainer}>
+                        <Image 
+                          source={{ uri: weeklyTrial.image }} 
+                          style={styles.taskImage} 
+                        />
+                      </View>
+                    )}
+                    
+                    {weeklyTrial.image && (
+                      <TouchableOpacity 
+                        style={[styles.showProofButton, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)' }]}
+                        onPress={() => toggleImageVisibility('weekly')}
+                      >
+                        <Text style={[styles.showProofText, { color: theme.text }]}>
+                          {weeklyTrial.showImage ? 'Hide Picture of Proof' : 'Show Picture of Proof'}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+              )}
+
+              {/* Daily Tasks - Only show non-empty tasks */}
+              {tasks.filter(task => task.text && task.text.trim() !== '').map((task, index) => (
+                <View 
+                  key={`daily-${index}`} 
+                  style={[
+                    styles.taskContainer, 
+                    task.completed ? 
+                      [styles.completedTaskDaily, { 
+                        backgroundColor: theme.mode === 'dark' ? 'rgba(0, 150, 0, 0.2)' : 'rgba(0, 150, 0, 0.1)',
+                        borderColor: theme.mode === 'dark' ? 'rgba(0, 180, 0, 0.3)' : 'rgba(0, 150, 0, 0.5)'  
+                      }] : 
+                      [styles.dailyTaskContainer, { 
+                        backgroundColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.1)' : 'rgba(255, 0, 0, 0.05)',
+                        borderColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.2)' : 'rgba(255, 0, 0, 0.15)'
+                      }]
+                  ]}
+                >
+                  <View style={[styles.taskHeader, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.1)' }]}>
+                    <Text style={[styles.taskTitle, { color: theme.text }]}>Daily Task {index + 1}</Text>
+                    <TouchableOpacity 
+                      style={[styles.photoButton, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)' }]}
+                      onPress={() => pickImage('daily', index)}
+                    >
+                      <Text style={[styles.photoButtonText, { color: theme.text }]}>➕ Photo</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.taskContent}>
+                    <TextInput
+                      style={[styles.taskInput, { color: theme.text }]}
                       value={task.text}
                       onChangeText={(text) => handleTaskChange(index, text)}
                       multiline={true}
@@ -510,10 +568,10 @@ export default function AddTaskScreen() {
                     
                     {task.image && (
                       <TouchableOpacity 
-                        style={styles.showProofButton}
+                        style={[styles.showProofButton, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)' }]}
                         onPress={() => toggleImageVisibility('daily', index)}
                       >
-                        <Text style={styles.showProofText}>
+                        <Text style={[styles.showProofText, { color: theme.text }]}>
                           {task.showImage ? 'Hide Picture of Proof' : 'Show Picture of Proof'}
                         </Text>
                       </TouchableOpacity>
@@ -522,13 +580,21 @@ export default function AddTaskScreen() {
                 </View>
               ))}
 
-              {/* Additional Tasks */}
-              {additionalTasks.map((task, index) => (
+              {/* Additional Tasks - Only show non-empty tasks */}
+              {additionalTasks.filter(task => task.text && task.text.trim() !== '').map((task, index) => (
                 <View 
                   key={`additional-${index}`} 
                   style={[
                     styles.taskContainer, 
-                    task.completed ? styles.completedTaskDaily : styles.dailyTaskContainer
+                    task.completed ? 
+                      [styles.completedTaskDaily, { 
+                        backgroundColor: theme.mode === 'dark' ? 'rgba(0, 150, 0, 0.2)' : 'rgba(0, 150, 0, 0.1)',
+                        borderColor: theme.mode === 'dark' ? 'rgba(0, 180, 0, 0.3)' : 'rgba(0, 150, 0, 0.5)'
+                      }] : 
+                      [styles.dailyTaskContainer, { 
+                        backgroundColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.1)' : 'rgba(255, 0, 0, 0.05)',
+                        borderColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.2)' : 'rgba(255, 0, 0, 0.15)'
+                      }]
                   ]}
                 >
                   <View style={styles.taskHeader}>
@@ -539,18 +605,18 @@ export default function AddTaskScreen() {
                       >
                         <Text style={styles.deleteButtonText}>🗑️</Text>
                       </TouchableOpacity>
-                      <Text style={styles.taskTitle}>Extra Task {index + 1}</Text>
+                      <Text style={[styles.taskTitle, { color: theme.text }]}>Extra Task {index + 1}</Text>
                     </View>
                     <TouchableOpacity 
-                      style={styles.photoButton}
+                      style={[styles.photoButton, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)' }]}
                       onPress={() => pickImage('additional', index)}
                     >
-                      <Text style={styles.photoButtonText}>➕ Photo</Text>
+                      <Text style={[styles.photoButtonText, { color: theme.text }]}>➕ Photo</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.taskContent}>
                     <TextInput
-                      style={styles.taskInput}
+                      style={[styles.taskInput, { color: theme.text }]}
                       value={task.text}
                       onChangeText={(text) => handleAdditionalTaskChange(index, text)}
                       multiline={true}
@@ -569,10 +635,10 @@ export default function AddTaskScreen() {
                     
                     {task.image && (
                       <TouchableOpacity 
-                        style={styles.showProofButton}
+                        style={[styles.showProofButton, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)' }]}
                         onPress={() => toggleImageVisibility('additional', index)}
                       >
-                        <Text style={styles.showProofText}>
+                        <Text style={[styles.showProofText, { color: theme.text }]}>
                           {task.showImage ? 'Hide Picture of Proof' : 'Show Picture of Proof'}
                         </Text>
                       </TouchableOpacity>
@@ -583,10 +649,10 @@ export default function AddTaskScreen() {
 
               {/* Add New Task Button */}
               <TouchableOpacity 
-                style={styles.addTaskButton}
+                style={[styles.addTaskButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#ccc' }]}
                 onPress={addNewTask}
               >
-                <Text style={styles.addTaskText}>+ Add New Extra Task</Text>
+                <Text style={[styles.addTaskText, { color: theme.text }]}>+ Add New Extra Task</Text>
               </TouchableOpacity>
 
               {/* Task Choice Modal */}
@@ -598,13 +664,13 @@ export default function AddTaskScreen() {
               >
                 <View style={styles.modalOverlay}>
                   <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <View style={styles.modalContent}>
-                      <Text style={styles.modalTitle}>Choose Your Task</Text>
+                    <View style={[styles.modalContent, { backgroundColor: theme.boxBackground }]}>
+                      <Text style={[styles.modalTitle, { color: theme.text }]}>Choose Your Task</Text>
                       
                       {/* Random Task Option */}
                       <View style={styles.taskOptionContainer}>
-                        <Text style={styles.taskOptionTitle}>Suggested Task:</Text>
-                        <Text style={styles.taskOptionText}>
+                        <Text style={[styles.taskOptionTitle, { color: theme.text }]}>Suggested Task:</Text>
+                        <Text style={[styles.taskOptionText, { color: theme.text }]}>
                           {randomTask} ({randomTaskDuration} min) - {randomTaskCategory}
                         </Text>
                         <TouchableOpacity 
@@ -619,9 +685,9 @@ export default function AddTaskScreen() {
                       
                       {/* Custom Task Option - Updated with Time Field */}
                       <View style={styles.taskOptionContainer}>
-                        <Text style={styles.taskOptionTitle}>Create Your Own:</Text>
+                        <Text style={[styles.taskOptionTitle, { color: theme.text }]}>Create Your Own:</Text>
                         <TextInput
-                          style={styles.taskOptionInput}
+                          style={[styles.taskOptionInput, { color: theme.text }]}
                           placeholder="Enter your task description"
                           placeholderTextColor="#999"
                           value={customTask}
@@ -630,9 +696,9 @@ export default function AddTaskScreen() {
                         
                         <View style={styles.taskDetailsRow}>
                           <View style={styles.taskDetailItem}>
-                            <Text style={styles.taskDetailLabel}>Duration (min):</Text>
+                            <Text style={[styles.taskDetailLabel, { color: theme.text }]}>Duration (min):</Text>
                             <TextInput
-                              style={styles.taskDetailInput}
+                              style={[styles.taskDetailInput, { color: theme.text }]}
                               keyboardType="numeric"
                               value={customTaskDuration}
                               onChangeText={setCustomTaskDuration}
@@ -640,9 +706,9 @@ export default function AddTaskScreen() {
                           </View>
                           
                           <View style={styles.taskDetailItem}>
-                            <Text style={styles.taskDetailLabel}>Category:</Text>
+                            <Text style={[styles.taskDetailLabel, { color: theme.text }]}>Category:</Text>
                             <TextInput
-                              style={styles.taskDetailInput}
+                              style={[styles.taskDetailInput, { color: theme.text }]}
                               value={customTaskCategory}
                               onChangeText={setCustomTaskCategory}
                             />
@@ -651,9 +717,9 @@ export default function AddTaskScreen() {
                         
                         {/* New Time Input Field */}
                         <View style={styles.timeInputContainer}>
-                          <Text style={styles.taskDetailLabel}>Time (optional):</Text>
+                          <Text style={[styles.taskDetailLabel, { color: theme.text }]}>Time (optional):</Text>
                           <TextInput
-                            style={styles.taskDetailInput}
+                            style={[styles.taskDetailInput, { color: theme.text }]}
                             placeholder="e.g., 8:00 AM"
                             placeholderTextColor="#777"
                             value={customTaskTime}
@@ -683,12 +749,15 @@ export default function AddTaskScreen() {
             </ScrollView>
 
             {/* Bottom Navigation Icons - Updated to match settings.tsx */}
-            <View style={styles.bottomNav}>
+            <View style={[styles.bottomNav, { 
+              backgroundColor: theme.background, 
+              borderColor: theme.border 
+            }]}>
               <TouchableOpacity 
                 onPress={() => router.push('/(tabs)/performance')}
                 style={styles.navButton}
               >
-                <FontAwesome5 name="chart-line" size={22} color="white" />
+                <FontAwesome5 name="chart-line" size={22} color={theme.text} />
               </TouchableOpacity>
               
               {/* Home button */}
@@ -703,7 +772,7 @@ export default function AddTaskScreen() {
                 onPress={() => router.push('/(tabs)/settings')}
                 style={styles.navButton}
               >
-                <Ionicons name="settings-outline" size={24} color="white" />
+                <Ionicons name="settings-outline" size={24} color={theme.text} />
               </TouchableOpacity>
             </View>
           </View>
@@ -716,7 +785,7 @@ export default function AddTaskScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    // backgroundColor will be applied dynamically
   },
   innerContainer: {
     flex: 1,
@@ -724,7 +793,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   instructionText: {
-    color: 'white',
+    // color will be applied dynamically
     fontSize: 16,
     textAlign: 'center',
     marginVertical: 10,

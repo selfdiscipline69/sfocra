@@ -12,16 +12,27 @@ import {
 import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons'; // Import vector icons
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
+// Define SettingItem interface for type safety
+interface SettingItem {
+  id: string;
+  title: string;
+  screen: string;
+  isSpecial?: boolean;
+  handler?: () => void;
+}
+
 export default function SettingsScreen() {
   const router = useRouter();
-  const [profileImage, setProfileImage] = useState(null);
-  const [userToken, setUserToken] = useState('');
-  const [userName, setUserName] = useState('');
-  const [userHandle, setUserHandle] = useState('');
+  const { theme } = useTheme();
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [userToken, setUserToken] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
+  const [userHandle, setUserHandle] = useState<string>('');
   const [heroClass, setHeroClass] = useState({
     className: '',
     description: '',
@@ -36,14 +47,18 @@ export default function SettingsScreen() {
   // Function to load all user data from AsyncStorage
   const loadUserData = async () => {
     try {
-      // Get user token
-      const userToken = await AsyncStorage.getItem('userToken');
-      setUserToken(userToken);
+      // Get user token - handle potential null value
+      const token = await AsyncStorage.getItem('userToken');
+      if (token !== null) {
+        setUserToken(token);
+      }
       
       // Load profile image if exists
-      if (userToken) {
-        const storedImage = await AsyncStorage.getItem(`profileImage_${userToken}`);
-        if (storedImage !== null) setProfileImage(storedImage);
+      if (token) {
+        const storedImage = await AsyncStorage.getItem(`profileImage_${token}`);
+        if (storedImage !== null) {
+          setProfileImage(storedImage);
+        }
       }
       
       // Load user name and handle with better fallbacks
@@ -111,157 +126,194 @@ export default function SettingsScreen() {
 
   // Add back button handler
   const handleBack = () => {
-    router.push('/(tabs)/homepage');
+    router.push({
+      pathname: '/(tabs)/homepage'
+    });
   };
 
-  // Settings data for FlatList - update the Appearance screen path
-  const settingsData = [
-    { id: '2', title: 'Appearance', screen: '/(tabs)/appearance' }, // Changed to new appearance screen
-    { id: '4', title: 'Privacy & Security', screen: '/(tabs)/homepage' },
+  // Debugging for navigation
+  const handlePrivacyNavigation = () => {
+    console.log("Navigating to privacy screen");
+    router.push({
+      pathname: "/(tabs)/privacy"
+    });
+  };
+
+  // Settings data for FlatList - update with direct navigation handler
+  const settingsData: SettingItem[] = [
+    { id: '2', title: 'Appearance', screen: '/(tabs)/appearance' },
+    { id: '4', title: 'Privacy & Security', screen: '/(tabs)/privacy', handler: handlePrivacyNavigation },
     { id: '6', title: 'Change Password', screen: '/(tabs)/change_pw' },
     { id: '7', title: 'Logout', screen: '/', isSpecial: true },
   ];
 
-  // Render each setting item
-  const renderSettingItem = ({ item }) => (
-    <TouchableOpacity 
-      style={[
-        styles.settingItem, 
-        item.isSpecial && styles.specialSettingItem
-      ]}
-      onPress={() => {
-        if (item.title === 'Logout') {
-          router.replace('/');
-        } else {
-          router.push(item.screen);
-        }
-      }}
-    >
-      <Text style={[
-        styles.settingText,
-        item.isSpecial && styles.specialSettingText
-      ]}>
-        {item.title}
-      </Text>
-      <Text style={styles.arrowIcon}>➝</Text>
-    </TouchableOpacity>
-  );
+  // Render each setting item with theme - add proper type annotations
+  function renderSettingItem({ item, theme }: { item: SettingItem; theme: any }) {
+    return (
+      <TouchableOpacity 
+        style={[
+          styles.settingItem, 
+          item.isSpecial && styles.specialSettingItem,
+          { 
+            borderBottomColor: theme.border,
+            backgroundColor: 'transparent'
+          }
+        ]}
+        onPress={() => {
+          if (item.title === 'Logout') {
+            router.replace('/');
+          } else if (item.handler) {
+            item.handler();
+          } else {
+            router.push({
+              pathname: item.screen
+            });
+          }
+        }}
+      >
+        <Text style={[
+          styles.settingText,
+          { color: item.isSpecial ? theme.accent : theme.text },
+          item.isSpecial && styles.specialSettingText
+        ]}>
+          {item.title}
+        </Text>
+        <Text style={[styles.arrowIcon, { color: theme.subtext }]}>➝</Text>
+      </TouchableOpacity>
+    );
+  }
 
-  // Create header component for FlatList that includes profile section
-  const ListHeaderComponent = () => (
-    <>
-      <View style={styles.profileSection}>
-        {/* Profile Picture with Edit Icon */}
-        <TouchableOpacity style={styles.profileImageContainer} onPress={handleImagePick}>
-          <Image 
-            source={
-              profileImage 
-                ? { uri: profileImage } 
-                : require('../../assets/images/empty-icon.png')
-            } 
-            style={styles.profileImage} 
-          />
-          <View style={styles.editIconContainer}>
-            <Text style={styles.editIcon}>✎</Text>
-          </View>
-        </TouchableOpacity>
-        
-        {/* Name and Username - Now properly fallback to generic text if empty */}
-        <Text style={styles.userName}>{userName || 'Set your name'}</Text>
-        <Text style={styles.userHandle}>{userHandle || 'Set your username'}</Text>
-      </View>
-      
-      {/* Hero Class Information - Redesigned */}
-      <View style={styles.heroClassSection}>
-        <View style={styles.heroClassTitleContainer}>
-          <Text style={styles.heroClassPrefix}>⚔️ YOUR HERO CLASS</Text>
-          <Text style={styles.heroClassName}>{heroClass.className}</Text>
+  // Create header component with proper type annotation
+  function ListHeaderComponent({ theme }: { theme: any }) {
+    return (
+      <>
+        <View style={[styles.profileSection, { 
+          borderBottomColor: theme.border,
+          backgroundColor: 'transparent'
+        }]}>
+          {/* Profile Picture with Edit Icon */}
+          <TouchableOpacity style={styles.profileImageContainer} onPress={handleImagePick}>
+            <Image 
+              source={
+                profileImage 
+                  ? { uri: profileImage } 
+                  : require('../../assets/images/empty-icon.png')
+              } 
+              style={[styles.profileImage, { 
+                backgroundColor: theme.mode === 'dark' ? theme.boxBackground : '#E0E0E0'
+              }]} 
+            />
+            <View style={styles.editIconContainer}>
+              <Text style={styles.editIcon}>✎</Text>
+            </View>
+          </TouchableOpacity>
+          
+          {/* Name and Username - Now properly fallback to generic text if empty */}
+          <Text style={[styles.userName, { color: theme.text }]}>{userName || 'Set your name'}</Text>
+          <Text style={[styles.userHandle, { color: theme.subtext }]}>{userHandle || 'Set your username'}</Text>
         </View>
         
-        <View style={styles.heroClassContentBox}>
-          <View style={styles.heroClassInfoSection}>
-            <Text style={styles.heroClassSubtitle}>📜 Description</Text>
-            <Text style={styles.heroClassText}>{heroClass.description}</Text>
+        {/* Hero Class Information - Keep a subtle background for this section */}
+        <View style={[styles.heroClassSection, { 
+          backgroundColor: theme.mode === 'dark' ? theme.boxBackground : 'rgba(245, 245, 245, 0.7)',
+          borderColor: theme.border 
+        }]}>
+          <View style={[styles.heroClassTitleContainer, { backgroundColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.2)' : 'rgba(255, 0, 0, 0.1)' }]}>
+            <Text style={[styles.heroClassPrefix, { color: theme.subtext }]}>⚔️ YOUR HERO CLASS</Text>
+            <Text style={[styles.heroClassName, { color: theme.accent }]}>{heroClass.className}</Text>
           </View>
           
-          <View style={styles.heroClassDivider} />
-          
-          <View style={styles.heroClassInfoSection}>
-            <Text style={styles.heroClassSubtitle}>🎯 Quest Format</Text>
-            <Text style={styles.heroClassText}>{heroClass.questFormat}</Text>
-          </View>
-          
-          <View style={styles.heroClassDivider} />
-          
-          <View style={styles.heroClassInfoSection}>
-            <Text style={styles.heroClassSubtitle}>⚖️ Consequence System</Text>
-            <Text style={styles.heroClassText}>{heroClass.consequenceDescription}</Text>
+          <View style={[styles.heroClassContentBox, { backgroundColor: theme.boxBackground }]}>
+            <View style={styles.heroClassInfoSection}>
+              <Text style={[styles.heroClassSubtitle, { color: theme.accent }]}>📜 Description</Text>
+              <Text style={[styles.heroClassText, { color: theme.text }]}>{heroClass.description}</Text>
+            </View>
+            
+            <View style={[styles.heroClassDivider, { backgroundColor: theme.border }]} />
+            
+            <View style={styles.heroClassInfoSection}>
+              <Text style={[styles.heroClassSubtitle, { color: theme.accent }]}>🎯 Quest Format</Text>
+              <Text style={[styles.heroClassText, { color: theme.text }]}>{heroClass.questFormat}</Text>
+            </View>
+            
+            <View style={[styles.heroClassDivider, { backgroundColor: theme.border }]} />
+            
+            <View style={styles.heroClassInfoSection}>
+              <Text style={[styles.heroClassSubtitle, { color: theme.accent }]}>⚖️ Consequence System</Text>
+              <Text style={[styles.heroClassText, { color: theme.text }]}>{heroClass.consequenceDescription}</Text>
+            </View>
           </View>
         </View>
-      </View>
-    </>
-  );
+      </>
+    );
+  }
 
   return (
     <>
       <Stack.Screen 
         options={{
           headerStyle: {
-            backgroundColor: 'black',
+            backgroundColor: theme.background,
           },
           headerTitleStyle: {
             fontSize: 18,
-            color: 'white',
+            color: theme.text,
             fontWeight: 'bold',
           },
           headerTitle: "Settings",
           headerTitleAlign: 'center',
-          headerHeight: 70,
+          // Remove invalid headerHeight property
           headerRight: () => (
             <TouchableOpacity
               style={styles.topRightBackButton}
               onPress={handleBack}
             >
-              <Text style={styles.topRightBackText}>Back</Text>
+              <Text style={[styles.topRightBackText, { color: theme.text }]}>Back</Text>
             </TouchableOpacity>
           ),
         }} 
       />
       
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
         {/* Settings List with Profile Section as Header */}
         <FlatList
           data={settingsData}
-          renderItem={renderSettingItem}
+          renderItem={({ item }) => renderSettingItem({ item, theme })}
           keyExtractor={item => item.id}
-          style={styles.settingsList}
+          style={[styles.settingsList, { backgroundColor: theme.background }]}
           showsVerticalScrollIndicator={false}
-          ListHeaderComponent={ListHeaderComponent}
+          ListHeaderComponent={() => ListHeaderComponent({ theme })}
           contentContainerStyle={styles.listContentContainer}
         />
         
         {/* Updated Bottom Navigation Icons */}
-        <View style={styles.bottomNav}>
+        <View style={[styles.bottomNav, { backgroundColor: theme.background, borderColor: theme.border }]}>
           <TouchableOpacity 
-            onPress={() => router.push('/(tabs)/performance')}
+            onPress={() => router.push({
+              pathname: '/(tabs)/performance'
+            })}
             style={styles.navButton}
           >
-            <FontAwesome5 name="chart-line" size={22} color="white" />
+            <FontAwesome5 name="chart-line" size={22} color={theme.text} />
           </TouchableOpacity>
           
           {/* Home button with text instead of plus icon */}
           <TouchableOpacity 
             style={styles.homeButton} 
-            onPress={() => router.push('/(tabs)/homepage')}
+            onPress={() => router.push({
+              pathname: '/(tabs)/homepage'
+            })}
           >
             <Text style={styles.homeButtonText}>Home</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
-            onPress={() => router.push('/(tabs)/settings')}
+            onPress={() => router.push({
+              pathname: '/(tabs)/settings'
+            })}
             style={[styles.navButton, styles.activeNavButton]}
           >
-            <Ionicons name="settings-outline" size={24} color="white" />
+            <Ionicons name="settings-outline" size={24} color={theme.text} />
           </TouchableOpacity>
         </View>
       </View>
@@ -272,13 +324,11 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
   },
   profileSection: {
     alignItems: 'center',
     paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#333',
     marginTop: 10, // Add space to prevent overlap with header
   },
   profileImageContainer: {
@@ -289,7 +339,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#333',
   },
   editIconContainer: {
     position: 'absolute',
@@ -329,9 +378,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 15,
-    paddingHorizontal: 5,
+    paddingHorizontal: 15, // Added more horizontal padding
     borderBottomWidth: 1,
-    borderBottomColor: '#333',
+    marginVertical: 2, // Add slight spacing between items
   },
   specialSettingItem: {
     borderBottomWidth: 0,
@@ -367,7 +416,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderTopWidth: 1,
-    borderColor: 'gray',
   },
   navButton: {
     alignItems: 'center',
@@ -401,13 +449,10 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     borderRadius: 12,
     overflow: 'hidden',
-    backgroundColor: '#111',
     borderWidth: 1,
-    borderColor: '#333',
   },
   heroClassTitleContainer: {
     padding: 15,
-    backgroundColor: 'rgba(255, 0, 0, 0.2)',
     alignItems: 'center',
   },
   heroClassPrefix: {
@@ -436,14 +481,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   heroClassText: {
-    color: '#ddd',
     fontSize: 14,
     lineHeight: 20,
     paddingLeft: 10,
   },
   heroClassDivider: {
     height: 1,
-    backgroundColor: '#333',
     marginVertical: 12,
   },
 });
