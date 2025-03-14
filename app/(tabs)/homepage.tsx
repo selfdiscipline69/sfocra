@@ -128,256 +128,39 @@ export default function Homepage() {
   // Function to load quests and quotes with an option to refresh weekly trial or not
   const loadQuestsAndQuotes = async (refreshWeeklyTrial = true) => {
     try {
-      // Get user's class key (P-D-T-C format)
-      const userClassKey = await AsyncStorage.getItem('userClassKey') || 
-                          await AsyncStorage.getItem(`userClassKey_${userToken}`);
+      // Select 3 random quests from the quests data
+      const selectedQuests = [];
+      const questsCopy = [...questsData]; // Create a copy to avoid modifying the original
       
-      if (!userClassKey) {
-        console.log("No user class key found, using default quests");
-        setDailyTasks([
-          "default quests",
-          "default quests"
-        ]);
-        if (refreshWeeklyTrial) {
-          setWeeklyTrial("default quests");
-        }
-        return;
+      for (let i = 0; i < 3; i++) {
+        if (questsCopy.length === 0) break;
+        
+        const randomIndex = Math.floor(Math.random() * questsCopy.length);
+        const randomQuest = questsCopy.splice(randomIndex, 1)[0]; // Remove and get the selected quest
+        
+        selectedQuests.push(randomQuest);
       }
       
-      // Parse the key to get path (P) and difficulty (D)
-      const keyParts = userClassKey.split('-');
-      const userPath = keyParts[0]; // P value (1=Mind, 2=Body, 3=Balanced)
-      const userDifficulty = parseInt(keyParts[1]); // D value (1-5)
-      
-      console.log(`User path: ${userPath}, difficulty: ${userDifficulty}`);
-      
-      // Get all available paths
-      const allPaths = ["1", "2", "3"]; // Mind, Body, Balanced
-      
-      // Determine the other paths (paths that are not the user's main path)
-      const otherPaths = allPaths.filter(path => path !== userPath);
-      
-      // Filter quests matching the user's path
-      const userPathQuests = questsData.filter(quest => {
-        const questKeyParts = quest.key.split('-');
-        return questKeyParts[0] === userPath;
-      });
-      
-      // Filter quests for other paths
-      const otherPathsQuests = questsData.filter(quest => {
-        const questKeyParts = quest.key.split('-');
-        return otherPaths.includes(questKeyParts[0]);
-      });
-      
-      // 1. WEEKLY TRIAL SELECTION - 5 quests with path diversity
-      if (refreshWeeklyTrial) {
-        const weeklyTrials = [];
-        
-        // First, select quests from other paths (at least 1, at most 3)
-        const otherPathsWeeklyQuests = [];
-        
-        // Find higher difficulty quests from other paths
-        const difficultOtherPathsQuests = otherPathsQuests.filter(quest => {
-          const questKeyParts = quest.key.split('-');
-          // Use user difficulty or higher for other paths
-          return parseInt(questKeyParts[1]) >= userDifficulty;
-        });
-        
-        // If not enough high difficulty quests from other paths, use any difficulty
-        let availableOtherPathsQuests = difficultOtherPathsQuests.length >= 3 
-          ? difficultOtherPathsQuests 
-          : otherPathsQuests;
-        
-        // Select 1-3 quests from other paths (randomly)
-        const numOtherPathsQuests = Math.min(
-          Math.floor(Math.random() * 3) + 1, // Random number between 1-3
-          availableOtherPathsQuests.length
-        );
-        
-        for (let i = 0; i < numOtherPathsQuests; i++) {
-          if (availableOtherPathsQuests.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableOtherPathsQuests.length);
-            const selectedQuest = availableOtherPathsQuests.splice(randomIndex, 1)[0];
-            otherPathsWeeklyQuests.push(selectedQuest);
-          }
-        }
-        
-        // Then, select remaining quests from user's path
-        // Find higher difficulty quests from user's path
-        const difficultUserPathQuests = userPathQuests.filter(quest => {
-          const questKeyParts = quest.key.split('-');
-          return parseInt(questKeyParts[1]) >= userDifficulty;
-        });
-        
-        // If not enough high difficulty quests, use any difficulty
-        let availableUserPathQuests = difficultUserPathQuests.length >= 5 
-          ? difficultUserPathQuests 
-          : userPathQuests;
-        
-        // Select remaining quests from user's path
-        const remainingQuests = 5 - otherPathsWeeklyQuests.length;
-        for (let i = 0; i < remainingQuests; i++) {
-          if (availableUserPathQuests.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableUserPathQuests.length);
-            const selectedQuest = availableUserPathQuests.splice(randomIndex, 1)[0];
-            weeklyTrials.push(selectedQuest);
-          }
-        }
-        
-        // Combine and shuffle all selected weekly trials
-        const allWeeklyTrials = [...otherPathsWeeklyQuests, ...weeklyTrials];
-        
-        // Fisher-Yates shuffle algorithm
-        for (let i = allWeeklyTrials.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [allWeeklyTrials[i], allWeeklyTrials[j]] = [allWeeklyTrials[j], allWeeklyTrials[i]];
-        }
-        
-        // Format the weekly trials (without showing intensity)
-        if (allWeeklyTrials.length > 0) {
-          // Join all trials with line breaks
-          const formattedWeeklyTrials = allWeeklyTrials.map(quest => 
-            `${quest.task} (${quest.duration_minutes} min)`
-          ).join('\n\n');
-          
-          setWeeklyTrial(formattedWeeklyTrials);
-          await AsyncStorage.setItem('weeklyTrial', formattedWeeklyTrials);
-        } else {
-          console.log("No weekly trial quests found");
-          setWeeklyTrial("Custom weekly challenge - adapt to your level");
-        }
+      // First quest for Weekly Trial - only update if refreshWeeklyTrial is true
+      if (selectedQuests.length > 0 && refreshWeeklyTrial) {
+        const formattedQuest = `${selectedQuests[0].task} (${selectedQuests[0].duration_minutes} min) - ${selectedQuests[0].category}`;
+        setWeeklyTrial(formattedQuest);
+        await AsyncStorage.setItem('weeklyTrial', formattedQuest);
       }
       
-      // 2. DAILY TASKS SELECTION - use actual difficulty and ensure path diversity
-      // Use the user's actual difficulty without capping
-      const dailyIntensity = userDifficulty.toString();
-      
-      // Find tasks matching user's path and difficulty
-      const mainPathTasks = questsData.filter(quest => {
-        const questKeyParts = quest.key.split('-');
-        return questKeyParts[0] === userPath && questKeyParts[1] === dailyIntensity;
-      });
-      
-      // Prepare to select daily tasks with path diversity
-      const dailyTasks = [];
-      
-      // For Balanced path (P=3), include at least 1 from Mind or Body
-      if (userPath === "3") {
-        // Find tasks from other paths (Mind or Body) matching difficulty
-        const diverseTasks = questsData.filter(quest => {
-          const questKeyParts = quest.key.split('-');
-          return (questKeyParts[0] === "1" || questKeyParts[0] === "2") && 
-                 questKeyParts[1] === dailyIntensity;
-        });
-        
-        // If we have diverse tasks, select one randomly
-        if (diverseTasks.length > 0) {
-          const randomIndex = Math.floor(Math.random() * diverseTasks.length);
-          const diverseTask = diverseTasks[randomIndex];
-          dailyTasks.push(`${diverseTask.task} (${diverseTask.duration_minutes} min)`);
+      // Next 2 quests for Daily Tasks - always refresh these
+      const tasks = [];
+      for (let i = 1; i < 3; i++) {
+        if (i < selectedQuests.length) {
+          const quest = selectedQuests[i];
+          const formattedQuest = `${quest.task} (${quest.duration_minutes} min) - ${quest.category}`;
+          tasks.push(formattedQuest);
         } else {
-          // Fallback if no matching difficulty found in other paths
-          const anyDiverseTasks = questsData.filter(quest => {
-            const questKeyParts = quest.key.split('-');
-            return questKeyParts[0] === "1" || questKeyParts[0] === "2";
-          });
-          
-          if (anyDiverseTasks.length > 0) {
-            const randomIndex = Math.floor(Math.random() * anyDiverseTasks.length);
-            const diverseTask = anyDiverseTasks[randomIndex];
-            dailyTasks.push(`${diverseTask.task} (${diverseTask.duration_minutes} min)`);
-          } else {
-            dailyTasks.push("No task available from Mind or Body paths");
-          }
-        }
-        
-        // Add one more task from main path if available
-        if (mainPathTasks.length > 0) {
-          const randomIndex = Math.floor(Math.random() * mainPathTasks.length);
-          const mainPathTask = mainPathTasks[randomIndex];
-          dailyTasks.push(`${mainPathTask.task} (${mainPathTask.duration_minutes} min)`);
-        } else {
-          // Fallback to any balanced path task
-          const anyBalancedTasks = questsData.filter(quest => {
-            const questKeyParts = quest.key.split('-');
-            return questKeyParts[0] === "3";
-          });
-          
-          if (anyBalancedTasks.length > 0) {
-            const randomIndex = Math.floor(Math.random() * anyBalancedTasks.length);
-            const balancedTask = anyBalancedTasks[randomIndex];
-            dailyTasks.push(`${balancedTask.task} (${balancedTask.duration_minutes} min)`);
-          } else {
-            dailyTasks.push("No Balanced path task available");
-          }
-        }
-      } 
-      // For Mind (P=1) or Body (P=2), include one from the other paths
-      else {
-        // Find tasks from other paths matching difficulty
-        const diverseTasks = questsData.filter(quest => {
-          const questKeyParts = quest.key.split('-');
-          return questKeyParts[0] !== userPath && questKeyParts[1] === dailyIntensity;
-        });
-        
-        // If we have diverse tasks, select one randomly
-        if (diverseTasks.length > 0) {
-          const randomIndex = Math.floor(Math.random() * diverseTasks.length);
-          const diverseTask = diverseTasks[randomIndex];
-          dailyTasks.push(`${diverseTask.task} (${diverseTask.duration_minutes} min)`);
-        } else {
-          // Fallback if no matching difficulty found in other paths
-          const anyDiverseTasks = questsData.filter(quest => {
-            const questKeyParts = quest.key.split('-');
-            return questKeyParts[0] !== userPath;
-          });
-          
-          if (anyDiverseTasks.length > 0) {
-            const randomIndex = Math.floor(Math.random() * anyDiverseTasks.length);
-            const diverseTask = anyDiverseTasks[randomIndex];
-            dailyTasks.push(`${diverseTask.task} (${diverseTask.duration_minutes} min)`);
-          } else {
-            dailyTasks.push("No task available from other paths");
-          }
-        }
-        
-        // Add one task from main path if available
-        if (mainPathTasks.length > 0) {
-          const randomIndex = Math.floor(Math.random() * mainPathTasks.length);
-          const mainPathTask = mainPathTasks[randomIndex];
-          dailyTasks.push(`${mainPathTask.task} (${mainPathTask.duration_minutes} min)`);
-        } else {
-          // Fallback to any task from user's path
-          const anyMainPathTasks = questsData.filter(quest => {
-            const questKeyParts = quest.key.split('-');
-            return questKeyParts[0] === userPath;
-          });
-          
-          if (anyMainPathTasks.length > 0) {
-            const randomIndex = Math.floor(Math.random() * anyMainPathTasks.length);
-            const mainPathTask = anyMainPathTasks[randomIndex];
-            dailyTasks.push(`${mainPathTask.task} (${mainPathTask.duration_minutes} min)`);
-          } else {
-            dailyTasks.push("No task available from your path");
-          }
+          tasks.push("No task available");
         }
       }
-      
-      // Ensure we have exactly 2 daily tasks
-      while (dailyTasks.length < 2) {
-        dailyTasks.push("Additional task not available");
-      }
-      
-      // Shuffle the tasks to randomize order
-      const shuffledDailyTasks = [...dailyTasks];
-      for (let i = shuffledDailyTasks.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffledDailyTasks[i], shuffledDailyTasks[j]] = [shuffledDailyTasks[j], shuffledDailyTasks[i]];
-      }
-      
-      // Update state and save to AsyncStorage
-      setDailyTasks(shuffledDailyTasks);
-      await AsyncStorage.setItem('dailyTasks', JSON.stringify(shuffledDailyTasks));
+      setDailyTasks(tasks);
+      await AsyncStorage.setItem('dailyTasks', JSON.stringify(tasks));
       
       // Select 1 random quote for Daily Quote - always refresh this
       if (quotesData.length > 0) {
@@ -511,18 +294,7 @@ export default function Homepage() {
             <View style={styles.spacerView} />
             
             {/* Weekly Trial with WeeklyTrialBox component */}
-            <WeeklyTrialBox 
-              title="Weekly Trial"
-              rightElement={
-                <TouchableOpacity 
-                  onPress={() => loadQuestsAndQuotes(true)} 
-                  style={styles.refreshButton}
-                  accessibilityLabel="Refresh weekly trials"
-                >
-                  <Ionicons name="refresh" size={18} color="white" />
-                </TouchableOpacity>
-              }
-            >
+            <WeeklyTrialBox title="Weekly Trial">
               {weeklyTrial ? (
                 <Text style={styles.userChoiceText}>{weeklyTrial}</Text>
               ) : (
@@ -721,10 +493,6 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     width: '100%',
-  },
-  refreshButton: {
-    padding: 4,
-    marginLeft: 8,
   },
 });
 

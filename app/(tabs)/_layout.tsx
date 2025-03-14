@@ -10,6 +10,7 @@ export default function TabLayout() {
       <Tabs.Screen name="performance" />
       <Tabs.Screen name="settings" />
       <Tabs.Screen name="addTask" />
+      <Tabs.Screen name="appearance" /> {/* Add the new screen */}
     </Tabs>
   );
 }

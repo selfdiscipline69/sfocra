@@ -1,46 +1,21 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { useTheme, ThemeContext, themes } from '../context/ThemeContext';
+import { useTheme, ThemeContext } from '../context/ThemeContext';
 
 export default function AppearanceScreen() {
   const router = useRouter();
-  const themeContext = React.useContext(ThemeContext);
-  const { theme, isDarkMode, toggleTheme } = themeContext;
+  const { theme, isDarkMode, toggleTheme } = useTheme();
   
-  // Enhanced theme toggle handlers with debugging
-  const handleToggleDark = () => {
-    console.log("Dark mode button pressed");
-    try {
-      toggleTheme(true);
-      console.log("Theme should now be dark");
-      // Optional: Show confirmation
-      Alert.alert("Theme Changed", "Dark theme applied");
-    } catch (error) {
-      console.error("Error toggling to dark mode:", error);
-    }
-  };
-
-  const handleToggleLight = () => {
-    console.log("Light mode button pressed");
-    try {
-      toggleTheme(false);
-      console.log("Theme should now be light");
-      // Optional: Show confirmation
-      Alert.alert("Theme Changed", "Light theme applied");
-    } catch (error) {
-      console.error("Error toggling to light mode:", error);
-    }
-  };
+  // Simplified direct toggle handlers
+  const handleToggleDark = () => toggleTheme(true);
+  const handleToggleLight = () => toggleTheme(false);
 
   // Back button handler
   const handleBack = () => {
     router.push('/(tabs)/settings');
   };
-
-  // Log current theme for debugging
-  console.log('Current theme in appearance screen:', theme.mode);
   
   return (
     <View style={[styles.outerContainer, { backgroundColor: theme.background }]}>
@@ -66,92 +41,53 @@ export default function AppearanceScreen() {
       />
       
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        {/* Theme indicator for debugging */}
-        <View style={styles.themeIndicator}>
-          <Text style={[styles.themeIndicatorText, { color: theme.text }]}>
-            Current UI Theme: {theme.mode}
-          </Text>
-        </View>
-        
         <Text style={[styles.headerText, { color: theme.text }]}>Theme Mode</Text>
         
         <View style={[styles.optionsContainer, { backgroundColor: theme.boxBackground }]}>
-          {/* Dark mode option - using TouchableOpacity with improved touch feedback */}
+          {/* Dark mode option - Full width touchable */}
           <TouchableOpacity
             style={[
               styles.optionButton,
-              isDarkMode && styles.selectedOptionDark,
+              isDarkMode ? styles.selectedOptionDark : null,
               { borderBottomColor: theme.border }
             ]}
             onPress={handleToggleDark}
-            activeOpacity={0.7}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            activeOpacity={0.6}
           >
-            <Ionicons name="moon" size={24} color={isDarkMode ? theme.text : "#888"} />
-            <Text style={[
-              styles.optionText, 
-              { color: isDarkMode ? theme.text : "#888" }
-            ]}>Dark Mode</Text>
-            {isDarkMode && <Ionicons name="checkmark-circle" size={22} color={theme.accent} />}
+            <View style={styles.optionContent}>
+              <Ionicons name="moon" size={24} color={isDarkMode ? theme.text : "#888"} />
+              <Text style={[
+                styles.optionText, 
+                { color: isDarkMode ? theme.text : "#888" }
+              ]}>Dark Mode</Text>
+              {isDarkMode && <Ionicons name="checkmark-circle" size={22} color={theme.accent} />}
+            </View>
           </TouchableOpacity>
           
-          {/* Light mode option with improved touch feedback */}
+          {/* Light mode option - Full width touchable */}
           <TouchableOpacity
             style={[
               styles.optionButton,
-              !isDarkMode && styles.selectedOptionLight,
+              !isDarkMode ? styles.selectedOptionLight : null,
               { borderBottomColor: theme.border }
             ]}
             onPress={handleToggleLight}
-            activeOpacity={0.7}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            activeOpacity={0.6}
           >
-            <Ionicons name="sunny" size={24} color={!isDarkMode ? theme.text : "#888"} />
-            <Text style={[
-              styles.optionText, 
-              { color: !isDarkMode ? theme.text : "#888" }
-            ]}>Light Mode</Text>
-            {!isDarkMode && <Ionicons name="checkmark-circle" size={22} color={theme.accent} />}
-          </TouchableOpacity>
-        </View>
-        
-        {/* Debug info to see current theme state */}
-        <View style={[styles.debugContainer, { backgroundColor: theme.mode === 'dark' ? '#222' : '#eee' }]}>
-          <Text style={[styles.debugText, { color: theme.text }]}>
-            Current Theme: {isDarkMode ? 'Dark' : 'Light'}
-          </Text>
-          <TouchableOpacity 
-            style={[styles.refreshButton, {backgroundColor: theme.accent}]}
-            onPress={() => {
-              Alert.alert("Theme Status", `Current theme: ${isDarkMode ? 'Dark' : 'Light'}`);
-              // Force refresh of theme context
-              if (isDarkMode) {
-                toggleTheme(true);
-              } else {
-                toggleTheme(false);
-              }
-            }}
-          >
-            <Text style={styles.refreshButtonText}>Refresh Theme</Text>
+            <View style={styles.optionContent}>
+              <Ionicons name="sunny" size={24} color={!isDarkMode ? theme.text : "#888"} />
+              <Text style={[
+                styles.optionText, 
+                { color: !isDarkMode ? theme.text : "#888" }
+              ]}>Light Mode</Text>
+              {!isDarkMode && <Ionicons name="checkmark-circle" size={22} color={theme.accent} />}
+            </View>
           </TouchableOpacity>
         </View>
         
         <Text style={[styles.noteText, { color: theme.subtext }]}>
           Note: Dark Mode is recommended for the best experience with our app.
         </Text>
-        
-        {/* Theme Samples to demonstrate the current theme */}
-        <View style={styles.themeSamples}>
-          <Text style={[styles.sampleTitle, { color: theme.text }]}>Theme Samples:</Text>
-          
-          <View style={[styles.sampleBox, { backgroundColor: theme.boxBackground, borderColor: theme.border }]}>
-            <Text style={[styles.sampleText, { color: theme.text }]}>Primary Text</Text>
-            <Text style={[styles.sampleText, { color: theme.subtext }]}>Secondary Text</Text>
-            <View style={[styles.sampleButton, { backgroundColor: theme.accent }]}>
-              <Text style={styles.sampleButtonText}>Button</Text>
-            </View>
-          </View>
-        </View>
       </View>
       
       {/* Bottom Navigation Icons */}
@@ -191,15 +127,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
   },
-  themeIndicator: {
-    paddingVertical: 8,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  themeIndicatorText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
   headerText: {
     fontSize: 22,
     fontWeight: 'bold',
@@ -216,21 +143,21 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   optionButton: {
+    padding: 0, // Remove padding from button itself
+    borderBottomWidth: 1,
+    width: '100%', // Ensure button takes full width
+  },
+  optionContent: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    borderBottomWidth: 1,
     height: 70, // Explicitly set height for better touch target
-    zIndex: 1, // Ensure buttons are clickable
   },
   selectedOptionDark: {
     backgroundColor: '#2C2C2E',
   },
   selectedOptionLight: {
     backgroundColor: '#e6e6e6',
-  },
-  pressedOption: {
-    opacity: 0.7,
   },
   optionText: {
     fontSize: 18,
@@ -284,61 +211,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
-  debugContainer: {
-    marginTop: 20,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#555',
-    borderRadius: 5,
-  },
-  debugText: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  refreshButton: {
-    padding: 8,
-    borderRadius: 5,
-    marginTop: 10,
-    alignSelf: 'center',
-  },
-  refreshButtonText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  // Theme samples styling
-  themeSamples: {
-    marginTop: 20,
-  },
-  sampleTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  sampleBox: {
-    padding: 15,
-    borderRadius: 8,
-    borderWidth: 1,
-    alignItems: 'center',
-  },
-  sampleText: {
-    marginBottom: 8,
-    fontSize: 14,
-  },
-  sampleButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginTop: 8,
-  },
-  sampleButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  }
 });
 
 export const unstable_settings = {
-  // This ensures the tab bar is displayed correctly
   bottomTabs: {
     tabBarStyle: { display: 'flex' },
   },

@@ -4,51 +4,53 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from "../context/ThemeContext";
 
 interface WeeklyTrialBoxProps {
+  children?: React.ReactNode;
   title: string;
-  children: React.ReactNode;
-  rightElement?: React.ReactNode;
 }
 
-const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children, rightElement }) => {
+const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children }) => {
+  // Use the theme context to get the current theme
   const { theme } = useTheme();
   
   return (
     <LinearGradient
-      colors={['#333', '#222']}
-      style={styles.container}
+      colors={theme.gradientColors as string[]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      style={styles.boxContainer}
     >
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
-        {rightElement}
-      </View>
-      <View style={styles.content}>
-        {children}
+      {/* Single unified content area with title at the top */}
+      <View style={styles.unifiedContainer}>
+        {/* Title */}
+        <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
+        
+        {/* Content directly below title with consistent spacing */}
+        <View style={styles.childrenContainer}>
+          {children}
+        </View>
       </View>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#222',
+  boxContainer: {
+    width: "100%",
     borderRadius: 10,
-    padding: 15,
     marginBottom: 15,
-    width: '100%',
+    overflow: 'hidden',
   },
-  titleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+  unifiedContainer: {
+    padding: 15,
   },
   title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: 'white',
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "left",
+    marginBottom: 12,
   },
-  content: {
-    width: '100%',
+  childrenContainer: {
+    marginTop: 5,
   },
 });
 
