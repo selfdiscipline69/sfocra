@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { ThemeProvider } from './context/ThemeContext';
+import { ThemeProvider } from '../src/context/ThemeContext';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';

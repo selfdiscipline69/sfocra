@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../../src/context/ThemeContext';
 
 // Define the dashboard data type
 interface DashboardData {

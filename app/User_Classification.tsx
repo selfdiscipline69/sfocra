@@ -8,7 +8,7 @@ import classesData from '../assets/classes.json';
 
 export default function User_Classification() {
   const router = useRouter();
-  const [userToken, setUserToken] = useState(null);
+  const [userToken, setUserToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [classInfo, setClassInfo] = useState({
     className: '',
@@ -66,7 +66,21 @@ export default function User_Classification() {
           if (token) {
             await AsyncStorage.setItem(`userClass_${token}`, classEntry.class);
             await AsyncStorage.setItem(`userClassKey_${token}`, classKey);
+            
+            // Clear any existing tasks to ensure fresh data
+            await AsyncStorage.removeItem(`dailyTasks_${token}`);
+            await AsyncStorage.removeItem('dailyTasks');
           }
+          
+          // Initialize additionalTasks as an empty array if it doesn't exist yet
+          if (token) {
+            const existingAdditionalTasks = await AsyncStorage.getItem(`additionalTasks_${token}`);
+            if (!existingAdditionalTasks) {
+              await AsyncStorage.setItem(`additionalTasks_${token}`, JSON.stringify([]));
+            }
+          }
+          
+          // Initial quests will be generated when homepage loads
         } else {
           console.error('Class not found for key:', classKey);
           setClassInfo({

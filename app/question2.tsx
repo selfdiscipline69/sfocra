@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import optionDescriptions from '../assets/Option_Description.json';
 
 export default function Question2() {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
   const [userToken, setUserToken] = useState(null);
+  const [expandedOption, setExpandedOption] = useState(null);
 
   // Difficulty mapping to align with classes.json format (D value)
   const difficultyToCode = {
@@ -38,8 +40,10 @@ export default function Question2() {
         
         if (savedSelection !== null) {
           setSelected(savedSelection);
+          setExpandedOption(savedSelection); // Also expand the saved selection
         } else {
           setSelected(null);
+          setExpandedOption(null);
         }
       } catch (e) {
         console.error('Error loading data:', e);
@@ -48,26 +52,48 @@ export default function Question2() {
     loadData();
   }, []);
 
-  // Function to save selection to AsyncStorage
+  // Function to save selection to AsyncStorage and handle expansion
   const handleSelection = async (option) => {
     try {
-      // Get the numeric code for the selected difficulty
-      const difficultyCode = difficultyToCode[option];
-      
-      // Store both the human-readable choice and the code
-      await AsyncStorage.setItem('question2Choice', option);
-      await AsyncStorage.setItem('question2Code', String(difficultyCode));
-      
-      // If we have a user token, also store with token-specific keys
-      if (userToken) {
-        await AsyncStorage.setItem(`question2Choice_${userToken}`, option);
-        await AsyncStorage.setItem(`question2Code_${userToken}`, String(difficultyCode));
+      if (selected === option) {
+        // If already selected, unselect it
+        setSelected(null);
+        setExpandedOption(null);
+        
+        // Remove from AsyncStorage
+        await AsyncStorage.removeItem('question2Choice');
+        await AsyncStorage.removeItem('question2Code');
+        
+        if (userToken) {
+          await AsyncStorage.removeItem(`question2Choice_${userToken}`);
+          await AsyncStorage.removeItem(`question2Code_${userToken}`);
+        }
+      } else {
+        // If not selected or a different option was selected, select this one
+        const difficultyCode = difficultyToCode[option];
+        
+        // Store both the human-readable choice and the code
+        await AsyncStorage.setItem('question2Choice', option);
+        await AsyncStorage.setItem('question2Code', String(difficultyCode));
+        
+        // If we have a user token, also store with token-specific keys
+        if (userToken) {
+          await AsyncStorage.setItem(`question2Choice_${userToken}`, option);
+          await AsyncStorage.setItem(`question2Code_${userToken}`, String(difficultyCode));
+        }
+        
+        setSelected(option);
+        setExpandedOption(option);
       }
-      
-      setSelected(option);
     } catch (e) {
       console.error('Error saving selection:', e);
     }
+  };
+
+  // Function to get description key for an option
+  const getDescriptionKey = (option) => {
+    const difficultyCode = difficultyToCode[option];
+    return `0-${difficultyCode}-0-0`;
   };
 
   // Function to handle navigation to the next question
@@ -127,16 +153,30 @@ export default function Question2() {
         <Text style={styles.questionTitle}>How shall your journey unfold?</Text>
         <Text style={styles.subtext}>Choose your difficulty.</Text>
 
-        {/* Options */}
+        {/* Options with expandable descriptions */}
         {['Daily Trials', 'Epic Missions', 'Relentless Campaign', 'Seasonal Conquests', 'Spartan Trials'].map((option) => (
-          <TouchableOpacity
-            key={option}
-            style={[styles.option, selected === option && styles.selectedOption]}
-            onPress={() => handleSelection(option)}
-          >
-            <Text style={styles.optionText}>{option}</Text>
-            {selected === option && <Text style={styles.checkmark}>✔</Text>}
-          </TouchableOpacity>
+          <View key={option} style={styles.optionContainer}>
+            <TouchableOpacity
+              style={[
+                styles.option, 
+                selected === option && styles.selectedOption,
+                selected === option && expandedOption === option && styles.expandedOption
+              ]}
+              onPress={() => handleSelection(option)}
+            >
+              <Text style={styles.optionText}>{option}</Text>
+              {selected === option && <Text style={styles.checkmark}>✔</Text>}
+            </TouchableOpacity>
+            
+            {/* Description section that expands when option is selected */}
+            {expandedOption === option && (
+              <View style={styles.descriptionBox}>
+                <Text style={styles.descriptionText}>
+                  {optionDescriptions[getDescriptionKey(option)]}
+                </Text>
+              </View>
+            )}
+          </View>
         ))}
 
         {/* Description */}
@@ -207,6 +247,10 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
   },
+  optionContainer: {
+    width: '100%',
+    marginBottom: 15,
+  },
   option: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -215,13 +259,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#888',
     borderRadius: 10,
-    marginBottom: 15,
     width: '100%',
     backgroundColor: '#222',
   },
   selectedOption: {
     backgroundColor: '#444',
     borderColor: 'red',
+  },
+  expandedOption: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
   },
   optionText: {
     fontSize: 16,
@@ -230,6 +277,20 @@ const styles = StyleSheet.create({
   checkmark: {
     color: 'red',
     fontSize: 18,
+  },
+  descriptionBox: {
+    backgroundColor: '#333',
+    padding: 15,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    borderColor: 'red',
+    borderWidth: 1,
+    borderTopWidth: 0,
+  },
+  descriptionText: {
+    color: '#ddd',
+    fontSize: 14,
+    lineHeight: 20,
   },
   description: {
     fontStyle: 'italic',

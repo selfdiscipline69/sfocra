@@ -145,7 +145,13 @@ export default function SignupScreen() {
                   style={styles.eyeIcon}
                   onPress={() => setSecureTextEntry(!secureTextEntry)}
                 >
-                  <Text style={{ color: 'white' }}>{secureTextEntry ? '👁️' : '👁️'}</Text>
+                  <Image 
+                    source={secureTextEntry 
+                      ? require('../assets/icons/Pw_show.png') 
+                      : require('../assets/icons/Pw_hide.png')
+                    } 
+                    style={styles.passwordToggleIcon} 
+                  />
                 </TouchableOpacity>
               </Animated.View>
               {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
@@ -308,5 +314,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     paddingHorizontal: 5,
+  },
+  passwordToggleIcon: {
+    width: 24,
+    height: 24,
+    tintColor: 'white', // Optional: adds white tint to the icon for better visibility
   },
 });

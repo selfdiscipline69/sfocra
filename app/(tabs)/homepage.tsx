@@ -13,14 +13,15 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
+import { useRouter, Stack, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 import quotesData from '../../assets/Quote.json';
 import questsData from '../../assets/Quest.json'; 
-import WeeklyTrialBox from '../components/WeeklyTrialBox';
-import { useTheme } from '../context/ThemeContext';
+import WeeklyTrialBox from '../../src/components/WeeklyTrialBox';
+import { useTheme } from '../../src/context/ThemeContext';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import HabitTrackingChart from '../../src/components/HabitTrackingChart';
 
 const { width } = Dimensions.get('window');
 
@@ -109,10 +110,24 @@ export default function Homepage() {
         const storedImage = await AsyncStorage.getItem(`profileImage_${userToken}`);
         if (storedImage !== null) setProfileImage(storedImage);
         
-        // Load additional tasks from addTask screen
+        // Load additional tasks from addTask screen - ensure proper formatting
         const savedAdditionalTasks = await AsyncStorage.getItem(`additionalTasks_${userToken}`);
+        console.log('Loaded additional tasks from storage:', savedAdditionalTasks);
+        
         if (savedAdditionalTasks) {
-          setAdditionalTasks(JSON.parse(savedAdditionalTasks));
+          const parsedTasks = JSON.parse(savedAdditionalTasks);
+          // Make sure we're using only the valid tasks with text
+          if (Array.isArray(parsedTasks)) {
+            const validTasks = parsedTasks.filter(task => task && task.text && task.text.trim() !== '');
+            console.log(`Found ${validTasks.length} valid additional tasks`);
+            setAdditionalTasks(validTasks);
+          } else {
+            console.log('Parsed additional tasks is not an array');
+            setAdditionalTasks([]);
+          }
+        } else {
+          console.log('No additional tasks found in storage');
+          setAdditionalTasks([]); // Initialize with empty array if nothing found
         }
       }
 
@@ -128,41 +143,106 @@ export default function Homepage() {
   // Function to load quests and quotes with an option to refresh weekly trial or not
   const loadQuestsAndQuotes = async (refreshWeeklyTrial = true) => {
     try {
-      // Select 3 random quests from the quests data
-      const selectedQuests = [];
-      const questsCopy = [...questsData]; // Create a copy to avoid modifying the original
+      // Get user's class key (P-D-T-C format)
+      const userClassKey = await AsyncStorage.getItem('userClassKey') || 
+                          await AsyncStorage.getItem(`userClassKey_${userToken}`);
       
-      for (let i = 0; i < 3; i++) {
-        if (questsCopy.length === 0) break;
-        
-        const randomIndex = Math.floor(Math.random() * questsCopy.length);
-        const randomQuest = questsCopy.splice(randomIndex, 1)[0]; // Remove and get the selected quest
-        
-        selectedQuests.push(randomQuest);
+      if (!userClassKey) {
+        console.log("No user class key found, using default quests");
+        setDailyTasks([
+          "No user class information found",
+          "Please complete the classification process"
+        ]);
+        if (refreshWeeklyTrial) {
+          setWeeklyTrial("No user class information found");
+        }
+        return;
       }
       
-      // First quest for Weekly Trial - only update if refreshWeeklyTrial is true
-      if (selectedQuests.length > 0 && refreshWeeklyTrial) {
-        const formattedQuest = `${selectedQuests[0].task} (${selectedQuests[0].duration_minutes} min) - ${selectedQuests[0].category}`;
-        setWeeklyTrial(formattedQuest);
-        await AsyncStorage.setItem('weeklyTrial', formattedQuest);
-      }
+      // Extract just the path and difficulty (first two components) from P-D-T-C format
+      const pathDifficultyKey = userClassKey.split('-').slice(0, 2).join('-');
+      console.log(`Using path-difficulty key: ${pathDifficultyKey}`);
       
-      // Next 2 quests for Daily Tasks - always refresh these
-      const tasks = [];
-      for (let i = 1; i < 3; i++) {
-        if (i < selectedQuests.length) {
-          const quest = selectedQuests[i];
-          const formattedQuest = `${quest.task} (${quest.duration_minutes} min) - ${quest.category}`;
-          tasks.push(formattedQuest);
+      // Filter quests to only those matching this exact path-difficulty key
+      const matchingQuests = questsData.filter(quest => quest.key === pathDifficultyKey);
+      console.log(`Found ${matchingQuests.length} quests matching ${pathDifficultyKey}`);
+      
+      // Create a working copy to select from without replacement
+      let availableQuests = [...matchingQuests];
+      
+      // 1. HANDLE WEEKLY TRIAL - 5 quests if available
+      if (refreshWeeklyTrial) {
+        if (availableQuests.length === 0) {
+          // No matching quests available
+          setWeeklyTrial("No quests available for your class type");
+          await AsyncStorage.setItem('weeklyTrial', "No quests available for your class type");
         } else {
-          tasks.push("No task available");
+          // Determine how many weekly quests we can provide (up to 5)
+          const weeklyQuestCount = Math.min(5, availableQuests.length);
+          const weeklyQuests = [];
+          
+          // Select quests without replacement
+          for (let i = 0; i < weeklyQuestCount; i++) {
+            if (availableQuests.length === 0) break;
+            
+            // Select a random quest from remaining ones
+            const randomIndex = Math.floor(Math.random() * availableQuests.length);
+            const selectedQuest = availableQuests.splice(randomIndex, 1)[0];
+            weeklyQuests.push(selectedQuest);
+          }
+          
+          // Format weekly quests
+          if (weeklyQuests.length > 0) {
+            const formattedWeeklyQuests = weeklyQuests.map(quest => 
+              `${quest.task} (${quest.duration_minutes} min)`
+            ).join('\n\n');
+            
+            setWeeklyTrial(formattedWeeklyQuests);
+            await AsyncStorage.setItem('weeklyTrial', formattedWeeklyQuests);
+          } else {
+            setWeeklyTrial("Not enough quests available for your class type");
+            await AsyncStorage.setItem('weeklyTrial', "Not enough quests available for your class type");
+          }
         }
       }
-      setDailyTasks(tasks);
-      await AsyncStorage.setItem('dailyTasks', JSON.stringify(tasks));
       
-      // Select 1 random quote for Daily Quote - always refresh this
+      // 2. HANDLE DAILY TASKS - 2 quests if available
+      const dailyTasks = [];
+      const dailyTaskObjects = []; // For addTask format
+      
+      for (let i = 0; i < 2; i++) {
+        if (availableQuests.length === 0) {
+          const taskText = "Not enough quests available for your class type";
+          dailyTasks.push(taskText);
+          dailyTaskObjects.push({
+            text: taskText,
+            image: null,
+            completed: false,
+            showImage: false
+          });
+        } else {
+          const randomIndex = Math.floor(Math.random() * availableQuests.length);
+          const selectedQuest = availableQuests.splice(randomIndex, 1)[0];
+          const taskText = `${selectedQuest.task} (${selectedQuest.duration_minutes} min)`;
+          dailyTasks.push(taskText);
+          dailyTaskObjects.push({
+            text: taskText,
+            image: null,
+            completed: false,
+            showImage: false
+          });
+        }
+      }
+      
+      setDailyTasks(dailyTasks);
+      await AsyncStorage.setItem('dailyTasks', JSON.stringify(dailyTasks));
+      
+      // Also save in the format needed by addTask
+      if (userToken) {
+        await AsyncStorage.setItem(`dailyTasks_${userToken}`, JSON.stringify(dailyTaskObjects));
+      }
+      
+      // 3. HANDLE DAILY QUOTE - always refresh this
       if (quotesData.length > 0) {
         const randomIndex = Math.floor(Math.random() * quotesData.length);
         const randomQuote = quotesData[randomIndex];
@@ -180,14 +260,14 @@ export default function Homepage() {
       
       // Set defaults in case of error - but respect the refreshWeeklyTrial parameter
       if (refreshWeeklyTrial) {
-        setWeeklyTrial("Working out in the gym (60 min) - Physical");
+        setWeeklyTrial("Error loading weekly trial");
       }
       
       setDailyTasks([
-        "Meditation (30 min) - Mental",
-        "Reading (30 min) - Knowledge"
+        "Error loading daily task 1",
+        "Error loading daily task 2"
       ]);
-      setDailyQuote("The unexamined life is not worth living - Socrates");
+      setDailyQuote("Error loading daily quote");
     }
   };
 
@@ -202,6 +282,17 @@ export default function Homepage() {
     loadUserChoices();
     loadQuestsAndQuotes();
   }, []);
+
+  // Add a focus effect to reload data whenever the homepage comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("Homepage focused - reloading data");
+      loadUserChoices();
+      // Don't refresh weekly trial when returning to screen
+      loadQuestsAndQuotes(false);
+      return () => {};
+    }, [])
+  );
 
   const handleTaskChange = (index: number, newTask: string) => {
     const updatedTasks = [...dailyTasks];
@@ -220,9 +311,12 @@ export default function Homepage() {
       updatedTasks[index].text = newText;
       setAdditionalTasks(updatedTasks);
       
-      // Save to AsyncStorage
+      // Save to AsyncStorage with proper error handling
       if (userToken) {
         AsyncStorage.setItem(`additionalTasks_${userToken}`, JSON.stringify(updatedTasks))
+          .then(() => {
+            console.log('Additional tasks saved successfully');
+          })
           .catch(err => console.error('Error saving additional tasks:', err));
       }
     }
@@ -341,18 +435,14 @@ export default function Homepage() {
                 
                 {additionalTasks.map((task, index) => (
                   <WeeklyTrialBox key={`additional-${index}`} title={`Extra Task ${index + 1}`}>
-                    <TextInput
+                    <Text
                       style={[
-                        styles.quoteInput, 
+                        styles.additionalTaskText, 
                         { color: theme.mode === 'dark' ? 'white' : 'black' }
                       ]}
-                      value={task.text}
-                      onChangeText={(text) => handleAdditionalTaskChange(index, text)}
-                      multiline={true}
-                      textAlign="center"
-                      placeholder="Task details"
-                      placeholderTextColor={theme.mode === 'dark' ? "#aaa" : "#777"}
-                    />
+                    >
+                      {task.text}
+                    </Text>
                   </WeeklyTrialBox>
                 ))}
               </>
@@ -508,6 +598,13 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     width: '100%',
+  },
+  additionalTaskText: {
+    fontSize: 14,
+    paddingVertical: 5,
+    textAlign: 'center',
+    width: '100%',
+    lineHeight: 18,
   },
 });
 

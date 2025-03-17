@@ -1,0 +1,19 @@
+{
+    "1-0-0-0": "Description for Mind path option: Focus on mental challenges and intellectual growth. Your journey will center around puzzles, strategy, and knowledge acquisition.",
+    "2-0-0-0": "Description for Body path option: Emphasize physical prowess and endurance. Your quests will test strength, agility, and physical discipline.",
+    "3-0-0-0": "Description for Balanced path option: Pursue harmony between mind and body. Your journey will provide a mix of physical and mental challenges.",
+    
+    "0-1-0-0": "Description for Daily Trials difficulty: Regular, smaller challenges to build consistent habits. Best for beginners or those with limited time.",
+    "0-2-0-0": "Description for Epic Missions difficulty: Longer, more complex challenges with greater rewards. Designed for those seeking moderate challenge.",
+    "0-3-0-0": "Description for Relentless Campaign difficulty: Continuous progression with interconnected challenges. For dedicated heroes committed to steady growth.",
+    "0-4-0-0": "Description for Seasonal Conquests difficulty: Time-bound achievement periods with themed challenges. Perfect for those who enjoy fresh starts and varied goals.",
+    "0-5-0-0": "Description for Spartan Trials difficulty: The ultimate test of will and discipline. Only for the most determined heroes seeking maximum challenge.",
+    
+    "0-0-1-0": "Description for Leveling System tracking: Monitor your growth through experience points and level progression. Focus on long-term advancement.",
+    "0-0-2-0": "Description for Streaks & Habits tracking: Build consistency through daily habit formation and streak maintenance. Emphasize regular practice.",
+    "0-0-3-0": "Description for Both tracking: Combine the benefits of leveling and streaks for a comprehensive approach to monitoring your heroic journey.",
+    
+    "0-0-0-1": "Description for Yes, Bring It On consequence: Embrace true challenge with automatic consequences for missed quests. For heroes who thrive under pressure.",
+    "0-0-0-2": "Description for Choose My Own Punishments consequence: Maintain accountability while selecting appropriate consequences for your circumstances.",
+    "0-0-0-3": "Description for Without Consequence consequence: Focus on positive reinforcement only. Best for those beginning their heroic journey or with high external pressure."
+  }

@@ -20,7 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import questsData from '../../assets/Quest.json';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons'; // Import vector icons
-import { useTheme } from '../context/ThemeContext'; // Import the theme hook
+import { useTheme } from '../../src/context/ThemeContext'; // Import the theme hook
 
 const { width } = Dimensions.get('window');
 
@@ -154,7 +154,7 @@ export default function AddTaskScreen() {
           }
         }
 
-        // DAILY TASKS HANDLING
+        // DAILY TASKS HANDLING - improve the fallback to homepage tasks
         const savedDailyTasks = await AsyncStorage.getItem(`dailyTasks_${token}`);
         
         if (savedDailyTasks) {
@@ -164,7 +164,7 @@ export default function AddTaskScreen() {
             parsedTasks.filter(task => task.text && task.text.trim() !== '') : [];
           setTasks(validTasks);
         } else {
-          // Try homepage tasks
+          // Try homepage tasks - convert from strings to task objects if needed
           const dailyTasksStr = await AsyncStorage.getItem('dailyTasks');
           if (dailyTasksStr) {
             try {
@@ -183,9 +183,11 @@ export default function AddTaskScreen() {
                     });
                   }
                 }
+                
+                // Also save these converted tasks for future use
+                await AsyncStorage.setItem(`dailyTasks_${token}`, JSON.stringify(validTasks));
+                setTasks(validTasks);
               }
-              
-              setTasks(validTasks);
             } catch (e) {
               console.error('Error parsing daily tasks:', e);
               setTasks([]);
@@ -374,44 +376,67 @@ export default function AddTaskScreen() {
   };
 
   // Function to add the selected random task
-  const addRandomTask = () => {
-    const formattedQuest = `${randomTask} (${randomTaskDuration} min) - ${randomTaskCategory}`;
-    const newTask: TaskItem = {
-      text: formattedQuest,
-      image: null,
-      completed: false,
-      showImage: false
-    };
-    
-    setAdditionalTasks(prev => [...prev, newTask]);
-    saveTasks();
-    setModalVisible(false);
+  const addRandomTask = async () => {
+    try {
+      const formattedQuest = `${randomTask} (${randomTaskDuration} min) - ${randomTaskCategory}`;
+      const newTask: TaskItem = {
+        text: formattedQuest,
+        image: null,
+        completed: false,
+        showImage: false
+      };
+      
+      const updatedTasks = [...additionalTasks, newTask];
+      setAdditionalTasks(updatedTasks);
+      
+      // Save with await to ensure completion
+      if (userToken) {
+        await AsyncStorage.setItem(`additionalTasks_${userToken}`, JSON.stringify(updatedTasks));
+        console.log('Tasks saved after adding random task:', JSON.stringify(updatedTasks));
+      }
+      
+      setModalVisible(false);
+    } catch (error) {
+      console.error('Error adding random task:', error);
+    }
   };
 
   // Function to add the custom task
-  const addCustomTask = () => {
-    if (customTask.trim() === '') {
-      Alert.alert('Error', 'Please enter a task description');
-      return;
+  const addCustomTask = async () => {
+    try {
+      if (customTask.trim() === '') {
+        Alert.alert('Error', 'Please enter a task description');
+        return;
+      }
+      
+      const duration = parseInt(customTaskDuration) || 30;
+      // Include time in the formatted task if provided
+      const timeInfo = customTaskTime.trim() ? ` at ${customTaskTime}` : '';
+      const formattedQuest = `${customTask}${timeInfo} (${duration} min) - ${customTaskCategory}`;
+      const newTask: TaskItem = {
+        text: formattedQuest,
+        image: null,
+        completed: false,
+        showImage: false
+      };
+      
+      const updatedTasks = [...additionalTasks, newTask];
+      setAdditionalTasks(updatedTasks);
+      
+      // Save with await to ensure completion
+      if (userToken) {
+        await AsyncStorage.setItem(`additionalTasks_${userToken}`, JSON.stringify(updatedTasks));
+        console.log('Tasks saved after adding custom task:', JSON.stringify(updatedTasks));
+      }
+      
+      setModalVisible(false);
+    } catch (error) {
+      console.error('Error adding custom task:', error);
     }
-    
-    const duration = parseInt(customTaskDuration) || 30;
-    // Include time in the formatted task if provided
-    const timeInfo = customTaskTime.trim() ? ` at ${customTaskTime}` : '';
-    const formattedQuest = `${customTask}${timeInfo} (${duration} min) - ${customTaskCategory}`;
-    const newTask: TaskItem = {
-      text: formattedQuest,
-      image: null,
-      completed: false,
-      showImage: false
-    };
-    
-    setAdditionalTasks(prev => [...prev, newTask]);
-    saveTasks();
-    setModalVisible(false);
   };
 
-  // Add this function to handle task deletion
+  // Improve the handleDeleteTask function to ensure AsyncStorage is updated properly
+
   const handleDeleteTask = (index: number) => {
     // Show confirmation alert before deleting
     Alert.alert(
@@ -425,12 +450,22 @@ export default function AddTaskScreen() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => {
-            // Remove task at specified index
-            const updatedTasks = [...additionalTasks];
-            updatedTasks.splice(index, 1);
-            setAdditionalTasks(updatedTasks);
-            saveTasks(); // Save the updated task list
+          onPress: async () => {
+            try {
+              // Remove task at specified index
+              const updatedTasks = [...additionalTasks];
+              updatedTasks.splice(index, 1);
+              setAdditionalTasks(updatedTasks);
+              
+              // Save to AsyncStorage with await to ensure it completes
+              if (userToken) {
+                await AsyncStorage.setItem(`additionalTasks_${userToken}`, JSON.stringify(updatedTasks));
+                console.log('Tasks saved after deletion:', JSON.stringify(updatedTasks));
+              }
+            } catch (error) {
+              console.error('Error deleting task:', error);
+              Alert.alert('Error', 'Failed to delete task. Please try again.');
+            }
           }
         }
       ]

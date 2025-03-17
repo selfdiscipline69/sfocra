@@ -13,7 +13,7 @@ import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../../src/context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 

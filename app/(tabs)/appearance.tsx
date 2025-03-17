@@ -1,180 +1,365 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  StyleSheet, 
+  FlatList,
+  Image,
+  Dimensions,
+  Alert
+} from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { useTheme, ThemeContext } from '../context/ThemeContext';
+import { useTheme } from '../../src/context/ThemeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
+
+const { width } = Dimensions.get('window');
 
 export default function AppearanceScreen() {
   const router = useRouter();
   const { theme, isDarkMode, toggleTheme } = useTheme();
   
-  // Simplified direct toggle handlers
-  const handleToggleDark = () => toggleTheme(true);
-  const handleToggleLight = () => toggleTheme(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [userToken, setUserToken] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
+  const [userHandle, setUserHandle] = useState<string>('');
+  const [heroClass, setHeroClass] = useState({
+    className: '',
+    description: '',
+    questFormat: '',
+    consequenceDescription: ''
+  });
 
-  // Back button handler
-  const handleBack = () => {
-    router.push('/(tabs)/settings');
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = async () => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      if (token !== null) {
+        setUserToken(token);
+      }
+
+      if (token) {
+        const storedImage = await AsyncStorage.getItem(`profileImage_${token}`);
+        if (storedImage !== null) {
+          setProfileImage(storedImage);
+        }
+      }
+
+      const storedName = await AsyncStorage.getItem('userFullName');
+      const storedHandle = await AsyncStorage.getItem('userUsername');
+      setUserName(storedName || 'Hero');
+      setUserHandle(storedHandle || '@hero');
+
+      const userClass = await AsyncStorage.getItem('userClass');
+      const userClassDescription = await AsyncStorage.getItem('userClassDescription');
+      const userQuestFormat = await AsyncStorage.getItem('userQuestFormat');
+      const userConsequenceDescription = await AsyncStorage.getItem('userConsequenceDescription');
+      setHeroClass({
+        className: userClass || 'Unknown',
+        description: userClassDescription || 'No description available.',
+        questFormat: userQuestFormat || 'No quest format available.',
+        consequenceDescription: userConsequenceDescription || 'No consequence description available.'
+      });
+    } catch (err) {
+      console.error('Error loading user data:', err);
+      setUserName('Hero');
+      setUserHandle('@hero');
+    }
   };
-  
+
+  const handleImagePick = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to make this work!');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const selectedImageUri = result.assets[0].uri;
+        setProfileImage(selectedImageUri);
+
+        if (userToken) {
+          await AsyncStorage.setItem(`profileImage_${userToken}`, selectedImageUri);
+        }
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Failed to select image');
+    }
+  };
+
+  const handleBack = () => {
+    router.push({
+      pathname: '/(tabs)/homepage'
+    });
+  };
+
+  const handlePrivacyNavigation = () => {
+    console.log("Navigating to privacy screen");
+    router.push({
+      pathname: "/(tabs)/privacy"
+    });
+  };
+
+  const settingsData: SettingItem[] = [
+    { id: '2', title: 'Appearance', screen: '/(tabs)/appearance' },
+    { id: '4', title: 'Privacy & Security', screen: '/(tabs)/privacy', handler: handlePrivacyNavigation },
+    { id: '6', title: 'Change Password', screen: '/(tabs)/change_pw' },
+    { id: '7', title: 'Logout', screen: '/', isSpecial: true },
+  ];
+
+  function renderSettingItem({ item, theme }: { item: SettingItem; theme: any }) {
+    return (
+      <TouchableOpacity 
+        style={[
+          styles.settingItem, 
+          item.isSpecial && styles.specialSettingItem,
+          { 
+            borderBottomColor: theme.border,
+            backgroundColor: 'transparent'
+          }
+        ]}
+        onPress={() => {
+          if (item.title === 'Logout') {
+            router.replace('/');
+          } else if (item.handler) {
+            item.handler();
+          } else {
+            router.push({
+              pathname: item.screen
+            });
+          }
+        }}
+      >
+        <Text style={[
+          styles.settingText,
+          { color: item.isSpecial ? theme.accent : theme.text },
+          item.isSpecial && styles.specialSettingText
+        ]}>
+          {item.title}
+        </Text>
+        <Text style={[styles.arrowIcon, { color: theme.subtext }]}>➝</Text>
+      </TouchableOpacity>
+    );
+  }
+
+  function ListHeaderComponent({ theme }: { theme: any }) {
+    return (
+      <>
+        <View style={[styles.profileSection, { 
+          borderBottomColor: theme.border,
+          backgroundColor: 'transparent'
+        }]}>
+          <TouchableOpacity style={styles.profileImageContainer} onPress={handleImagePick}>
+            <Image 
+              source={
+                profileImage 
+                  ? { uri: profileImage } 
+                  : require('../../assets/images/empty-icon.png')
+              } 
+              style={[styles.profileImage, { 
+                backgroundColor: theme.mode === 'dark' ? theme.boxBackground : '#E0E0E0'
+              }]} 
+            />
+            <View style={styles.editIconContainer}>
+              <Text style={styles.editIcon}>✎</Text>
+            </View>
+          </TouchableOpacity>
+          <Text style={[styles.userName, { color: theme.text }]}>{userName || 'Set your name'}</Text>
+          <Text style={[styles.userHandle, { color: theme.subtext }]}>{userHandle || 'Set your username'}</Text>
+        </View>
+        
+        <View style={[styles.heroClassSection, { 
+          backgroundColor: theme.mode === 'dark' ? theme.boxBackground : 'rgba(245, 245, 245, 0.7)',
+          borderColor: theme.border 
+        }]}>
+          <View style={[styles.heroClassTitleContainer, { backgroundColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.2)' : 'rgba(255, 0, 0, 0.1)' }]}>
+            <Text style={[styles.heroClassPrefix, { color: theme.subtext }]}>⚔️ YOUR HERO CLASS</Text>
+            <Text style={[styles.heroClassName, { color: theme.accent }]}>{heroClass.className}</Text>
+          </View>
+          <View style={[styles.heroClassContentBox, { backgroundColor: theme.boxBackground }]}>
+            <View style={styles.heroClassInfoSection}>
+              <Text style={[styles.heroClassSubtitle, { color: theme.accent }]}>📜 Description</Text>
+              <Text style={[styles.heroClassText, { color: theme.text }]}>{heroClass.description}</Text>
+            </View>
+            <View style={[styles.heroClassDivider, { backgroundColor: theme.border }]} />
+            <View style={styles.heroClassInfoSection}>
+              <Text style={[styles.heroClassSubtitle, { color: theme.accent }]}>🎯 Quest Format</Text>
+              <Text style={[styles.heroClassText, { color: theme.text }]}>{heroClass.questFormat}</Text>
+            </View>
+            <View style={[styles.heroClassDivider, { backgroundColor: theme.border }]} />
+            <View style={styles.heroClassInfoSection}>
+              <Text style={[styles.heroClassSubtitle, { color: theme.accent }]}>⚖️ Consequence System</Text>
+              <Text style={[styles.heroClassText, { color: theme.text }]}>{heroClass.consequenceDescription}</Text>
+            </View>
+          </View>
+        </View>
+      </>
+    );
+  }
+
   return (
-    <View style={[styles.outerContainer, { backgroundColor: theme.background }]}>
+    <>
       <Stack.Screen 
-        options={{
-          headerStyle: {
-            backgroundColor: theme.background,
-          },
-          headerTitleStyle: {
-            fontSize: 20,
-            color: theme.text,
-          },
-          headerTitle: "Appearance",
+        options={{ 
+          headerStyle: { 
+            backgroundColor: theme.background, 
+          }, 
+          headerTitleStyle: { 
+            fontSize: 18, 
+            color: theme.text, 
+            fontWeight: 'bold', 
+          }, 
+          headerTitle: "Settings", 
+          headerTitleAlign: 'center', 
           headerRight: () => (
-            <TouchableOpacity
-              style={styles.topRightBackButton}
+            <TouchableOpacity 
+              style={styles.topRightBackButton} 
               onPress={handleBack}
             >
               <Text style={[styles.topRightBackText, { color: theme.text }]}>Back</Text>
             </TouchableOpacity>
-          ),
+          ), 
         }} 
       />
-      
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <Text style={[styles.headerText, { color: theme.text }]}>Theme Mode</Text>
-        
-        <View style={[styles.optionsContainer, { backgroundColor: theme.boxBackground }]}>
-          {/* Dark mode option - Full width touchable */}
-          <TouchableOpacity
-            style={[
-              styles.optionButton,
-              isDarkMode ? styles.selectedOptionDark : null,
-              { borderBottomColor: theme.border }
-            ]}
-            onPress={handleToggleDark}
-            activeOpacity={0.6}
+        <FlatList 
+          data={settingsData} 
+          renderItem={({ item }) => renderSettingItem({ item, theme })} 
+          keyExtractor={item => item.id} 
+          style={[styles.settingsList, { backgroundColor: theme.background }]} 
+          showsVerticalScrollIndicator={false} 
+          ListHeaderComponent={() => ListHeaderComponent({ theme })} 
+          contentContainerStyle={styles.listContentContainer} 
+        />
+        <View style={[styles.bottomNav, { backgroundColor: theme.background, borderColor: theme.border }]}>
+          <TouchableOpacity 
+            onPress={() => router.push({ pathname: '/(tabs)/performance' })}
+            style={styles.navButton}
           >
-            <View style={styles.optionContent}>
-              <Ionicons name="moon" size={24} color={isDarkMode ? theme.text : "#888"} />
-              <Text style={[
-                styles.optionText, 
-                { color: isDarkMode ? theme.text : "#888" }
-              ]}>Dark Mode</Text>
-              {isDarkMode && <Ionicons name="checkmark-circle" size={22} color={theme.accent} />}
-            </View>
+            <FontAwesome5 name="chart-line" size={22} color={theme.text} />
           </TouchableOpacity>
-          
-          {/* Light mode option - Full width touchable */}
-          <TouchableOpacity
-            style={[
-              styles.optionButton,
-              !isDarkMode ? styles.selectedOptionLight : null,
-              { borderBottomColor: theme.border }
-            ]}
-            onPress={handleToggleLight}
-            activeOpacity={0.6}
+          <TouchableOpacity 
+            style={styles.homeButton} 
+            onPress={() => router.push({ pathname: '/(tabs)/homepage' })}
           >
-            <View style={styles.optionContent}>
-              <Ionicons name="sunny" size={24} color={!isDarkMode ? theme.text : "#888"} />
-              <Text style={[
-                styles.optionText, 
-                { color: !isDarkMode ? theme.text : "#888" }
-              ]}>Light Mode</Text>
-              {!isDarkMode && <Ionicons name="checkmark-circle" size={22} color={theme.accent} />}
-            </View>
+            <Text style={styles.homeButtonText}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => router.push({ pathname: '/(tabs)/settings' })}
+            style={[styles.navButton, styles.activeNavButton]}
+          >
+            <Ionicons name="settings-outline" size={24} color={theme.text} />
           </TouchableOpacity>
         </View>
-        
-        <Text style={[styles.noteText, { color: theme.subtext }]}>
-          Note: Dark Mode is recommended for the best experience with our app.
-        </Text>
       </View>
-      
-      {/* Bottom Navigation Icons */}
-      <View style={[styles.bottomNav, { backgroundColor: theme.background, borderColor: theme.border }]}>
-        <TouchableOpacity 
-          onPress={() => router.push('/(tabs)/performance')}
-          style={styles.navButton}
-        >
-          <FontAwesome5 name="chart-line" size={22} color={theme.text} />
-        </TouchableOpacity>
-        
-        {/* Home button */}
-        <TouchableOpacity 
-          style={styles.homeButton} 
-          onPress={() => router.push('/(tabs)/homepage')}
-        >
-          <Text style={styles.homeButtonText}>Home</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          onPress={() => router.push('/(tabs)/settings')}
-          style={styles.navButton}
-        >
-          <Ionicons name="settings-outline" size={24} color={theme.text} />
-        </TouchableOpacity>
-      </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    flex: 1,
-  },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
   },
-  headerText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  optionsContainer: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginBottom: 20,
-    elevation: 2, // Android shadow
-    shadowColor: '#000', // iOS shadow
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  optionButton: {
-    padding: 0, // Remove padding from button itself
-    borderBottomWidth: 1,
-    width: '100%', // Ensure button takes full width
-  },
-  optionContent: {
-    flexDirection: 'row',
+  profileSection: {
     alignItems: 'center',
-    padding: 16,
-    height: 70, // Explicitly set height for better touch target
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    marginTop: 10,
   },
-  selectedOptionDark: {
-    backgroundColor: '#2C2C2E',
+  profileImageContainer: {
+    position: 'relative',
+    marginBottom: 10,
   },
-  selectedOptionLight: {
-    backgroundColor: '#e6e6e6',
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
   },
-  optionText: {
-    fontSize: 18,
-    marginLeft: 16,
-    flex: 1,
-  },
-  noteText: {
-    fontSize: 14,
-    fontStyle: 'italic',
-    marginTop: 20,
-    textAlign: 'center',
-  },
-  bottomNav: {
+  editIconContainer: {
     position: 'absolute',
     bottom: 0,
-    left: 0,
     right: 0,
+    backgroundColor: '#0080ff',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'black',
+  },
+  editIcon: {
+    color: 'white',
+    fontSize: 16,
+  },
+  userName: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
+  userHandle: {
+    color: 'gray',
+    fontSize: 16,
+  },
+  settingsList: {
+    flex: 1,
+  },
+  listContentContainer: {
+    paddingHorizontal: 15,
+  },
+  settingItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    marginVertical: 2,
+  },
+  specialSettingItem: {
+    borderBottomWidth: 0,
+    marginTop: 15,
+  },
+  settingText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  specialSettingText: {
+    color: '#ff3b30',
+    fontWeight: 'bold',
+  },
+  arrowIcon: {
+    color: 'gray',
+    fontSize: 16,
+  },
+  topRightBackButton: {
+    backgroundColor: 'transparent',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginRight: 10,
+    borderRadius: 5,
+  },
+  topRightBackText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  bottomNav: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 12,
@@ -186,6 +371,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 40,
     height: 40,
+  },
+  activeNavButton: {
+    opacity: 0.9,
+  },
+  icon: {
+    fontSize: 24,
+    color: 'white',
   },
   homeButton: {
     backgroundColor: 'rgba(255, 0, 0, 0.8)',
@@ -200,21 +392,45 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
-  topRightBackButton: {
-    backgroundColor: 'transparent',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    marginRight: 10,
-    borderRadius: 5,
+  heroClassSection: {
+    marginHorizontal: 10,
+    marginVertical: 15,
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
   },
-  topRightBackText: {
-    fontSize: 14,
+  heroClassTitleContainer: {
+    padding: 15,
+    alignItems: 'center',
+  },
+  heroClassPrefix: {
+    color: '#999',
+    fontSize: 12,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+    marginBottom: 5,
+  },
+  heroClassName: {
+    color: 'red',
+    fontSize: 24,
     fontWeight: 'bold',
   },
-});
-
-export const unstable_settings = {
-  bottomTabs: {
-    tabBarStyle: { display: 'flex' },
+  heroClassContentBox: {
+    padding: 15,
   },
-};
+  heroClassInfoSection: {
+    marginBottom: 10,
+  },
+  heroClassSubtitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  heroClassText: {
+    fontSize: 14,
+  },
+  heroClassDivider: {
+    height: 1,
+    marginVertical: 10,
+  },
+});
