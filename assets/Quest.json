@@ -1,5 +1,230 @@
 [
   {
+    "key": "1-1",
+    "task": "Meditation",
+    "duration_minutes": 15
+  },
+  {
+    "key": "1-2",
+    "task": "Meditation",
+    "duration_minutes": 22
+  },
+  {
+    "key": "1-3",
+    "task": "Meditation",
+    "duration_minutes": 30
+  },
+  {
+    "key": "1-4",
+    "task": "Meditation",
+    "duration_minutes": 45
+  },
+  {
+    "key": "1-5",
+    "task": "Meditation",
+    "duration_minutes": 60
+  },
+  {
+    "key": "1-1",
+    "task": "Journaling emotions and thoughts",
+    "duration_minutes": 8
+  },
+  {
+    "key": "1-2",
+    "task": "Journaling emotions and thoughts",
+    "duration_minutes": 11
+  },
+  {
+    "key": "1-3",
+    "task": "Journaling emotions and thoughts",
+    "duration_minutes": 15
+  },
+  {
+    "key": "1-4",
+    "task": "Journaling emotions and thoughts",
+    "duration_minutes": 22
+  },
+  {
+    "key": "1-5",
+    "task": "Journaling emotions and thoughts",
+    "duration_minutes": 30
+  },
+  {
+    "key": "1-1",
+    "task": "Deep breathing exercises",
+    "duration_minutes": 5
+  },
+  {
+    "key": "1-2",
+    "task": "Deep breathing exercises",
+    "duration_minutes": 8
+  },
+  {
+    "key": "1-3",
+    "task": "Deep breathing exercises",
+    "duration_minutes": 10
+  },
+  {
+    "key": "1-4",
+    "task": "Deep breathing exercises",
+    "duration_minutes": 15
+  },
+  {
+    "key": "1-5",
+    "task": "Deep breathing exercises",
+    "duration_minutes": 20
+  },
+  {
+    "key": "1-1",
+    "task": "Reading (book, article, etc.)",
+    "duration_minutes": 15
+  },
+  {
+    "key": "1-2",
+    "task": "Reading (book, article, etc.)",
+    "duration_minutes": 22
+  },
+  {
+    "key": "1-3",
+    "task": "Reading (book, article, etc.)",
+    "duration_minutes": 30
+  },
+  {
+    "key": "1-4",
+    "task": "Reading (book, article, etc.)",
+    "duration_minutes": 45
+  },
+  {
+    "key": "1-5",
+    "task": "Reading (book, article, etc.)",
+    "duration_minutes": 60
+  },
+  {
+    "key": "1-1",
+    "task": "Online course or tutorial",
+    "duration_minutes": 15
+  },
+  {
+    "key": "1-2",
+    "task": "Online course or tutorial",
+    "duration_minutes": 22
+  },
+  {
+    "key": "1-3",
+    "task": "Online course or tutorial",
+    "duration_minutes": 30
+  },
+  {
+    "key": "1-4",
+    "task": "Online course or tutorial",
+    "duration_minutes": 45
+  },
+  {
+    "key": "1-5",
+    "task": "Online course or tutorial",
+    "duration_minutes": 60
+  },
+  {
+    "key": "1-1",
+    "task": "Self-reflection on knowledge gained",
+    "duration_minutes": 10
+  },
+  {
+    "key": "1-2",
+    "task": "Self-reflection on knowledge gained",
+    "duration_minutes": 15
+  },
+  {
+    "key": "1-3",
+    "task": "Self-reflection on knowledge gained",
+    "duration_minutes": 20
+  },
+  {
+    "key": "1-4",
+    "task": "Self-reflection on knowledge gained",
+    "duration_minutes": 30
+  },
+  {
+    "key": "1-5",
+    "task": "Self-reflection on knowledge gained",
+    "duration_minutes": 40
+  },
+  {
+    "key": "1-1",
+    "task": "Learning a new language (e.g., via app)",
+    "duration_minutes": 12
+  },
+  {
+    "key": "1-2",
+    "task": "Learning a new language (e.g., via app)",
+    "duration_minutes": 19
+  },
+  {
+    "key": "1-3",
+    "task": "Learning a new language (e.g., via app)",
+    "duration_minutes": 25
+  },
+  {
+    "key": "1-4",
+    "task": "Learning a new language (e.g., via app)",
+    "duration_minutes": 38
+  },
+  {
+    "key": "1-5",
+    "task": "Learning a new language (e.g., via app)",
+    "duration_minutes": 50
+  },
+  {
+    "key": "1-1",
+    "task": "Watching educational documentary",
+    "duration_minutes": 22
+  },
+  {
+    "key": "1-2",
+    "task": "Watching educational documentary",
+    "duration_minutes": 34
+  },
+  {
+    "key": "1-3",
+    "task": "Watching educational documentary",
+    "duration_minutes": 45
+  },
+  {
+    "key": "1-4",
+    "task": "Watching educational documentary",
+    "duration_minutes": 68
+  },
+  {
+    "key": "1-5",
+    "task": "Watching educational documentary",
+    "duration_minutes": 90
+  },
+  {
+    "key": "1-1",
+    "task": "Practicing a skill (e.g., coding, drawing)",
+    "duration_minutes": 20
+  },
+  {
+    "key": "1-2",
+    "task": "Practicing a skill (e.g., coding, drawing)",
+    "duration_minutes": 30
+  },
+  {
+    "key": "1-3",
+    "task": "Practicing a skill (e.g., coding, drawing)",
+    "duration_minutes": 40
+  },
+  {
+    "key": "1-4",
+    "task": "Practicing a skill (e.g., coding, drawing)",
+    "duration_minutes": 60
+  },
+  {
+    "key": "1-5",
+    "task": "Practicing a skill (e.g., coding, drawing)",
+    "duration_minutes": 80
+  },
+  {
     "key": "2-1",
     "task": "Working out in the gym",
     "duration_minutes": 30
@@ -77,7 +302,7 @@
   {
     "key": "2-1",
     "task": "Cycling",
-    "duration_minutes": 23
+    "duration_minutes": 22
   },
   {
     "key": "2-2",
@@ -102,7 +327,7 @@
   {
     "key": "2-1",
     "task": "Bodyweight exercises (push-ups, squats, etc.)",
-    "duration_minutes": 13
+    "duration_minutes": 12
   },
   {
     "key": "2-2",
@@ -125,231 +350,6 @@
     "duration_minutes": 50
   },
   {
-    "key": "1-1",
-    "task": "Meditation",
-    "duration_minutes": 15
-  },
-  {
-    "key": "1-2",
-    "task": "Meditation",
-    "duration_minutes": 23
-  },
-  {
-    "key": "1-3",
-    "task": "Meditation",
-    "duration_minutes": 30
-  },
-  {
-    "key": "1-4",
-    "task": "Meditation",
-    "duration_minutes": 45
-  },
-  {
-    "key": "1-5",
-    "task": "Meditation",
-    "duration_minutes": 60
-  },
-  {
-    "key": "1-1",
-    "task": "Journaling emotions and thoughts",
-    "duration_minutes": 8
-  },
-  {
-    "key": "1-2",
-    "task": "Journaling emotions and thoughts",
-    "duration_minutes": 11
-  },
-  {
-    "key": "1-3",
-    "task": "Journaling emotions and thoughts",
-    "duration_minutes": 15
-  },
-  {
-    "key": "1-4",
-    "task": "Journaling emotions and thoughts",
-    "duration_minutes": 23
-  },
-  {
-    "key": "1-5",
-    "task": "Journaling emotions and thoughts",
-    "duration_minutes": 30
-  },
-  {
-    "key": "1-1",
-    "task": "Deep breathing exercises",
-    "duration_minutes": 5
-  },
-  {
-    "key": "1-2",
-    "task": "Deep breathing exercises",
-    "duration_minutes": 8
-  },
-  {
-    "key": "1-3",
-    "task": "Deep breathing exercises",
-    "duration_minutes": 10
-  },
-  {
-    "key": "1-4",
-    "task": "Deep breathing exercises",
-    "duration_minutes": 15
-  },
-  {
-    "key": "1-5",
-    "task": "Deep breathing exercises",
-    "duration_minutes": 20
-  },
-  {
-    "key": "1-1",
-    "task": "Reading (book, article, etc.)",
-    "duration_minutes": 15
-  },
-  {
-    "key": "1-2",
-    "task": "Reading (book, article, etc.)",
-    "duration_minutes": 23
-  },
-  {
-    "key": "1-3",
-    "task": "Reading (book, article, etc.)",
-    "duration_minutes": 30
-  },
-  {
-    "key": "1-4",
-    "task": "Reading (book, article, etc.)",
-    "duration_minutes": 45
-  },
-  {
-    "key": "1-5",
-    "task": "Reading (book, article, etc.)",
-    "duration_minutes": 60
-  },
-  {
-    "key": "1-1",
-    "task": "Online course or tutorial",
-    "duration_minutes": 15
-  },
-  {
-    "key": "1-2",
-    "task": "Online course or tutorial",
-    "duration_minutes": 23
-  },
-  {
-    "key": "1-3",
-    "task": "Online course or tutorial",
-    "duration_minutes": 30
-  },
-  {
-    "key": "1-4",
-    "task": "Online course or tutorial",
-    "duration_minutes": 45
-  },
-  {
-    "key": "1-5",
-    "task": "Online course or tutorial",
-    "duration_minutes": 60
-  },
-  {
-    "key": "1-1",
-    "task": "Self-reflection on knowledge gained",
-    "duration_minutes": 10
-  },
-  {
-    "key": "1-2",
-    "task": "Self-reflection on knowledge gained",
-    "duration_minutes": 15
-  },
-  {
-    "key": "1-3",
-    "task": "Self-reflection on knowledge gained",
-    "duration_minutes": 20
-  },
-  {
-    "key": "1-4",
-    "task": "Self-reflection on knowledge gained",
-    "duration_minutes": 30
-  },
-  {
-    "key": "1-5",
-    "task": "Self-reflection on knowledge gained",
-    "duration_minutes": 40
-  },
-  {
-    "key": "1-1",
-    "task": "Learning a new language (e.g., via app)",
-    "duration_minutes": 13
-  },
-  {
-    "key": "1-2",
-    "task": "Learning a new language (e.g., via app)",
-    "duration_minutes": 19
-  },
-  {
-    "key": "1-3",
-    "task": "Learning a new language (e.g., via app)",
-    "duration_minutes": 25
-  },
-  {
-    "key": "1-4",
-    "task": "Learning a new language (e.g., via app)",
-    "duration_minutes": 38
-  },
-  {
-    "key": "1-5",
-    "task": "Learning a new language (e.g., via app)",
-    "duration_minutes": 50
-  },
-  {
-    "key": "1-1",
-    "task": "Watching educational documentary",
-    "duration_minutes": 23
-  },
-  {
-    "key": "1-2",
-    "task": "Watching educational documentary",
-    "duration_minutes": 34
-  },
-  {
-    "key": "1-3",
-    "task": "Watching educational documentary",
-    "duration_minutes": 45
-  },
-  {
-    "key": "1-4",
-    "task": "Watching educational documentary",
-    "duration_minutes": 68
-  },
-  {
-    "key": "1-5",
-    "task": "Watching educational documentary",
-    "duration_minutes": 90
-  },
-  {
-    "key": "1-1",
-    "task": "Practicing a skill (e.g., coding, drawing)",
-    "duration_minutes": 20
-  },
-  {
-    "key": "1-2",
-    "task": "Practicing a skill (e.g., coding, drawing)",
-    "duration_minutes": 30
-  },
-  {
-    "key": "1-3",
-    "task": "Practicing a skill (e.g., coding, drawing)",
-    "duration_minutes": 40
-  },
-  {
-    "key": "1-4",
-    "task": "Practicing a skill (e.g., coding, drawing)",
-    "duration_minutes": 60
-  },
-  {
-    "key": "1-5",
-    "task": "Practicing a skill (e.g., coding, drawing)",
-    "duration_minutes": 80
-  },
-  {
     "key": "3-1",
     "task": "Yoga session",
     "duration_minutes": 15
@@ -357,7 +357,7 @@
   {
     "key": "3-2",
     "task": "Yoga session",
-    "duration_minutes": 23
+    "duration_minutes": 22
   },
   {
     "key": "3-3",
