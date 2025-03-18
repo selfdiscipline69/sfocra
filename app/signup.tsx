@@ -44,7 +44,7 @@ export default function SignupScreen() {
     ]).start();
   };
 
-  // Update the handleLogin function
+  // Replace the handleLogin function with this updated version:
 
   const handleLogin = async () => {
     // Reset error messages
@@ -88,9 +88,6 @@ export default function SignupScreen() {
         const token = `${email}_${password}`;
         await AsyncStorage.setItem('userToken', token);
         
-        // Clear any existing question selections for this user
-        await AsyncStorage.removeItem(`question1Choice_${token}`);
-        await AsyncStorage.removeItem(`question1Code_${token}`);
         
         // Navigate to question1
         router.replace('/question1');
