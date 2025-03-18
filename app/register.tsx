@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -20,15 +20,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
-export default function SignupScreen() {
+export default function RegisterScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [secureConfirmTextEntry, setSecureConfirmTextEntry] = useState(true);
+  
   const emailShakeAnimation = useRef(new Animated.Value(0)).current;
   const passwordShakeAnimation = useRef(new Animated.Value(0)).current;
+  const confirmPasswordShakeAnimation = useRef(new Animated.Value(0)).current;
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,12 +49,11 @@ export default function SignupScreen() {
     ]).start();
   };
 
-  // Update the handleLogin function
-
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     // Reset error messages
     setEmailError('');
     setPasswordError('');
+    setConfirmPasswordError('');
     
     let hasError = false;
     
@@ -60,10 +64,17 @@ export default function SignupScreen() {
       hasError = true;
     }
     
-    // Validate password is not empty
-    if (!password || password.trim() === '') {
-      setPasswordError('Please enter a valid password');
+    // Validate password is not empty and at least 6 characters
+    if (!password || password.trim() === '' || password.length < 1) {
+      setPasswordError('Password must be at least 1 characters');
       shakeElement(passwordShakeAnimation);
+      hasError = true;
+    }
+    
+    // Validate confirm password matches
+    if (password !== confirmPassword) {
+      setConfirmPasswordError('Passwords do not match');
+      shakeElement(confirmPasswordShakeAnimation);
       hasError = true;
     }
     
@@ -71,59 +82,36 @@ export default function SignupScreen() {
       return;
     }
 
+    // Check if user already exists
     try {
-      // Check if credentials match stored values
-      const storedEmail = await AsyncStorage.getItem('userEmail');
-      const storedPassword = await AsyncStorage.getItem('userPassword');
+      const existingEmail = await AsyncStorage.getItem('userEmail');
       
-      // Print debug info
-      console.log('Login attempt:', { email, password });
-      console.log('Stored credentials:', { storedEmail, storedPassword });
-      
-      if (email === storedEmail && password === storedPassword) {
-        // Successful login
-        console.log('Login successful');
-        
-        // Important: Create and store the token when logging in
-        const token = `${email}_${password}`;
-        await AsyncStorage.setItem('userToken', token);
-        
-        // Clear any existing question selections for this user
-        await AsyncStorage.removeItem(`question1Choice_${token}`);
-        await AsyncStorage.removeItem(`question1Code_${token}`);
-        
-        // Navigate to question1
-        router.replace('/question1');
-      } else {
-        // Invalid credentials
-        console.log('Login failed: Credentials do not match');
-        setEmailError('Invalid email or password');
-        setPasswordError('Invalid email or password');
+      if (existingEmail === email) {
+        setEmailError('This email is already registered');
         shakeElement(emailShakeAnimation);
-        shakeElement(passwordShakeAnimation);
+        return;
       }
+      
+      // Save user registration data
+      await AsyncStorage.setItem('userEmail', email);
+      await AsyncStorage.setItem('userPassword', password);
+      const token = `${email}_${password}`;
+      await AsyncStorage.setItem('userToken', token);
+      
+      // Clear any existing data for this new token
+      await AsyncStorage.removeItem(`question1Choice_${token}`);
+      await AsyncStorage.removeItem(`question1Code_${token}`);
+      
+      // Also remove non-token-specific choices to prevent confusion
+      await AsyncStorage.removeItem('question1Choice');
+      await AsyncStorage.removeItem('question1Code');
+      
+      console.log('User registered successfully with token:', token);
+      
+      // Navigate to the user_info page to complete profile
+      router.push('/user_info');
     } catch (err) {
-      console.error('Failed to verify login credentials', err);
-    }
-  };
-
-  // Clear inputs on initial load/refresh
-  useEffect(() => {
-    const clearInputs = async () => {
-      setEmail('');
-      setPassword('');
-    };
-    clearInputs();
-  }, []); // Empty dependency array means it runs once on mount
-
-  // Add this function for clearing the data
-  const handleDebugClear = async () => {
-    try {
-      await AsyncStorage.clear();
-      console.log('All AsyncStorage data cleared for debugging');
-      alert('Storage cleared. All users and selections have been removed.');
-    } catch (e) {
-      console.error('Failed to clear AsyncStorage:', e);
+      console.error('Failed to register user', err);
     }
   };
 
@@ -144,9 +132,9 @@ export default function SignupScreen() {
               contentContainerStyle={styles.scrollContent}
               showsVerticalScrollIndicator={false}
             >
-              {/* Spacer to push content lower */}
-              <View style={styles.spacer} />
-
+              {/* Title */}
+              <Text style={styles.title}>Create Account</Text>
+              
               {/* Email Input */}
               <Animated.View style={[styles.inputContainer, { transform: [{ translateX: emailShakeAnimation }] }]}>
                 <TextInput
@@ -159,6 +147,7 @@ export default function SignupScreen() {
                     setEmailError('');
                   }}
                   keyboardType="email-address"
+                  autoCapitalize="none"
                 />
               </Animated.View>
               {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
@@ -193,26 +182,51 @@ export default function SignupScreen() {
               </Animated.View>
               {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
-              {/* Forgot Password */}
-              <TouchableOpacity>
-                <Text style={styles.forgotPassword}>Forgot password?</Text>
+              {/* Confirm Password Input */}
+              <Animated.View 
+                style={[styles.passwordContainer, { transform: [{ translateX: confirmPasswordShakeAnimation }] }]}
+              >
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="Confirm Password"
+                  placeholderTextColor="white"
+                  value={confirmPassword}
+                  onChangeText={(text) => {
+                    setConfirmPassword(text);
+                    setConfirmPasswordError('');
+                  }}
+                  secureTextEntry={secureConfirmTextEntry}
+                />
+                <TouchableOpacity
+                  style={styles.eyeIcon}
+                  onPress={() => setSecureConfirmTextEntry(!secureConfirmTextEntry)}
+                >
+                  <Image 
+                    source={secureConfirmTextEntry 
+                      ? require('../assets/icons/Pw_show.png') 
+                      : require('../assets/icons/Pw_hide.png')
+                    } 
+                    style={styles.passwordToggleIcon} 
+                  />
+                </TouchableOpacity>
+              </Animated.View>
+              {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
+
+              {/* Register Button */}
+              <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+                <Text style={styles.registerText}>Register</Text>
               </TouchableOpacity>
 
-              {/* Login Button */}
-              <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                <Text style={styles.loginText}>Login</Text>
-              </TouchableOpacity>
-
-              {/* Register Option (Aligned) */}
-              <View style={styles.registerContainer}>
-                <Text style={styles.registerText}>Not a member?</Text>
-                <TouchableOpacity onPress={() => router.replace('/register')}>
-                  <Text style={styles.registerNow}> Register now</Text>
+              {/* Login Option */}
+              <View style={styles.loginContainer}>
+                <Text style={styles.loginText}>Already have an account?</Text>
+                <TouchableOpacity onPress={() => router.replace('/signup')}>
+                  <Text style={styles.loginNow}> Login now</Text>
                 </TouchableOpacity>
               </View>
 
-              {/* Social Login Options */}
-              <Text style={styles.orContinue}>Or continue with</Text>
+              {/* Social Register Options */}
+              <Text style={styles.orContinue}>Or register with</Text>
               <View style={styles.socialContainer}>
                 <TouchableOpacity style={styles.socialButton}>
                   <Image source={require('../assets/icons/google.png')} style={styles.icon} />
@@ -224,7 +238,6 @@ export default function SignupScreen() {
                   <Image source={require('../assets/icons/facebook.png')} style={styles.icon} />
                 </TouchableOpacity>
               </View>
-
             </ScrollView>
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -236,7 +249,7 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   backgroundContainer: {
     flex: 1,
-    backgroundColor: 'black', // This will show through the semi-transparent image
+    backgroundColor: 'black',
   },
   backgroundImage: {
     flex: 1,
@@ -248,11 +261,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  spacer: {
-    flex: 1,
+  title: {
+    color: 'white',
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 30,
   },
   inputContainer: {
-    width: width - 10,  // Full screen width - 10
+    width: width - 40,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
@@ -267,14 +283,14 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     marginBottom: 10,
-    width: width - 10,
+    width: width - 40,
     paddingHorizontal: 5,
     fontSize: 12,
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: width - 10,
+    width: width - 40,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
@@ -290,37 +306,31 @@ const styles = StyleSheet.create({
   eyeIcon: {
     padding: 10,
   },
-  forgotPassword: {
-    color: 'red',
-    alignSelf: 'flex-start',
-    marginBottom: 20,
-    width: width - 10,
-    paddingHorizontal: 5,
-  },
-  loginButton: {
+  registerButton: {
     backgroundColor: 'red',
-    width: width - 10,
+    width: width - 40,
     height: 50,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 10,
     marginBottom: 20,
   },
-  loginText: {
+  registerText: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },
-  registerContainer: {
+  loginContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
   },
-  registerText: {
+  loginText: {
     color: 'gray',
     fontSize: 14,
   },
-  registerNow: {
+  loginNow: {
     color: 'red',
     fontSize: 14,
     fontWeight: 'bold',
@@ -351,11 +361,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    paddingHorizontal: 5,
+    paddingHorizontal: 20,
+    paddingVertical: 40,
   },
   passwordToggleIcon: {
     width: 24,
     height: 24,
-    tintColor: 'white', // Optional: adds white tint to the icon for better visibility
+    tintColor: 'white',
   },
 });

@@ -105,7 +105,7 @@ export default function User_Classification() {
   // Handler for continuing to user_info page instead of homepage
   const handleContinue = () => {
     console.log("Continuing to user_info page");
-    router.push('/user_info');
+    router.replace('/(tabs)/homepage');
   };
 
   // Handler for going back to question4

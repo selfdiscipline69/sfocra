@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import optionDescriptions from '../assets/Option_Description.json';
@@ -21,64 +21,72 @@ export default function Question4() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Get user token
+        // First, remove any NON-token specific choices to avoid confusion
+        await AsyncStorage.removeItem('question4Choice');
+        await AsyncStorage.removeItem('question4Code');
+        
+        // Get user token (this should be set during login/registration)
         const token = await AsyncStorage.getItem('userToken');
+        console.log('Question4 - Current token:', token);
+        
+        if (!token) {
+          // If no token, redirect to login
+          console.log('No user token found - redirecting to login');
+          Alert.alert(
+            "Session Expired", 
+            "Please log in again to continue.",
+            [{ text: "OK", onPress: () => router.replace('/signup') }]
+          );
+          return;
+        }
+        
         setUserToken(token);
         
-        // First try to load with token-specific key
-        let savedSelection = null;
-        if (token) {
-          savedSelection = await AsyncStorage.getItem(`question4Choice_${token}`);
-        }
-        
-        // Fall back to non-token specific key if needed
-        if (savedSelection === null) {
-          savedSelection = await AsyncStorage.getItem('question4Choice');
-        }
+        // Only load TOKEN-SPECIFIC choices
+        const savedSelection = await AsyncStorage.getItem(`question4Choice_${token}`);
+        console.log('Loaded selection for this user:', savedSelection);
         
         if (savedSelection !== null) {
           setSelected(savedSelection);
-          setExpandedOption(savedSelection); // Also expand the saved selection
+          setExpandedOption(savedSelection);
         } else {
+          // No saved selection for this token
           setSelected(null);
           setExpandedOption(null);
+          console.log('No saved selections for this user. Starting fresh.');
         }
       } catch (e) {
         console.error('Error loading data:', e);
       }
     };
     loadData();
-  }, []);
+  }, [router]);
 
-  // Function to save selection to AsyncStorage and handle expansion
+  // Function to handle option selection and expansion
   const handleSelection = async (option) => {
+    if (!userToken) {
+      console.log('No user token found when selecting option');
+      return;
+    }
+    
     try {
       if (selected === option) {
         // If already selected, unselect it
         setSelected(null);
         setExpandedOption(null);
         
-        // Remove from AsyncStorage
-        await AsyncStorage.removeItem('question4Choice');
-        await AsyncStorage.removeItem('question4Code');
-        
-        if (userToken) {
-          await AsyncStorage.removeItem(`question4Choice_${userToken}`);
-          await AsyncStorage.removeItem(`question4Code_${userToken}`);
-        }
+        // Remove from AsyncStorage - ONLY TOKEN-SPECIFIC
+        await AsyncStorage.removeItem(`question4Choice_${userToken}`);
+        await AsyncStorage.removeItem(`question4Code_${userToken}`);
+        console.log('Selection cleared');
       } else {
         // Get the numeric code for the selected consequence
         const consequenceCode = consequenceToCode[option];
         
-        // Store both the human-readable choice and the code
-        await AsyncStorage.setItem('question4Choice', option);
-        await AsyncStorage.setItem('question4Code', String(consequenceCode));
-        
-        // If we have a user token, also store with token-specific keys
-        if (userToken) {
-          await AsyncStorage.setItem(`question4Choice_${userToken}`, option);
-          await AsyncStorage.setItem(`question4Code_${userToken}`, String(consequenceCode));
-        }
+        // Store ONLY with token-specific keys
+        await AsyncStorage.setItem(`question4Choice_${userToken}`, option);
+        await AsyncStorage.setItem(`question4Code_${userToken}`, String(consequenceCode));
+        console.log(`Saved selection: ${option} (${consequenceCode}) for token ${userToken}`);
         
         setSelected(option);
         setExpandedOption(option);
@@ -96,25 +104,25 @@ export default function Question4() {
 
   // Handle navigation with save - now navigating directly to User_Classification
   const handleNext = async () => {
+    if (!userToken) {
+      console.log('No user token found when navigating');
+      return;
+    }
+    
     if (selected) {
       try {
         // Get the numeric code for the selected consequence
         const consequenceCode = consequenceToCode[selected];
         
-        // Store both the human-readable choice and the code before navigation
-        await AsyncStorage.setItem('question4Choice', selected);
-        await AsyncStorage.setItem('question4Code', String(consequenceCode));
-        
-        // If we have a user token, also store with token-specific keys
-        if (userToken) {
-          await AsyncStorage.setItem(`question4Choice_${userToken}`, selected);
-          await AsyncStorage.setItem(`question4Code_${userToken}`, String(consequenceCode));
-        }
+        // Store ONLY with token-specific keys
+        await AsyncStorage.setItem(`question4Choice_${userToken}`, selected);
+        await AsyncStorage.setItem(`question4Code_${userToken}`, String(consequenceCode));
+        console.log(`Confirmed selection before navigation: ${selected}`);
         
         // Make sure this is the only navigation occurring
-        console.log("Navigating to User_Classification");
+        console.log("Navigating to homepage");
         await router.push({
-          pathname: '/User_Classification'
+          pathname: '/User_Classification',
         });
       } catch (e) {
         console.error('Error during navigation:', e);
@@ -123,12 +131,8 @@ export default function Question4() {
   };
 
   // Back to previous page
-  const handleBack = async () => {
-    try {
-      router.push('/question3');
-    } catch (e) {
-      console.error('Error navigating back:', e);
-    }
+  const handleBack = () => {
+    router.push('/question3');
   };
 
   return (
@@ -209,6 +213,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 50,
   },
+  tokenText: {
+    color: '#888',
+    fontSize: 12,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
   topSection: {
     width: '100%',
   },
@@ -237,6 +247,7 @@ const styles = StyleSheet.create({
   questionContent: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   questionTitle: {
     fontSize: 22,

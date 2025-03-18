@@ -34,7 +34,7 @@ export default function UserInfoScreen() {
       
       // Continue to homepage
       console.log("Navigating to homepage");
-      router.replace('/(tabs)/homepage');
+      router.replace('/question1');
     } catch (error) {
       console.error('Failed to save user info:', error);
     }

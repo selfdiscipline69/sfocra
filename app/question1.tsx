@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import optionDescriptions from '../assets/Option_Description.json';
@@ -21,64 +21,72 @@ export default function Question1() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Get user token
+        // First, remove any NON-token specific choices to avoid confusion
+        await AsyncStorage.removeItem('question1Choice');
+        await AsyncStorage.removeItem('question1Code');
+        
+        // Get user token (this should be set during login/registration)
         const token = await AsyncStorage.getItem('userToken');
+        console.log('Current token:', token);
+        
+        if (!token) {
+          // If no token, redirect to login
+          console.log('No user token found - redirecting to login');
+          Alert.alert(
+            "Session Expired", 
+            "Please log in again to continue.",
+            [{ text: "OK", onPress: () => router.replace('/signup') }]
+          );
+          return;
+        }
+        
         setUserToken(token);
         
-        // First try to load with token-specific key
-        let savedSelection = null;
-        if (token) {
-          savedSelection = await AsyncStorage.getItem(`question1Choice_${token}`);
-        }
-        
-        // Fall back to non-token specific key if needed
-        if (savedSelection === null) {
-          savedSelection = await AsyncStorage.getItem('question1Choice');
-        }
+        // Only load TOKEN-SPECIFIC choices
+        const savedSelection = await AsyncStorage.getItem(`question1Choice_${token}`);
+        console.log('Loaded selection for this user:', savedSelection);
         
         if (savedSelection !== null) {
           setSelected(savedSelection);
-          setExpandedOption(savedSelection); // Also expand the saved selection
+          setExpandedOption(savedSelection);
         } else {
+          // No saved selection for this token
           setSelected(null);
           setExpandedOption(null);
+          console.log('No saved selections for this user. Starting fresh.');
         }
       } catch (e) {
         console.error('Error loading data:', e);
       }
     };
     loadData();
-  }, []);
+  }, [router]);
 
   // Function to handle option selection and expansion
   const handleSelection = async (option) => {
+    if (!userToken) {
+      console.log('No user token found when selecting option');
+      return;
+    }
+    
     try {
       if (selected === option) {
         // If already selected, unselect it
         setSelected(null);
         setExpandedOption(null);
         
-        // Remove from AsyncStorage
-        await AsyncStorage.removeItem('question1Choice');
-        await AsyncStorage.removeItem('question1Code');
-        
-        if (userToken) {
-          await AsyncStorage.removeItem(`question1Choice_${userToken}`);
-          await AsyncStorage.removeItem(`question1Code_${userToken}`);
-        }
+        // Remove from AsyncStorage - ONLY TOKEN-SPECIFIC
+        await AsyncStorage.removeItem(`question1Choice_${userToken}`);
+        await AsyncStorage.removeItem(`question1Code_${userToken}`);
+        console.log('Selection cleared');
       } else {
         // If not selected or a different option was selected, select this one
         const pathCode = pathToCode[option];
         
-        // Store both the human-readable choice and the code
-        await AsyncStorage.setItem('question1Choice', option);
-        await AsyncStorage.setItem('question1Code', String(pathCode));
-        
-        // If we have a user token, also store with token-specific keys
-        if (userToken) {
-          await AsyncStorage.setItem(`question1Choice_${userToken}`, option);
-          await AsyncStorage.setItem(`question1Code_${userToken}`, String(pathCode));
-        }
+        // Store ONLY with token-specific keys
+        await AsyncStorage.setItem(`question1Choice_${userToken}`, option);
+        await AsyncStorage.setItem(`question1Code_${userToken}`, String(pathCode));
+        console.log(`Saved selection: ${option} (${pathCode}) for token ${userToken}`);
         
         setSelected(option);
         setExpandedOption(option);
@@ -96,20 +104,20 @@ export default function Question1() {
 
   // Function to handle navigation with saved data
   const handleNext = async () => {
+    if (!userToken) {
+      console.log('No user token found when navigating');
+      return;
+    }
+    
     if (selected) {
       try {
         // Get the numeric code for the selected path
         const pathCode = pathToCode[selected];
         
-        // Store both the human-readable choice and the code before navigation
-        await AsyncStorage.setItem('question1Choice', selected);
-        await AsyncStorage.setItem('question1Code', String(pathCode));
-        
-        // If we have a user token, also store with token-specific keys
-        if (userToken) {
-          await AsyncStorage.setItem(`question1Choice_${userToken}`, selected);
-          await AsyncStorage.setItem(`question1Code_${userToken}`, String(pathCode));
-        }
+        // Store ONLY with token-specific keys
+        await AsyncStorage.setItem(`question1Choice_${userToken}`, selected);
+        await AsyncStorage.setItem(`question1Code_${userToken}`, String(pathCode));
+        console.log(`Confirmed selection before navigation: ${selected}`);
         
         router.push('/question2');
       } catch (e) {
@@ -122,6 +130,7 @@ export default function Question1() {
   const handleBack = async () => {
     router.push('/signup');
   };
+  
 
   return (
     <View style={styles.container}>
@@ -139,6 +148,7 @@ export default function Question1() {
         >
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
+        
       </View>
 
       {/* Question Content */}
@@ -187,6 +197,14 @@ export default function Question1() {
 }
 
 const styles = StyleSheet.create({
+  // ...existing styles...
+  
+  tokenText: {
+    color: '#888',
+    fontSize: 12,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
   container: {
     flex: 1,
     paddingHorizontal: 20,
@@ -196,6 +214,7 @@ const styles = StyleSheet.create({
   },
   topSection: {
     width: '100%',
+    position: 'relative',
   },
   progressBar: {
     height: 5,
