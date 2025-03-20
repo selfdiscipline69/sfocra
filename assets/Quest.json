@@ -1,0 +1,627 @@
+[
+  {
+    "key": "1-1",
+    "task": "Meditation",
+    "duration": 5
+  },
+  {
+    "key": "1-2",
+    "task": "Meditation",
+    "duration": 10
+  },
+  {
+    "key": "1-3",
+    "task": "Meditation",
+    "duration": 15
+  },
+  {
+    "key": "1-4",
+    "task": "Meditation",
+    "duration": 25
+  },
+  {
+    "key": "1-5",
+    "task": "Meditation",
+    "duration": 40
+  },
+  {
+    "key": "1-1",
+    "task": "Journaling emotions and thoughts",
+    "duration": 10
+  },
+  {
+    "key": "1-2",
+    "task": "Journaling emotions and thoughts",
+    "duration": 15
+  },
+  {
+    "key": "1-3",
+    "task": "Journaling emotions and thoughts",
+    "duration": 20
+  },
+  {
+    "key": "1-4",
+    "task": "Journaling emotions and thoughts",
+    "duration": 25
+  },
+  {
+    "key": "1-5",
+    "task": "Journaling emotions and thoughts",
+    "duration": 30
+  },
+  {
+    "key": "1-1",
+    "task": "Book Reading",
+    "duration": "1 chapter/ 2 pages"
+  },
+  {
+    "key": "1-2",
+    "task": "Book Reading",
+    "duration": "1 chapter/ 6 pages"
+  },
+  {
+    "key": "1-3",
+    "task": "Book Reading",
+    "duration": "1 chapter/ 10 pages"
+  },
+  {
+    "key": "1-4",
+    "task": "Book Reading",
+    "duration": "1 chapter/26 pages"
+  },
+  {
+    "key": "1-5",
+    "task": "Book Reading",
+    "duration": "2 chapter/30 pages"
+  },
+  {
+    "key": "1-1",
+    "task": "Listening to a podcast",
+    "duration": "1 episode/ 10 minutes"
+  },
+  {
+    "key": "1-2",
+    "task": "Listening to a podcast",
+    "duration": "1 episode/ 20 minutes"
+  },
+  {
+    "key": "1-3",
+    "task": "Listening to a podcast",
+    "duration": "1 episode/ 30 minutes"
+  },
+  {
+    "key": "1-4",
+    "task": "Listening to a podcast",
+    "duration": "1 episode/ 50 minutes"
+  },
+  {
+    "key": "1-5",
+    "task": "Listening to a podcast",
+    "duration": "2 episode/ 80 minutes"
+  },
+  {
+    "key": "1-1",
+    "task": "Listening to chill/ mindful music",
+    "duration": 10
+  },
+  {
+    "key": "1-2",
+    "task": "Listening to chill/ mindful music",
+    "duration": 15
+  },
+  {
+    "key": "1-3",
+    "task": "Listening to chill/ mindful music",
+    "duration": 20
+  },
+  {
+    "key": "1-4",
+    "task": "Listening to chill/ mindful music",
+    "duration": 30
+  },
+  {
+    "key": "1-5",
+    "task": "Listening to chill/ mindful music",
+    "duration": 40
+  },
+  {
+    "key": "1-1",
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 10
+  },
+  {
+    "key": "1-2",
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 15
+  },
+  {
+    "key": "1-3",
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 25
+  },
+  {
+    "key": "1-4",
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 40
+  },
+  {
+    "key": "1-5",
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 50
+  },
+  {
+    "key": "1-1",
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 10
+  },
+  {
+    "key": "1-2",
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 15
+  },
+  {
+    "key": "1-3",
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 25
+  },
+  {
+    "key": "1-4",
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 40
+  },
+  {
+    "key": "1-5",
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 50
+  },
+  {
+    "key": "1-1",
+    "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
+    "duration": 15
+  },
+  {
+    "key": "1-2",
+    "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
+    "duration": 22
+  },
+  {
+    "key": "1-3",
+    "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
+    "duration": 30
+  },
+  {
+    "key": "1-4",
+    "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
+    "duration": 45
+  },
+  {
+    "key": "1-5", 
+    "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
+    "duration": 60
+  },
+  {
+    "key": "1-1",
+    "task": "Self-reflection",
+    "duration": 10
+  },
+  {
+    "key": "1-2",
+    "task": "Self-reflection",
+    "duration": 15
+  },
+  {
+    "key": "1-3",
+    "task": "Self-reflection",
+    "duration": 20
+  },
+  {
+    "key": "1-4",
+    "task": "Self-reflection",
+    "duration": 30
+  },
+  {
+    "key": "1-5",
+    "task": "Self-reflection",
+    "duration": 40
+  },
+  {
+    "key": "1-1",
+    "task": "Skill Development (language, coding, math))",
+    "duration": "1 episode/ 10 minutes"
+  },
+  {
+    "key": "1-2",
+    "task": "Skill Development (language, coding, math))",
+    "duration": "1 episode/ 20 minutes"
+  },
+  {
+    "key": "1-3",
+    "task": "Skill Development (language, coding, math))",
+    "duration": "1 episode/ 30 minutes"
+  },
+  {
+    "key": "1-4",
+    "task": "Skill Development (language, coding, math))",
+    "duration": "1 episode/ 45 minutes"
+  },
+  {
+    "key": "1-5",
+    "task": "Skill Development (language, coding, math))",
+    "duration": "1 episode/ 60 minutes"
+  },
+  {
+    "key": "1-1",
+    "task": "Watching educational documentary",
+    "duration": "1 episode/ 15 minutes"
+  },
+  {
+    "key": "1-2",
+    "task": "Watching educational documentary",
+    "duration": "1 episode/ 25 minutes"
+  },
+  {
+    "key": "1-3",
+    "task": "Watching educational documentary",
+    "duration": "1 episode/ 30 minutes"
+  },
+  {
+    "key": "1-4",
+    "task": "Watching educational documentary",
+    "duration": "1 episode/ 45 minutes"
+  },
+  {
+    "key": "1-5",
+    "task": "Watching educational documentary",
+    "duration": "1 episode/ 90 minutes"
+  },
+  {
+    "key": "1-1",
+    "task": "Cooking",
+    "duration": "a dish/ a dessert"
+  },
+  {
+    "key": "1-2",
+    "task": "Cooking",
+    "duration": "a dish"
+  },
+  {
+    "key": "1-3",
+    "task": "Cooking",
+    "duration": "a meal"
+  },
+  {
+    "key": "1-4",
+    "task": "Cooking",
+    "duration": "a meal + a dessert"
+  },
+  {
+    "key": "1-5",
+    "task": "Cooking",
+    "duration": "a fine diner dish"
+  },
+  {
+    "key": "1-1",
+    "task": "article reading",
+    "duration": "1 articles"
+  },
+  {
+    "key": "1-2",
+    "task": "article reading",
+    "duration": "2 articles"
+  },
+  {
+    "key": "1-3",
+    "task": "article reading",
+    "duration": "2 articles"
+  },
+  {
+    "key": "1-4",
+    "task": "article reading",
+    "duration": "3 articles"
+  },
+  {
+    "key": "1-5",
+    "task": "article reading",
+    "duration": "5 articles"
+  },
+  {
+    "key": "2-1",
+    "task": "Working out in the gym",
+    "duration": 30
+  },
+  {
+    "key": "2-2",
+    "task": "Working out in the gym",
+    "duration": 45
+  },
+  {
+    "key": "2-3",
+    "task": "Working out in the gym",
+    "duration": 60
+  },
+  {
+    "key": "2-4",
+    "task": "Working out in the gym",
+    "duration": 90
+  },
+  {
+    "key": "2-5",
+    "task": "Working out in the gym",
+    "duration": 120
+  },
+  {
+    "key": "2-1",
+    "task": "Running",
+    "duration": "1.5 km"
+  },
+  {
+    "key": "2-2",
+    "task": "Running",
+    "duration": "3 km"
+  },
+  {
+    "key": "2-3",
+    "task": "Running",
+    "duration": "5 km"
+  },
+  {
+    "key": "2-4",
+    "task": "Running",
+    "duration": "7 km"
+  },
+  {
+    "key": "2-5",
+    "task": "Running",
+    "duration": "10 km"
+  },
+  {
+    "key": "2-1",
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 5
+  },
+  {
+    "key": "2-2",
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 8
+  },
+  {
+    "key": "2-3",
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 10
+  },
+  {
+    "key": "2-4",
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 15
+  },
+  {
+    "key": "2-5",
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 20
+  },
+  {
+    "key": "2-1",
+    "task": "Cycling",
+    "duration": "intensity modification is required, standard is 15 km"
+  },
+  {
+    "key": "2-2",
+    "task": "Cycling",
+    "duration": "intensity modification is required, standard is 15 km"
+  },
+  {
+    "key": "2-3",
+    "task": "Cycling",
+    "duration": "15 km"
+  },
+  {
+    "key": "2-4",
+    "task": "Cycling",
+    "duration": "intensity modification is required, standard is 15 km"
+  },
+  {
+    "key": "2-5",
+    "task": "Cycling",
+    "duration": "intensity modification is required, standard is 15 km"
+  },
+  {
+    "key": "2-1",
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "2 sets"
+  },
+  {
+    "key": "2-2",
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "2 sets"
+  },
+  {
+    "key": "2-3",
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "3 sets"
+  },
+  {
+    "key": "2-4",
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "5 sets"
+  },
+  {
+    "key": "2-5",
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "10 sets"
+  },
+  {
+    "key": "2-4",
+    "task": "hiking",
+    "duration": "1 hill/ 5 km"
+  },
+  {
+    "key": "2-5",
+    "task": "hiking",
+    "duration": "1 hill/ 10 km"
+  },
+  {
+    "key": "2-3",
+    "task": "Swimming",
+    "duration": 20
+  },
+  {
+    "key": "2-4",
+    "task": "Swimming",
+    "duration": 30
+  },
+  {
+    "key": "2-5",
+    "task": "Swimming",
+    "duration": 60
+  },
+  {
+    "key": "2-1",
+    "task": "Rhythmic Movement (Dancing, Yoga, Pilates)",
+    "duration": 15
+  },
+  {
+    "key": "2-2",
+    "task": "Rhythmic Movement (Dancing, Yoga, Pilates)",
+    "duration": 22
+  },
+  {
+    "key": "2-3",
+    "task": "Rhythmic Movement (Dancing, Yoga, Pilates)",
+    "duration": 30
+  },
+  {
+    "key": "2-4",
+    "task": "Rhythmic Movement (Dancing, Yoga, Pilates)",
+    "duration": 45
+  },
+  {
+    "key": "2-5",
+    "task": "Rhythmic Movement (Dancing, Yoga, Pilates)",
+    "duration": 60
+  },
+  {
+    "key": "2-1",
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 30
+  },
+  {
+    "key": "2-2",
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 45
+  },
+  {
+    "key": "2-3",
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 60
+  },
+  {
+    "key": "2-4",
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 90
+  },
+  {
+    "key": "2-5",
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 120
+  },
+  {
+    "key": "3-1",
+    "task": "Yoga session",
+    "duration": 15
+  },
+  {
+    "key": "3-2",
+    "task": "Yoga session",
+    "duration": 22
+  },
+  {
+    "key": "3-3",
+    "task": "Yoga session",
+    "duration": 30
+  },
+  {
+    "key": "3-4",
+    "task": "Yoga session",
+    "duration": 45
+  },
+  {
+    "key": "3-5",
+    "task": "Yoga session",
+    "duration": 60
+  },
+  {
+    "key": "3-1",
+    "task": "Walking",
+    "duration": "intensity modification is required, standard is 3 km"
+  },
+  {
+    "key": "3-2",
+    "task": "Walking",
+    "duration": "intensity modification is required, standard is 3 km"
+  },
+  {
+    "key": "3-3",
+    "task": "Walking",
+    "duration": "3 km"
+  },
+  {
+    "key": "3-4",
+    "task": "Walking",
+    "duration": "intensity modification is required, standard is 3 km"
+  },
+  {
+    "key": "3-5",
+    "task": "Walking",
+    "duration": "intensity modification is required, standard is 3 km"
+  },
+  {
+    "key": "3-1",
+    "task": "Mindfulness practice (e.g., mindful eating)",
+    "duration": 10
+  },
+  {
+    "key": "3-2",
+    "task": "Mindfulness practice (e.g., mindful eating)",
+    "duration": 15
+  },
+  {
+    "key": "3-3",
+    "task": "Mindfulness practice (e.g., mindful eating)",
+    "duration": 20
+  },
+  {
+    "key": "3-4",
+    "task": "Mindfulness practice (e.g., mindful eating)",
+    "duration": 30
+  },
+  {
+    "key": "3-5",
+    "task": "Mindfulness practice (e.g., mindful eating)",
+    "duration": 40
+  },
+  {
+    "key": "3-1",
+    "task": "Gratitude reflection",
+    "duration": 5
+  },
+  {
+    "key": "3-2",
+    "task": "Gratitude reflection",
+    "duration": 8
+  },
+  {
+    "key": "3-3",
+    "task": "Gratitude reflection",
+    "duration": 10
+  },
+  {
+    "key": "3-4",
+    "task": "Gratitude reflection",
+    "duration": 15
+  },
+  {
+    "key": "3-5",
+    "task": "Gratitude reflection",
+    "duration": 20
+  }
+]
