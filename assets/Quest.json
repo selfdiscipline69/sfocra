@@ -2,701 +2,626 @@
   {
     "key": "1-1",
     "task": "Meditation",
-    "duration_minutes": 15
+    "duration": 5
   },
   {
     "key": "1-2",
     "task": "Meditation",
-    "duration_minutes": 22
+    "duration": 10
   },
   {
     "key": "1-3",
     "task": "Meditation",
-    "duration_minutes": 30
+    "duration": 15
   },
   {
     "key": "1-4",
     "task": "Meditation",
-    "duration_minutes": 45
+    "duration": 25
   },
   {
     "key": "1-5",
     "task": "Meditation",
-    "duration_minutes": 60
+    "duration": 40
   },
   {
     "key": "1-1",
     "task": "Journaling emotions and thoughts",
-    "duration_minutes": 8
+    "duration": 10
   },
   {
     "key": "1-2",
     "task": "Journaling emotions and thoughts",
-    "duration_minutes": 11
+    "duration": 15
   },
   {
     "key": "1-3",
     "task": "Journaling emotions and thoughts",
-    "duration_minutes": 15
+    "duration": 20
   },
   {
     "key": "1-4",
     "task": "Journaling emotions and thoughts",
-    "duration_minutes": 22
+    "duration": 25
   },
   {
     "key": "1-5",
     "task": "Journaling emotions and thoughts",
-    "duration_minutes": 30
+    "duration": 30
   },
   {
     "key": "1-1",
     "task": "Book Reading",
-    "duration_minutes": "intensity modification is required, standard is 1 chapter"
+    "duration": "1 chapter/ 2 pages"
   },
   {
     "key": "1-2",
     "task": "Book Reading",
-    "duration_minutes": "intensity modification is required, standard is 1 chapter"
+    "duration": "1 chapter/ 6 pages"
   },
   {
     "key": "1-3",
     "task": "Book Reading",
-    "duration_minutes": "1 chapter"
+    "duration": "1 chapter/ 10 pages"
   },
   {
     "key": "1-4",
     "task": "Book Reading",
-    "duration_minutes": "intensity modification is required, standard is 1 chapter"
+    "duration": "1 chapter/26 pages"
   },
   {
     "key": "1-5",
     "task": "Book Reading",
-    "duration_minutes": "intensity modification is required, standard is 1 chapter"
+    "duration": "2 chapter/30 pages"
   },
   {
     "key": "1-1",
     "task": "Listening to a podcast",
-    "duration_minutes": "intensity modification is required, standard is 1 episode"
+    "duration": "1 episode/ 10 minutes"
   },
   {
     "key": "1-2",
     "task": "Listening to a podcast",
-    "duration_minutes": "intensity modification is required, standard is 1 episode"
+    "duration": "1 episode/ 20 minutes"
   },
   {
     "key": "1-3",
     "task": "Listening to a podcast",
-    "duration_minutes": "1 episode"
+    "duration": "1 episode/ 30 minutes"
   },
   {
     "key": "1-4",
     "task": "Listening to a podcast",
-    "duration_minutes": "intensity modification is required, standard is 1 episode"
+    "duration": "1 episode/ 50 minutes"
   },
   {
     "key": "1-5",
     "task": "Listening to a podcast",
-    "duration_minutes": "intensity modification is required, standard is 1 episode"
+    "duration": "2 episode/ 80 minutes"
   },
   {
     "key": "1-1",
     "task": "Listening to chill/ mindful music",
-    "duration_minutes": 10
+    "duration": 10
   },
   {
     "key": "1-2",
     "task": "Listening to chill/ mindful music",
-    "duration_minutes": 15
+    "duration": 15
   },
   {
     "key": "1-3",
     "task": "Listening to chill/ mindful music",
-    "duration_minutes": 20
+    "duration": 20
   },
   {
     "key": "1-4",
     "task": "Listening to chill/ mindful music",
-    "duration_minutes": 30
+    "duration": 30
   },
   {
     "key": "1-5",
     "task": "Listening to chill/ mindful music",
-    "duration_minutes": 40
+    "duration": 40
   },
   {
     "key": "1-1",
-    "task": "Drawing or painting",
-    "duration_minutes": 22
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 10
   },
   {
     "key": "1-2",
-    "task": "Drawing or painting",
-    "duration_minutes": 34
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 15
   },
   {
     "key": "1-3",
-    "task": "Drawing or painting",
-    "duration_minutes": 45
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 25
   },
   {
     "key": "1-4",
-    "task": "Drawing or painting",
-    "duration_minutes": 68
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 40
   },
   {
     "key": "1-5",
-    "task": "Drawing or painting",
-    "duration_minutes": 90
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 50
   },
   {
     "key": "1-1",
-    "task": "Creative writing (poetry, short stories)",
-    "duration_minutes": 15
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 10
   },
   {
     "key": "1-2",
-    "task": "Creative writing (poetry, short stories)",
-    "duration_minutes": 22
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 15
   },
   {
     "key": "1-3",
-    "task": "Creative writing (poetry, short stories)",
-    "duration_minutes": 30
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 25
   },
   {
     "key": "1-4",
-    "task": "Creative writing (poetry, short stories)",
-    "duration_minutes": 45
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 40
   },
   {
     "key": "1-5",
-    "task": "Creative writing (poetry, short stories)",
-    "duration_minutes": 60
-  },
-  {
-    "key": "1-1",
-    "task": "Playing a musical instrument",
-    "duration_minutes": 22
-  },
-  {
-    "key": "1-2",
-    "task": "Playing a musical instrument",
-    "duration_minutes": 34
-  },
-  {
-    "key": "1-3",
-    "task": "Playing a musical instrument",
-    "duration_minutes": 45
-  },
-  {
-    "key": "1-4",
-    "task": "Playing a musical instrument",
-    "duration_minutes": 68
-  },
-  {
-    "key": "1-5",
-    "task": "Playing a musical instrument",
-    "duration_minutes": 90
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": 50
   },
   {
     "key": "1-1",
     "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration_minutes": 15
+    "duration": 15
   },
   {
     "key": "1-2",
     "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration_minutes": 22
+    "duration": 22
   },
   {
     "key": "1-3",
     "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration_minutes": 30
+    "duration": 30
   },
   {
     "key": "1-4",
     "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration_minutes": 45
+    "duration": 45
   },
   {
-    "key": "1-5",
+    "key": "1-5", 
     "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration_minutes": 60
+    "duration": 60
   },
   {
     "key": "1-1",
     "task": "Self-reflection",
-    "duration_minutes": 10
+    "duration": 10
   },
   {
     "key": "1-2",
     "task": "Self-reflection",
-    "duration_minutes": 15
+    "duration": 15
   },
   {
     "key": "1-3",
     "task": "Self-reflection",
-    "duration_minutes": 20
+    "duration": 20
   },
   {
     "key": "1-4",
     "task": "Self-reflection",
-    "duration_minutes": 30
+    "duration": 30
   },
   {
     "key": "1-5",
     "task": "Self-reflection",
-    "duration_minutes": 40
+    "duration": 40
   },
   {
     "key": "1-1",
-    "task": "Learning a new language (e.g., via app)",
-    "duration_minutes": 12
+    "task": "Skill Development (language, coding, math))",
+    "duration": "1 episode/ 10 minutes"
   },
   {
     "key": "1-2",
-    "task": "Learning a new language (e.g., via app)",
-    "duration_minutes": 19
+    "task": "Skill Development (language, coding, math))",
+    "duration": "1 episode/ 20 minutes"
   },
   {
     "key": "1-3",
-    "task": "Learning a new language (e.g., via app)",
-    "duration_minutes": 25
+    "task": "Skill Development (language, coding, math))",
+    "duration": "1 episode/ 30 minutes"
   },
   {
     "key": "1-4",
-    "task": "Learning a new language (e.g., via app)",
-    "duration_minutes": 38
+    "task": "Skill Development (language, coding, math))",
+    "duration": "1 episode/ 45 minutes"
   },
   {
     "key": "1-5",
-    "task": "Learning a new language (e.g., via app)",
-    "duration_minutes": 50
+    "task": "Skill Development (language, coding, math))",
+    "duration": "1 episode/ 60 minutes"
   },
   {
     "key": "1-1",
     "task": "Watching educational documentary",
-    "duration_minutes": 22
+    "duration": "1 episode/ 15 minutes"
   },
   {
     "key": "1-2",
     "task": "Watching educational documentary",
-    "duration_minutes": 34
+    "duration": "1 episode/ 25 minutes"
   },
   {
     "key": "1-3",
     "task": "Watching educational documentary",
-    "duration_minutes": 45
+    "duration": "1 episode/ 30 minutes"
   },
   {
     "key": "1-4",
     "task": "Watching educational documentary",
-    "duration_minutes": 68
+    "duration": "1 episode/ 45 minutes"
   },
   {
     "key": "1-5",
     "task": "Watching educational documentary",
-    "duration_minutes": 90
+    "duration": "1 episode/ 90 minutes"
   },
   {
     "key": "1-1",
-    "task": "Cook a fine dinner",
-    "duration_minutes": "intensity modification is required, standard is 1 time"
+    "task": "Cooking",
+    "duration": "a dish/ a dessert"
   },
   {
     "key": "1-2",
-    "task": "Cook a fine dinner",
-    "duration_minutes": "intensity modification is required, standard is 1 time"
+    "task": "Cooking",
+    "duration": "a dish"
   },
   {
     "key": "1-3",
-    "task": "Cook a fine dinner",
-    "duration_minutes": "1 time"
+    "task": "Cooking",
+    "duration": "a meal"
   },
   {
     "key": "1-4",
-    "task": "Cook a fine dinner",
-    "duration_minutes": "intensity modification is required, standard is 1 time"
+    "task": "Cooking",
+    "duration": "a meal + a dessert"
   },
   {
     "key": "1-5",
-    "task": "Cook a fine dinner",
-    "duration_minutes": "intensity modification is required, standard is 1 time"
+    "task": "Cooking",
+    "duration": "a fine diner dish"
   },
   {
     "key": "1-1",
     "task": "article reading",
-    "duration_minutes": "intensity modification is required, standard is 3 articles"
+    "duration": "1 articles"
   },
   {
     "key": "1-2",
     "task": "article reading",
-    "duration_minutes": "intensity modification is required, standard is 3 articles"
+    "duration": "2 articles"
   },
   {
     "key": "1-3",
     "task": "article reading",
-    "duration_minutes": "3 articles"
+    "duration": "2 articles"
   },
   {
     "key": "1-4",
     "task": "article reading",
-    "duration_minutes": "intensity modification is required, standard is 3 articles"
+    "duration": "3 articles"
   },
   {
     "key": "1-5",
     "task": "article reading",
-    "duration_minutes": "intensity modification is required, standard is 3 articles"
+    "duration": "5 articles"
   },
   {
     "key": "2-1",
     "task": "Working out in the gym",
-    "duration_minutes": 30
+    "duration": 30
   },
   {
     "key": "2-2",
     "task": "Working out in the gym",
-    "duration_minutes": 45
+    "duration": 45
   },
   {
     "key": "2-3",
     "task": "Working out in the gym",
-    "duration_minutes": 60
+    "duration": 60
   },
   {
     "key": "2-4",
     "task": "Working out in the gym",
-    "duration_minutes": 90
+    "duration": 90
   },
   {
     "key": "2-5",
     "task": "Working out in the gym",
-    "duration_minutes": 120
+    "duration": 120
   },
   {
     "key": "2-1",
     "task": "Running",
-    "duration_minutes": "intensity modification is required, standard is 5 km"
+    "duration": "1.5 km"
   },
   {
     "key": "2-2",
     "task": "Running",
-    "duration_minutes": "intensity modification is required, standard is 5 km"
+    "duration": "3 km"
   },
   {
     "key": "2-3",
     "task": "Running",
-    "duration_minutes": "5 km"
+    "duration": "5 km"
   },
   {
     "key": "2-4",
     "task": "Running",
-    "duration_minutes": "intensity modification is required, standard is 5 km"
+    "duration": "7 km"
   },
   {
     "key": "2-5",
     "task": "Running",
-    "duration_minutes": "intensity modification is required, standard is 5 km"
+    "duration": "10 km"
   },
   {
     "key": "2-1",
-    "task": "Stretching",
-    "duration_minutes": 5
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 5
   },
   {
     "key": "2-2",
-    "task": "Stretching",
-    "duration_minutes": 8
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 8
   },
   {
     "key": "2-3",
-    "task": "Stretching",
-    "duration_minutes": 10
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 10
   },
   {
     "key": "2-4",
-    "task": "Stretching",
-    "duration_minutes": 15
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 15
   },
   {
     "key": "2-5",
-    "task": "Stretching",
-    "duration_minutes": 20
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 20
   },
   {
     "key": "2-1",
     "task": "Cycling",
-    "duration_minutes": "intensity modification is required, standard is 15 km"
+    "duration": "intensity modification is required, standard is 15 km"
   },
   {
     "key": "2-2",
     "task": "Cycling",
-    "duration_minutes": "intensity modification is required, standard is 15 km"
+    "duration": "intensity modification is required, standard is 15 km"
   },
   {
     "key": "2-3",
     "task": "Cycling",
-    "duration_minutes": "15 km"
+    "duration": "15 km"
   },
   {
     "key": "2-4",
     "task": "Cycling",
-    "duration_minutes": "intensity modification is required, standard is 15 km"
+    "duration": "intensity modification is required, standard is 15 km"
   },
   {
     "key": "2-5",
     "task": "Cycling",
-    "duration_minutes": "intensity modification is required, standard is 15 km"
+    "duration": "intensity modification is required, standard is 15 km"
   },
   {
     "key": "2-1",
-    "task": "Bodyweight exercises (push-ups, squats, etc.)",
-    "duration_minutes": "intensity modification is required, standard is 3 sets"
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "2 sets"
   },
   {
     "key": "2-2",
-    "task": "Bodyweight exercises (push-ups, squats, etc.)",
-    "duration_minutes": "intensity modification is required, standard is 3 sets"
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "2 sets"
   },
   {
     "key": "2-3",
-    "task": "Bodyweight exercises (push-ups, squats, etc.)",
-    "duration_minutes": "3 sets"
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "3 sets"
   },
   {
     "key": "2-4",
-    "task": "Bodyweight exercises (push-ups, squats, etc.)",
-    "duration_minutes": "intensity modification is required, standard is 3 sets"
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "5 sets"
   },
   {
     "key": "2-5",
-    "task": "Bodyweight exercises (push-ups, squats, etc.)",
-    "duration_minutes": "intensity modification is required, standard is 3 sets"
-  },
-  {
-    "key": "2-1",
-    "task": "hiking",
-    "duration_minutes": "intensity modification is required, standard is 10 km"
-  },
-  {
-    "key": "2-2",
-    "task": "hiking",
-    "duration_minutes": "intensity modification is required, standard is 10 km"
-  },
-  {
-    "key": "2-3",
-    "task": "hiking",
-    "duration_minutes": "10 km"
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "10 sets"
   },
   {
     "key": "2-4",
     "task": "hiking",
-    "duration_minutes": "intensity modification is required, standard is 10 km"
+    "duration": "1 hill/ 5 km"
   },
   {
     "key": "2-5",
     "task": "hiking",
-    "duration_minutes": "intensity modification is required, standard is 10 km"
-  },
-  {
-    "key": "2-1",
-    "task": "Swimming",
-    "duration_minutes": "intensity modification is required, standard is 1 km"
-  },
-  {
-    "key": "2-2",
-    "task": "Swimming",
-    "duration_minutes": "intensity modification is required, standard is 1 km"
+    "duration": "1 hill/ 10 km"
   },
   {
     "key": "2-3",
     "task": "Swimming",
-    "duration_minutes": "1 km"
+    "duration": 20
   },
   {
     "key": "2-4",
     "task": "Swimming",
-    "duration_minutes": "intensity modification is required, standard is 1 km"
+    "duration": 30
   },
   {
     "key": "2-5",
     "task": "Swimming",
-    "duration_minutes": "intensity modification is required, standard is 1 km"
+    "duration": 60
   },
   {
     "key": "2-1",
-    "task": "Dancing",
-    "duration_minutes": 15
+    "task": "Rhythmic Movement (Dancing, Yoga, Pilates)",
+    "duration": 15
   },
   {
     "key": "2-2",
-    "task": "Dancing",
-    "duration_minutes": 22
+    "task": "Rhythmic Movement (Dancing, Yoga, Pilates)",
+    "duration": 22
   },
   {
     "key": "2-3",
-    "task": "Dancing",
-    "duration_minutes": 30
+    "task": "Rhythmic Movement (Dancing, Yoga, Pilates)",
+    "duration": 30
   },
   {
     "key": "2-4",
-    "task": "Dancing",
-    "duration_minutes": 45
+    "task": "Rhythmic Movement (Dancing, Yoga, Pilates)",
+    "duration": 45
   },
   {
     "key": "2-5",
-    "task": "Dancing",
-    "duration_minutes": 60
+    "task": "Rhythmic Movement (Dancing, Yoga, Pilates)",
+    "duration": 60
   },
   {
     "key": "2-1",
-    "task": "yoga or Pilates",
-    "duration_minutes": 22
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 30
   },
   {
     "key": "2-2",
-    "task": "yoga or Pilates",
-    "duration_minutes": 34
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 45
   },
   {
     "key": "2-3",
-    "task": "yoga or Pilates",
-    "duration_minutes": 45
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 60
   },
   {
     "key": "2-4",
-    "task": "yoga or Pilates",
-    "duration_minutes": 68
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 90
   },
   {
     "key": "2-5",
-    "task": "yoga or Pilates",
-    "duration_minutes": 90
-  },
-  {
-    "key": "2-1",
-    "task": "massages for muscle recovery",
-    "duration_minutes": 30
-  },
-  {
-    "key": "2-2",
-    "task": "massages for muscle recovery",
-    "duration_minutes": 45
-  },
-  {
-    "key": "2-3",
-    "task": "massages for muscle recovery",
-    "duration_minutes": 60
-  },
-  {
-    "key": "2-4",
-    "task": "massages for muscle recovery",
-    "duration_minutes": 90
-  },
-  {
-    "key": "2-5",
-    "task": "massages for muscle recovery",
-    "duration_minutes": 120
+    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
+    "duration": 120
   },
   {
     "key": "3-1",
     "task": "Yoga session",
-    "duration_minutes": 15
+    "duration": 15
   },
   {
     "key": "3-2",
     "task": "Yoga session",
-    "duration_minutes": 22
+    "duration": 22
   },
   {
     "key": "3-3",
     "task": "Yoga session",
-    "duration_minutes": 30
+    "duration": 30
   },
   {
     "key": "3-4",
     "task": "Yoga session",
-    "duration_minutes": 45
+    "duration": 45
   },
   {
     "key": "3-5",
     "task": "Yoga session",
-    "duration_minutes": 60
+    "duration": 60
   },
   {
     "key": "3-1",
     "task": "Walking",
-    "duration_minutes": "intensity modification is required, standard is 3 km"
+    "duration": "intensity modification is required, standard is 3 km"
   },
   {
     "key": "3-2",
     "task": "Walking",
-    "duration_minutes": "intensity modification is required, standard is 3 km"
+    "duration": "intensity modification is required, standard is 3 km"
   },
   {
     "key": "3-3",
     "task": "Walking",
-    "duration_minutes": "3 km"
+    "duration": "3 km"
   },
   {
     "key": "3-4",
     "task": "Walking",
-    "duration_minutes": "intensity modification is required, standard is 3 km"
+    "duration": "intensity modification is required, standard is 3 km"
   },
   {
     "key": "3-5",
     "task": "Walking",
-    "duration_minutes": "intensity modification is required, standard is 3 km"
+    "duration": "intensity modification is required, standard is 3 km"
   },
   {
     "key": "3-1",
     "task": "Mindfulness practice (e.g., mindful eating)",
-    "duration_minutes": 10
+    "duration": 10
   },
   {
     "key": "3-2",
     "task": "Mindfulness practice (e.g., mindful eating)",
-    "duration_minutes": 15
+    "duration": 15
   },
   {
     "key": "3-3",
     "task": "Mindfulness practice (e.g., mindful eating)",
-    "duration_minutes": 20
+    "duration": 20
   },
   {
     "key": "3-4",
     "task": "Mindfulness practice (e.g., mindful eating)",
-    "duration_minutes": 30
+    "duration": 30
   },
   {
     "key": "3-5",
     "task": "Mindfulness practice (e.g., mindful eating)",
-    "duration_minutes": 40
+    "duration": 40
   },
   {
     "key": "3-1",
     "task": "Gratitude reflection",
-    "duration_minutes": 5
+    "duration": 5
   },
   {
     "key": "3-2",
     "task": "Gratitude reflection",
-    "duration_minutes": 8
+    "duration": 8
   },
   {
     "key": "3-3",
     "task": "Gratitude reflection",
-    "duration_minutes": 10
+    "duration": 10
   },
   {
     "key": "3-4",
     "task": "Gratitude reflection",
-    "duration_minutes": 15
+    "duration": 15
   },
   {
     "key": "3-5",
     "task": "Gratitude reflection",
-    "duration_minutes": 20
+    "duration": 20
   }
 ]
