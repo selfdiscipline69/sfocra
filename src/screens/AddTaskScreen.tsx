@@ -16,6 +16,7 @@ import questsData from '../../assets/Quest.json';
 import { createStyles } from '../styles/addTaskStyles';
 import { imageVisibilityUtils } from '../utils/imageVisibilityUtils';
 import WeeklyTrialBox from '../components/WeeklyTrialBox';
+import BottomNavigation from '../components/settings/SettingBottomNavigation';
 
 // Move all your interfaces and component implementation here
 const { width } = Dimensions.get('window');
@@ -602,33 +603,7 @@ const AddTaskScreen = () => {
               </Modal>
             </ScrollView>
 
-            {/* Bottom Navigation Icons - Updated to match settings.tsx */}
-            <View style={[styles.bottomNav, { 
-              backgroundColor: theme.background, 
-              borderColor: theme.border 
-            }]}>
-              <TouchableOpacity 
-                onPress={() => router.push('/(tabs)/performance')}
-                style={styles.navButton}
-              >
-                <FontAwesome5 name="chart-line" size={22} color={theme.text} />
-              </TouchableOpacity>
-              
-              {/* Home button */}
-              <TouchableOpacity 
-                style={styles.homeButton} 
-                onPress={() => router.push('/(tabs)/homepage')}
-              >
-                <Text style={styles.homeButtonText}>Home</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                onPress={() => router.push('/(tabs)/settings')}
-                style={styles.navButton}
-              >
-                <Ionicons name="settings-outline" size={24} color={theme.text} />
-              </TouchableOpacity>
-            </View>
+            <BottomNavigation theme={theme} activeScreen="homepage" />
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
