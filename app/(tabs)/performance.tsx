@@ -11,12 +11,12 @@ import { useRouter, Stack } from 'expo-router';
 import { useTheme } from '../../src/context/ThemeContext';
 
 // Import components
-import XPLevelTracker from '../../src/components/performance/XPLevelTracker';
-import WeeklyHabitSection from '../../src/components/performance/WeeklyHabitSection';
-import TimeSpentSection from '../../src/components/performance/TimeSpentSection';
-import ProgressSummary from '../../src/components/performance/ProgressSummary';
-import LoadingErrorStates from '../../src/components/performance/LoadingErrorStates';
-import BottomNavigation from '../../src/components/settings/SettingBottomNavigation';
+import XPLevelTracker from '../../components/performance/XPLevelTracker';
+import WeeklyHabitSection from '../../components/performance/WeeklyHabitSection';
+import TimeSpentSection from '../../components/performance/TimeSpentSection';
+import ProgressSummary from '../../components/performance/ProgressSummary';
+import LoadingErrorStates from '../../components/performance/LoadingErrorStates';
+import BottomNavigation from '../../components/BottomNavigation';
 
 // Define the dashboard data type
 interface DashboardData {
