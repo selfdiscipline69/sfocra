@@ -20,80 +20,25 @@ export default function Question3() {
   // Load user token and saved selection when component mounts
   useEffect(() => {
     const loadData = async () => {
-      try {
-        // First, remove any NON-token specific choices to avoid confusion
-        await AsyncStorage.removeItem('question3Choice');
-        await AsyncStorage.removeItem('question3Code');
-        
-        // Get user token (this should be set during login/registration)
-        const token = await AsyncStorage.getItem('userToken');
-        console.log('Question3 - Current token:', token);
-        
-        if (!token) {
-          // If no token, redirect to login
-          console.log('No user token found - redirecting to login');
-          Alert.alert(
-            "Session Expired", 
-            "Please log in again to continue.",
-            [{ text: "OK", onPress: () => router.replace('/signup') }]
-          );
-          return;
-        }
-        
-        setUserToken(token);
-        
-        // Only load TOKEN-SPECIFIC choices
-        const savedSelection = await AsyncStorage.getItem(`question3Choice_${token}`);
-        console.log('Loaded selection for this user:', savedSelection);
-        
-        if (savedSelection !== null) {
-          setSelected(savedSelection);
-          setExpandedOption(savedSelection);
-        } else {
-          // No saved selection for this token
-          setSelected(null);
-          setExpandedOption(null);
-          console.log('No saved selections for this user. Starting fresh.');
-        }
-      } catch (e) {
-        console.error('Error loading data:', e);
-      }
+      const { loadSessionData } = require('../src/utils/loadSessionData');
+      await loadSessionData(3, router, setUserToken, setSelected, setExpandedOption);
     };
     loadData();
   }, [router]);
 
   // Function to handle option selection and expansion
   const handleSelection = async (option) => {
-    if (!userToken) {
-      console.log('No user token found when selecting option');
-      return;
-    }
-    
-    try {
-      if (selected === option) {
-        // If already selected, unselect it
-        setSelected(null);
-        setExpandedOption(null);
-        
-        // Remove from AsyncStorage - ONLY TOKEN-SPECIFIC
-        await AsyncStorage.removeItem(`question3Choice_${userToken}`);
-        await AsyncStorage.removeItem(`question3Code_${userToken}`);
-        console.log('Selection cleared');
-      } else {
-        // Get the numeric code for the selected tracking option
-        const trackingCode = trackingToCode[option];
-        
-        // Store ONLY with token-specific keys
-        await AsyncStorage.setItem(`question3Choice_${userToken}`, option);
-        await AsyncStorage.setItem(`question3Code_${userToken}`, String(trackingCode));
-        console.log(`Saved selection: ${option} (${trackingCode}) for token ${userToken}`);
-        
-        setSelected(option);
-        setExpandedOption(option);
-      }
-    } catch (e) {
-      console.error('Error saving selection:', e);
-    }
+    const { handleSelection: handleSelectionUtil } = require('../src/utils/handleSelectionUtil');
+    await handleSelectionUtil(
+      3, // question number
+      option,
+      userToken, 
+      selected,
+      setSelected,
+      setExpandedOption,
+      trackingToCode,
+      false // only store token-specific version (matches original behavior in question3)
+    );
   };
 
   // Function to get description key for an option
@@ -104,26 +49,16 @@ export default function Question3() {
 
   // Handle navigation with save
   const handleNext = async () => {
-    if (!userToken) {
-      console.log('No user token found when navigating');
-      return;
-    }
-    
-    if (selected) {
-      try {
-        // Get the numeric code for the selected tracking option
-        const trackingCode = trackingToCode[selected];
-        
-        // Store ONLY with token-specific keys
-        await AsyncStorage.setItem(`question3Choice_${userToken}`, selected);
-        await AsyncStorage.setItem(`question3Code_${userToken}`, String(trackingCode));
-        console.log(`Confirmed selection before navigation: ${selected}`);
-        
-        router.push('/question4');
-      } catch (e) {
-        console.error('Error saving before navigation:', e);
-      }
-    }
+    const { handleNext: handleNextNavigation } = require('../src/utils/handleNextNavigation');
+    await handleNextNavigation(
+      3, // question number
+      userToken,
+      selected,
+      trackingToCode,
+      router,
+      '/question4',
+      false // only store token-specific version (matches original behavior in question3)
+    );
   };
 
   // Back to previous page

@@ -20,80 +20,25 @@ export default function Question4() {
   // Load user token and saved selection when component mounts
   useEffect(() => {
     const loadData = async () => {
-      try {
-        // First, remove any NON-token specific choices to avoid confusion
-        await AsyncStorage.removeItem('question4Choice');
-        await AsyncStorage.removeItem('question4Code');
-        
-        // Get user token (this should be set during login/registration)
-        const token = await AsyncStorage.getItem('userToken');
-        console.log('Question4 - Current token:', token);
-        
-        if (!token) {
-          // If no token, redirect to login
-          console.log('No user token found - redirecting to login');
-          Alert.alert(
-            "Session Expired", 
-            "Please log in again to continue.",
-            [{ text: "OK", onPress: () => router.replace('/signup') }]
-          );
-          return;
-        }
-        
-        setUserToken(token);
-        
-        // Only load TOKEN-SPECIFIC choices
-        const savedSelection = await AsyncStorage.getItem(`question4Choice_${token}`);
-        console.log('Loaded selection for this user:', savedSelection);
-        
-        if (savedSelection !== null) {
-          setSelected(savedSelection);
-          setExpandedOption(savedSelection);
-        } else {
-          // No saved selection for this token
-          setSelected(null);
-          setExpandedOption(null);
-          console.log('No saved selections for this user. Starting fresh.');
-        }
-      } catch (e) {
-        console.error('Error loading data:', e);
-      }
+      const { loadSessionData } = require('../src/utils/loadSessionData');
+      await loadSessionData(4, router, setUserToken, setSelected, setExpandedOption);
     };
     loadData();
   }, [router]);
 
   // Function to handle option selection and expansion
   const handleSelection = async (option) => {
-    if (!userToken) {
-      console.log('No user token found when selecting option');
-      return;
-    }
-    
-    try {
-      if (selected === option) {
-        // If already selected, unselect it
-        setSelected(null);
-        setExpandedOption(null);
-        
-        // Remove from AsyncStorage - ONLY TOKEN-SPECIFIC
-        await AsyncStorage.removeItem(`question4Choice_${userToken}`);
-        await AsyncStorage.removeItem(`question4Code_${userToken}`);
-        console.log('Selection cleared');
-      } else {
-        // Get the numeric code for the selected consequence
-        const consequenceCode = consequenceToCode[option];
-        
-        // Store ONLY with token-specific keys
-        await AsyncStorage.setItem(`question4Choice_${userToken}`, option);
-        await AsyncStorage.setItem(`question4Code_${userToken}`, String(consequenceCode));
-        console.log(`Saved selection: ${option} (${consequenceCode}) for token ${userToken}`);
-        
-        setSelected(option);
-        setExpandedOption(option);
-      }
-    } catch (e) {
-      console.error('Error saving selection:', e);
-    }
+    const { handleSelection: handleSelectionUtil } = require('../src/utils/handleSelectionUtil');
+    await handleSelectionUtil(
+      4, // question number
+      option,
+      userToken,
+      selected,
+      setSelected,
+      setExpandedOption,
+      consequenceToCode,
+      false // only store token-specific version (matches original behavior)
+    );
   };
 
   // Function to get description key for an option
@@ -104,30 +49,17 @@ export default function Question4() {
 
   // Handle navigation with save - now navigating directly to User_Classification
   const handleNext = async () => {
-    if (!userToken) {
-      console.log('No user token found when navigating');
-      return;
-    }
-    
-    if (selected) {
-      try {
-        // Get the numeric code for the selected consequence
-        const consequenceCode = consequenceToCode[selected];
-        
-        // Store ONLY with token-specific keys
-        await AsyncStorage.setItem(`question4Choice_${userToken}`, selected);
-        await AsyncStorage.setItem(`question4Code_${userToken}`, String(consequenceCode));
-        console.log(`Confirmed selection before navigation: ${selected}`);
-        
-        // Make sure this is the only navigation occurring
-        console.log("Navigating to homepage");
-        await router.push({
-          pathname: '/User_Classification',
-        });
-      } catch (e) {
-        console.error('Error during navigation:', e);
-      }
-    }
+    const { handleNext: handleNextNavigation } = require('../src/utils/handleNextNavigation');
+    await handleNextNavigation(
+      4, // question number
+      userToken,
+      selected,
+      consequenceToCode,
+      router,
+      { pathname: '/User_Classification' }, // object-based navigation route
+      false, // only store token-specific version
+      "Navigating to homepage" // custom log message
+    );
   };
 
   // Back to previous page

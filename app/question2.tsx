@@ -22,72 +22,25 @@ export default function Question2() {
   // Load user token and saved selection when component mounts
   useEffect(() => {
     const loadData = async () => {
-      try {
-        // Get user token
-        const token = await AsyncStorage.getItem('userToken');
-        setUserToken(token);
-        
-        // First try to load with token-specific key
-        let savedSelection = null;
-        if (token) {
-          savedSelection = await AsyncStorage.getItem(`question2Choice_${token}`);
-        }
-        
-        // Fall back to non-token specific key if needed
-        if (savedSelection === null) {
-          savedSelection = await AsyncStorage.getItem('question2Choice');
-        }
-        
-        if (savedSelection !== null) {
-          setSelected(savedSelection);
-          setExpandedOption(savedSelection); // Also expand the saved selection
-        } else {
-          setSelected(null);
-          setExpandedOption(null);
-        }
-      } catch (e) {
-        console.error('Error loading data:', e);
-      }
+      const { loadSessionData } = require('../src/utils/loadSessionData');
+      await loadSessionData(2, router, setUserToken, setSelected, setExpandedOption);
     };
     loadData();
   }, []);
 
   // Function to save selection to AsyncStorage and handle expansion
   const handleSelection = async (option) => {
-    try {
-      if (selected === option) {
-        // If already selected, unselect it
-        setSelected(null);
-        setExpandedOption(null);
-        
-        // Remove from AsyncStorage
-        await AsyncStorage.removeItem('question2Choice');
-        await AsyncStorage.removeItem('question2Code');
-        
-        if (userToken) {
-          await AsyncStorage.removeItem(`question2Choice_${userToken}`);
-          await AsyncStorage.removeItem(`question2Code_${userToken}`);
-        }
-      } else {
-        // If not selected or a different option was selected, select this one
-        const difficultyCode = difficultyToCode[option];
-        
-        // Store both the human-readable choice and the code
-        await AsyncStorage.setItem('question2Choice', option);
-        await AsyncStorage.setItem('question2Code', String(difficultyCode));
-        
-        // If we have a user token, also store with token-specific keys
-        if (userToken) {
-          await AsyncStorage.setItem(`question2Choice_${userToken}`, option);
-          await AsyncStorage.setItem(`question2Code_${userToken}`, String(difficultyCode));
-        }
-        
-        setSelected(option);
-        setExpandedOption(option);
-      }
-    } catch (e) {
-      console.error('Error saving selection:', e);
-    }
+    const { handleSelection: handleSelectionUtil } = require('../src/utils/handleSelectionUtil');
+    await handleSelectionUtil(
+      2, // question number
+      option,
+      userToken,
+      selected,
+      setSelected,
+      setExpandedOption,
+      difficultyToCode,
+      true // store non-token version (matches behavior in question2)
+    );
   };
 
   // Function to get description key for an option
@@ -98,26 +51,16 @@ export default function Question2() {
 
   // Function to handle navigation to the next question
   const handleNext = async () => {
-    if (selected) {
-      try {
-        // Get the numeric code for the selected difficulty
-        const difficultyCode = difficultyToCode[selected];
-        
-        // Store both the human-readable choice and the code before navigation
-        await AsyncStorage.setItem('question2Choice', selected);
-        await AsyncStorage.setItem('question2Code', String(difficultyCode));
-        
-        // If we have a user token, also store with token-specific keys
-        if (userToken) {
-          await AsyncStorage.setItem(`question2Choice_${userToken}`, selected);
-          await AsyncStorage.setItem(`question2Code_${userToken}`, String(difficultyCode));
-        }
-        
-        router.push('/question3');
-      } catch (e) {
-        console.error('Error saving before navigation:', e);
-      }
-    }
+    const { handleNext: handleNextNavigation } = require('../src/utils/handleNextNavigation');
+    await handleNextNavigation(
+      2, // question number
+      userToken,
+      selected,
+      difficultyToCode,
+      router,
+      '/question3',
+      true // store non-token version (matches behavior in question2)
+    );
   };
 
   // Function to navigate back to Question 1
