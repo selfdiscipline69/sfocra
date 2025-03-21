@@ -6,10 +6,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../../src/context/ThemeContext';
 
 // Import components
-import ProfileSection from '../../components/settings/ProfileSection';
-import HeroClassSection from '../../components/settings/HeroClassSection';
-import SettingItem from '../../components/settings/SettingItem';
-import BottomNavigation from '../../components/BottomNavigation';
+import ProfileSection from '../../src/components/settings/ProfileSection';
+import HeroClassSection from '../../src/components/settings/HeroClassSection';
+import SettingItem from '../../src/components/settings/SettingItem';
+import BottomNavigation from '../../src/components/settings/SettingBottomNavigation';
 
 const { width } = Dimensions.get('window');
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { useTheme } from '../../src/context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 
 interface PieChartProps {
   data: {
