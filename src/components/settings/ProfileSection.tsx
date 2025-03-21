@@ -27,7 +27,7 @@ const ProfileSection = ({
           source={
             profileImage 
               ? { uri: profileImage } 
-              : require('../../assets/images/empty-icon.png')
+              : require('../../../assets/images/empty-icon.png')
           } 
           style={[styles.profileImage, { 
             backgroundColor: theme.mode === 'dark' ? theme.boxBackground : '#E0E0E0'

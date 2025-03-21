@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     width: '100%',
     lineHeight: 18,
   },
-  // Styles for enhanced version (for addTaskScreen)
+  // Styles for addTaskScreen
   taskContainer: {
     marginVertical: 10,
     borderRadius: 10,
