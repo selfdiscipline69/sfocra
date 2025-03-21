@@ -102,7 +102,8 @@ def main():
         if platform.system() != 'Windows' and platform.system() != 'Linux':
             print("⚠️ Android clearing only supported on Windows and Linux")
         else:
-            success = clear_android_storage() or success
+            pass
+            #success = clear_android_storage() or success
     
     if args.platform in ['ios', 'both']:
         if platform.system() != 'Darwin':

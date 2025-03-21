@@ -89,8 +89,8 @@ export default function SignupScreen() {
         await AsyncStorage.setItem('userToken', token);
         
         
-        // Navigate to question1
-        router.replace('/question1');
+        // Navigate to homepage
+        router.replace('/(tabs)/homepage');
       } else {
         // Invalid credentials
         console.log('Login failed: Credentials do not match');
