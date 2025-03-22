@@ -267,4 +267,61 @@ export const createStyles = (theme: any) => StyleSheet.create({
         width: 40,
         height: 40,
         },
+        categoryButton: {
+        padding: 10,
+        borderRadius: 8,
+        minWidth: 90,
+        marginLeft: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: theme.mode === 'dark' ? '#444' : '#ddd',
+        },
+        categoryButtonText: {
+        fontSize: 14,
+        fontWeight: '500',
+        },
+        categoryModalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        },
+        categoryModalContent: {
+        width: width - 40,
+        padding: 20,
+        borderRadius: 15,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        },
+        categoryModalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        },
+        categoryOption: {
+        width: '100%',
+        paddingVertical: 12,
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        marginBottom: 8,
+        },
+        selectedCategoryOption: {
+        backgroundColor: '#2196F3',
+        },
+        categoryOptionText: {
+        fontSize: 16,
+        textAlign: 'center',
+        },
+        selectedCategoryOptionText: {
+        color: 'white',
+        fontWeight: 'bold',
+        },
 });

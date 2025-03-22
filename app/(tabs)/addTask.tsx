@@ -14,7 +14,6 @@ export default function AddTask() {
         options={{
           headerStyle: {
             backgroundColor: theme.background,
-            height: 100,
           },
           headerTitleStyle: {
             fontSize: 16,

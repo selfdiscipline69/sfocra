@@ -32,17 +32,28 @@ export const addCustomTask = async ({
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   try {
-    if (customTask.trim() === '') {
-      Alert.alert('Error', 'Please enter a task description');
+    if (!customTask.trim()) {
+      // Handle empty task case
       return;
     }
     
-    const duration = parseInt(customTaskDuration) || 30;
-    // Include time in the formatted task if provided
-    const timeInfo = customTaskTime.trim() ? ` at ${customTaskTime}` : '';
-    const formattedQuest = `${customTask}${timeInfo} (${duration} min) - ${customTaskCategory}`;
-    const newTask: TaskItem = {
-      text: formattedQuest,
+    // Format task with duration and category
+    let taskText = customTask;
+    
+    if (customTaskDuration) {
+      taskText += ` (${customTaskDuration})`;
+    }
+    
+    // Add category to the task text
+    taskText += ` - ${customTaskCategory}`;
+    
+    // Add time information if provided
+    if (customTaskTime) {
+      taskText += ` at ${customTaskTime}`;
+    }
+    
+    const newTask = {
+      text: taskText,
       image: null,
       completed: false,
       showImage: false
@@ -51,10 +62,9 @@ export const addCustomTask = async ({
     const updatedTasks = [...additionalTasks, newTask];
     setAdditionalTasks(updatedTasks);
     
-    // Save with await to ensure completion
+    // Save to AsyncStorage if we have a userToken
     if (userToken) {
       await AsyncStorage.setItem(`additionalTasks_${userToken}`, JSON.stringify(updatedTasks));
-      console.log('Tasks saved after adding custom task:', JSON.stringify(updatedTasks));
     }
     
     setModalVisible(false);
