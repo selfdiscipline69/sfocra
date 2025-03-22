@@ -32,7 +32,7 @@ const AddTaskScreen = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [randomTask, setRandomTask] = useState<string>('');
   const [customTask, setCustomTask] = useState<string>('');
-  const [randomTaskDuration, setRandomTaskDuration] = useState<number>(30);
+  const [randomTaskDuration, setRandomTaskDuration] = useState<string>('30');
   const [customTaskDuration, setCustomTaskDuration] = useState<string>('30');
   const [randomTaskCategory, setRandomTaskCategory] = useState<string>('General');
   const [customTaskCategory, setCustomTaskCategory] = useState<string>('General');
@@ -77,18 +77,18 @@ const AddTaskScreen = () => {
       const randomQuest = questsData[randomIndex];
       
       setRandomTask(randomQuest.task || "Task");
-      setRandomTaskDuration(randomQuest.duration_minutes || 30);
+      setRandomTaskDuration(randomQuest.duration || '30');
       setRandomTaskCategory(randomQuest.category || "General");
       
       return {
         task: randomQuest.task || "Task",
-        duration: randomQuest.duration_minutes || 30,
+        duration: randomQuest.duration || '30',
         category: randomQuest.category || "General"
       };
     }
     return {
       task: "New task",
-      duration: 30,
+      duration: '30',
       category: "General"
     };
   };
@@ -113,7 +113,7 @@ const AddTaskScreen = () => {
   // Function to add the selected random task
   const addRandomTask = async () => {
     try {
-      const formattedQuest = `${randomTask} (${randomTaskDuration} min) - ${randomTaskCategory}`;
+      const formattedQuest = `${randomTask} (${randomTaskDuration}) - ${randomTaskCategory}`;
       const newTask: TaskItem = {
         text: formattedQuest,
         image: null,
@@ -210,7 +210,7 @@ const AddTaskScreen = () => {
                       <View style={styles.taskOptionContainer}>
                         <Text style={[styles.taskOptionTitle, { color: theme.text }]}>Suggested Task:</Text>
                         <Text style={[styles.taskOptionText, { color: theme.text }]}>
-                          {randomTask} ({randomTaskDuration} min) - {randomTaskCategory}
+                          {randomTask} ({randomTaskDuration}) - {randomTaskCategory}
                         </Text>
                         <TouchableOpacity 
                           style={styles.taskOptionButton}
@@ -238,9 +238,9 @@ const AddTaskScreen = () => {
                             <TextInput
                               style={[styles.taskDetailInput, { color: theme.text }]}
                               keyboardType="numeric"
-                              placeholder="Duration (minutes)"
+                              placeholder="Duration (minutes, km, etc.)"
                               placeholderTextColor="#999" 
-                              value={customTaskDuration}
+                              //value={customTaskDuration}
                               onChangeText={setCustomTaskDuration}
                             />
                           </View>

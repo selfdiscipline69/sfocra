@@ -57,7 +57,10 @@ const AdditionalTaskDisplay = ({
                     style={styles.deleteButton}
                     onPress={() => onDeleteTask(index)}
                   >
-                    <Text style={styles.deleteButtonText}>🗑️</Text>
+                    <Image 
+                      source={require('../../assets/icons/recycle-bin-icon-trash-bin-icon-png.png')} 
+                      style={[styles.deleteButtonIcon, { tintColor: theme.mode === 'dark' ? 'white' : 'white' }]} 
+                    />
                   </TouchableOpacity>
                 )}
                 <Text style={[styles.taskTitle, { color: theme.text }]}>Extra Task {index + 1}</Text>
@@ -169,8 +172,10 @@ const styles = StyleSheet.create({
   deleteButton: {
     marginRight: 10,
   },
-  deleteButtonText: {
-    fontSize: 16,
+  deleteButtonIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
   photoButton: {
     paddingHorizontal: 10,

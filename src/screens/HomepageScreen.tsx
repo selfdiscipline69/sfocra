@@ -53,26 +53,26 @@ const HomepageScreen = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 20}
     >
       <View style={styles.innerContainer}>
-        {/* Header with Profile and Quote */}
-        <View style={styles.header}>
-          <DailyQuote quote={content.dailyQuote} theme={theme} />
-          
-          <View style={styles.headerButtons}>
-            <ProfileSection 
-              profileImage={userData.profileImage} 
-              userHandle={userData.userHandle}
-              theme={theme}
-            />
-          </View>
-        </View>
-
-        {/* Scrollable Content */}
+        {/* Remove fixed header section and put everything in the ScrollView */}
         <ScrollView 
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={true} 
           scrollEnabled={true}
           style={styles.scrollView}
         >
+          {/* Header with Profile and Quote */}
+          <View style={styles.header}>
+            <DailyQuote quote={content.dailyQuote} theme={theme} />
+            
+            <View style={styles.headerButtons}>
+              <ProfileSection 
+                profileImage={userData.profileImage} 
+                userHandle={userData.userHandle}
+                theme={theme}
+              />
+            </View>
+          </View>
+          
           <View style={styles.spacerView} />
           
           {/* Weekly Trial Section */}
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   innerContainer: {
     flex: 1,
     paddingHorizontal: 5,
-    paddingTop: 20, 
+    paddingTop: 0, 
     position: 'relative',
   },
   header: {
@@ -121,17 +121,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     marginTop: 5,
+    marginLeft: 12,
+    flex: 1,
   },
   headerButtons: {
     alignItems: 'center',
     marginRight: 25,
   },
   content: {
+    paddingTop: 0,
     paddingBottom: 80,
     flexGrow: 1,
   },
   spacerView: {
-    height: 30,
+    height: 5,
   },
   keyboardSpace: {
     height: 100,

@@ -17,6 +17,18 @@ import * as ImagePicker from 'expo-image-picker';
 
 const { width } = Dimensions.get('window');
 
+interface SettingItem {
+  id: string;
+  title: string;
+  screen: string;
+  isSpecial?: boolean;
+  handler?: () => void;
+  isToggle?: boolean;
+  toggleValue?: boolean;
+  toggleHandler?: () => void;
+  rightElement?: () => React.ReactNode;
+}
+
 export default function AppearanceScreen() {
   const router = useRouter();
   const { theme, isDarkMode, toggleTheme } = useTheme();
@@ -114,11 +126,44 @@ export default function AppearanceScreen() {
     });
   };
 
+  const handleThemeToggle = () => {
+    toggleTheme(!isDarkMode);
+  };
+
   const settingsData: SettingItem[] = [
-    { id: '2', title: 'Appearance', screen: '/(tabs)/appearance' },
-    { id: '4', title: 'Privacy & Security', screen: '/(tabs)/privacy', handler: handlePrivacyNavigation },
-    { id: '6', title: 'Change Password', screen: '/(tabs)/change_pw' },
-    { id: '7', title: 'Logout', screen: '/', isSpecial: true },
+    { 
+      id: '1', 
+      title: 'Theme', 
+      screen: '', 
+      isToggle: true,
+      toggleValue: isDarkMode,
+      toggleHandler: handleThemeToggle,
+      rightElement: () => (
+        <View style={styles.themeToggleContainer}>
+          <Text style={[styles.themeLabel, { color: theme.text }]}>
+            {isDarkMode ? 'Dark Mode' : 'Light Mode'}
+          </Text>
+          <TouchableOpacity 
+            style={[
+              styles.themeToggle, 
+              { backgroundColor: isDarkMode ? theme.accent : '#ccc' }
+            ]}
+            onPress={handleThemeToggle}
+          >
+            <View style={[
+              styles.toggleKnob, 
+              { 
+                backgroundColor: 'white',
+                transform: [{ translateX: isDarkMode ? 22 : 0 }]
+              }
+            ]} />
+          </TouchableOpacity>
+        </View>
+      )
+    },
+    { id: '2', title: 'Privacy & Security', screen: '/(tabs)/privacy', handler: handlePrivacyNavigation },
+    { id: '3', title: 'Change Password', screen: '/(tabs)/change_pw' },
+    { id: '4', title: 'Logout', screen: '/', isSpecial: true },
   ];
 
   function renderSettingItem({ item, theme }: { item: SettingItem; theme: any }) {
@@ -133,13 +178,15 @@ export default function AppearanceScreen() {
           }
         ]}
         onPress={() => {
-          if (item.title === 'Logout') {
+          if (item.isToggle && item.toggleHandler) {
+            item.toggleHandler();
+          } else if (item.title === 'Logout') {
             router.replace('/');
           } else if (item.handler) {
             item.handler();
-          } else {
+          } else if (item.screen) {
             router.push({
-              pathname: item.screen
+              pathname: item.screen as any
             });
           }
         }}
@@ -151,7 +198,12 @@ export default function AppearanceScreen() {
         ]}>
           {item.title}
         </Text>
-        <Text style={[styles.arrowIcon, { color: theme.subtext }]}>➝</Text>
+        
+        {item.rightElement ? (
+          item.rightElement()
+        ) : (
+          <Text style={[styles.arrowIcon, { color: theme.subtext }]}>➝</Text>
+        )}
       </TouchableOpacity>
     );
   }
@@ -433,4 +485,29 @@ const styles = StyleSheet.create({
     height: 1,
     marginVertical: 10,
   },
+  themeToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  themeLabel: {
+    marginRight: 10,
+    fontSize: 14,
+  },
+  themeToggle: {
+    width: 50,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    paddingHorizontal: 2,
+  },
+  toggleKnob: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+  }
 });

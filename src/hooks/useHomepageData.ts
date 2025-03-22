@@ -87,7 +87,7 @@ export default function useHomepageData() {
           
           if (weeklyQuests.length > 0) {
             const formattedWeeklyQuests = weeklyQuests.map(quest => 
-              `${quest.task} (${quest.duration_minutes} min)`
+              `${quest.task} (${quest.duration})`
             ).join('\n\n');
             
             setWeeklyTrial(formattedWeeklyQuests);
@@ -108,7 +108,7 @@ export default function useHomepageData() {
         } else {
           const randomIndex = Math.floor(Math.random() * availableQuests.length);
           const selectedQuest = availableQuests.splice(randomIndex, 1)[0];
-          const taskText = `${selectedQuest.task} (${selectedQuest.duration_minutes} min)`;
+          const taskText = `${selectedQuest.task} (${selectedQuest.duration})`;
           dailyTasksArray.push(taskText);
         }
       }
