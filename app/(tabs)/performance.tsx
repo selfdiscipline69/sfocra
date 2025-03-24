@@ -106,11 +106,6 @@ export default function PerformanceScreen() {
     setRefreshing(false);
   };
   
-  // Back button handler
-  const handleBack = () => {
-    router.push('/(tabs)/homepage');
-  };
-  
   // Render dashboard content
   const renderDashboardContent = () => {
     if (!dashboardData) {
@@ -160,14 +155,6 @@ export default function PerformanceScreen() {
             color: theme.text,
           },
           headerTitle: "Performance Dashboard",
-          headerRight: () => (
-            <TouchableOpacity
-              style={styles.topRightBackButton}
-              onPress={handleBack}
-            >
-              <Text style={[styles.topRightBackText, { color: theme.text }]}>Back</Text>
-            </TouchableOpacity>
-          ),
         }} 
       />
       
@@ -221,17 +208,6 @@ const styles = StyleSheet.create({
   },
   retryText: {
     color: 'white',
-    fontWeight: 'bold',
-  },
-  topRightBackButton: {
-    backgroundColor: 'transparent',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    marginRight: 10,
-    borderRadius: 5,
-  },
-  topRightBackText: {
-    fontSize: 14,
     fontWeight: 'bold',
   },
 });

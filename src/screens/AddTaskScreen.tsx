@@ -11,17 +11,25 @@ import { createStyles } from '../styles/addTaskStyles';
 import AdditionalTaskDisplay from '../components/AdditionalTaskDisplay';
 import BottomNavigation from '../components/settings/SettingBottomNavigation';
 import { addCustomTask as addCustomTaskUtil } from '../utils/taskAdditionUtils';
-import { Portal } from 'react-native-portalize';
+import { TaskItem } from '../types/TaskTypes';
+import { themes } from '../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
-// Define TypeScript interfaces for task types
-interface TaskItem {
-  text: string;
-  image: string | null;
-  completed: boolean;
-  showImage: boolean;
-}
+// Function to get category color - same as in taskAdditionUtils.ts
+const getCategoryColor = (category: string): string => {
+  // Use the same colors as defined in ThemeContext
+  // We'll use light theme colors for consistency
+  switch(category.toLowerCase()) {
+    case 'fitness': return themes.light.categoryColors.fitness;
+    case 'learning': return themes.light.categoryColors.learning;
+    case 'knowledge': return themes.light.categoryColors.learning; // map knowledge to learning
+    case 'mindfulness': return themes.light.categoryColors.mindfulness;
+    case 'social': return themes.light.categoryColors.social;
+    case 'creativity': return themes.light.categoryColors.creativity;
+    default: return '#607D8B';  // Blue Grey (General)
+  }
+};
 
 const AddTaskScreen = () => {
   const { theme } = useTheme();
@@ -80,14 +88,21 @@ const AddTaskScreen = () => {
       const randomIndex = Math.floor(Math.random() * questsData.length);
       const randomQuest = questsData[randomIndex];
       
+      // Extract category from the key if it exists, or use a default
+      const category = randomQuest.key ? 
+        (randomQuest.key.startsWith('1-') ? 'Mindfulness' :
+         randomQuest.key.startsWith('2-') ? 'Fitness' :
+         randomQuest.key.startsWith('3-') ? 'General' : 'General') : 
+        'General';
+      
       setRandomTask(randomQuest.task || "Task");
       setRandomTaskDuration(randomQuest.duration || '30');
-      setRandomTaskCategory(randomQuest.category || "General");
+      setRandomTaskCategory(category);
       
       return {
         task: randomQuest.task || "Task",
         duration: randomQuest.duration || '30',
-        category: randomQuest.category || "General"
+        category: category
       };
     }
     return {
@@ -118,11 +133,18 @@ const AddTaskScreen = () => {
   const addRandomTask = async () => {
     try {
       const formattedQuest = `${randomTask} (${randomTaskDuration}) - ${randomTaskCategory}`;
+      
+      // Map to a category format our system recognizes
+      let categoryKey = randomTaskCategory.toLowerCase();
+      if (categoryKey === 'knowledge') categoryKey = 'learning';
+      
       const newTask: TaskItem = {
         text: formattedQuest,
         image: null,
         completed: false,
-        showImage: false
+        showImage: false,
+        category: categoryKey as any, // Type conversion for compatibility
+        color: getCategoryColor(categoryKey)
       };
       
       const updatedTasks = [...additionalTasks, newTask];
@@ -148,7 +170,7 @@ const AddTaskScreen = () => {
       additionalTasks,
       setAdditionalTasks,
       userToken,
-      setModalType
+      setModalVisible: () => setModalType('none')
     });
   };
 
@@ -169,7 +191,7 @@ const AddTaskScreen = () => {
   // Function to select a category and close modal
   const selectCategory = (category: string) => {
     setCustomTaskCategory(category);
-    setModalType('none');
+    setModalType('task');
   };
   
   // Add this function
@@ -210,10 +232,10 @@ const AddTaskScreen = () => {
 
             {/* Add New Task Button */}
             <TouchableOpacity 
-              style={[styles.addTaskButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#ccc' }]}
+              style={[styles.addTaskButton, { backgroundColor: theme.accent }]}
               onPress={addNewTask}
             >
-              <Text style={[styles.addTaskText, { color: theme.text }]}>+ Add New Task</Text>
+              <Text style={[styles.addTaskText, { color: 'white' }]}>+ Add New Task</Text>
             </TouchableOpacity>
           </ScrollView>
 
@@ -233,158 +255,156 @@ const AddTaskScreen = () => {
                     {/* Wrap these sections in a fragment or View */}
                     <>
                       {/* Random Task Option */}
-                      <View style={styles.taskOptionContainer}>
+                      <View style={[styles.taskOptionContainer, { backgroundColor: theme.mode === 'dark' ? '#333' : '#f0f0f0' }]}>
                         <Text style={[styles.taskOptionTitle, { color: theme.text }]}>Suggested Task:</Text>
                         <Text style={[styles.taskOptionText, { color: theme.text }]}>
                           {randomTask} ({randomTaskDuration}) - {randomTaskCategory}
                         </Text>
                         <TouchableOpacity 
-                          style={styles.taskOptionButton}
+                          style={[styles.taskOptionButton, { backgroundColor: theme.accent }]}
                           onPress={addRandomTask}
                         >
                           <Text style={styles.taskOptionButtonText}>Use This Task</Text>
                         </TouchableOpacity>
                       </View>
                       
-                      <View style={styles.modalDivider} />
+                      <View style={[styles.modalDivider, { backgroundColor: theme.mode === 'dark' ? '#555' : '#ddd' }]} />
                       
                       {/* Custom Task Option */}
                       <View style={styles.taskOptionContainer}>
-                        <Text style={[styles.taskOptionTitle, { color: theme.text }]}>Create Your Own:</Text>
+                        <Text style={[styles.taskOptionTitle, { color: theme.text }]}>Create Custom Task:</Text>
+                        
                         <TextInput
-                          style={[styles.taskOptionInput, { color: theme.text }]}
-                          placeholder="Enter your task description"
-                          placeholderTextColor="#999"
+                          style={[
+                            styles.taskOptionInput, 
+                            { 
+                              backgroundColor: theme.mode === 'dark' ? '#444' : '#f5f5f5',
+                              color: theme.text,
+                              borderColor: theme.mode === 'dark' ? '#555' : '#ddd',
+                              borderWidth: 1,
+                              height: 50  // Set explicit height for main task input
+                            }
+                          ]}
+                          placeholder="Enter your task"
+                          placeholderTextColor={theme.mode === 'dark' ? '#aaa' : '#888'}
                           value={customTask}
                           onChangeText={setCustomTask}
                         />
                         
                         <View style={styles.taskDetailsRow}>
-                          <View style={[styles.taskDetailItem, { flex: 1 }]}>
+                          <View style={styles.taskDetailItem}>
+                            <Text style={[styles.taskDetailLabel, { color: theme.text }]}>Duration (min)</Text>
                             <TextInput
-                              style={[styles.taskDetailInput, { color: theme.text }]}
+                              style={[
+                                styles.taskDetailInput, 
+                                { 
+                                  backgroundColor: theme.mode === 'dark' ? '#444' : '#f5f5f5',
+                                  color: theme.text,
+                                  borderColor: theme.mode === 'dark' ? '#555' : '#ddd',
+                                  borderWidth: 1
+                                }
+                              ]}
+                              placeholder="30"
+                              placeholderTextColor={theme.mode === 'dark' ? '#aaa' : '#888'}
                               keyboardType="numeric"
-                              placeholder="Duration (minutes, km, etc.)"
-                              placeholderTextColor="#999" 
-                              //value={customTaskDuration}
+                              value={customTaskDuration}
                               onChangeText={setCustomTaskDuration}
                             />
                           </View>
                           
-                          {/* Add Category Selection Button */}
-                          <TouchableOpacity 
+                          <View style={styles.taskDetailItem}>
+                            <Text style={[styles.taskDetailLabel, { color: theme.text }]}>Category</Text>
+                            <TouchableOpacity
+                              onPress={openCategoryModal}
+                              style={[
+                                styles.taskDetailInput, 
+                                { 
+                                  backgroundColor: theme.mode === 'dark' ? '#444' : '#f5f5f5',
+                                  borderColor: theme.mode === 'dark' ? '#555' : '#ddd',
+                                  borderWidth: 1,
+                                  justifyContent: 'center',
+                                  alignItems: 'flex-start',
+                                  paddingHorizontal: 12
+                                }
+                              ]}
+                            >
+                              <Text style={{ color: theme.text }}>{customTaskCategory}</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                        
+                        <View style={[styles.taskDetailItem, { marginBottom: 10 }]}>
+                          <Text style={[styles.taskDetailLabel, { color: theme.text }]}>Time (optional)</Text>
+                          <TextInput
                             style={[
-                              styles.categoryButton, 
+                              styles.taskDetailInput, 
                               { 
-                                backgroundColor: theme.mode === 'dark' ? '#333' : '#eee',
-                                borderColor: 'blue',
-                                borderWidth: 2,  // Make it clearly visible
+                                backgroundColor: theme.mode === 'dark' ? '#444' : '#f5f5f5',
+                                color: theme.text,
+                                borderColor: theme.mode === 'dark' ? '#555' : '#ddd',
+                                borderWidth: 1,
+                                padding: 12,
+                                height: 45
                               }
                             ]}
-                            onPress={() => {
-                              console.log('Category button pressed');
-                              openCategoryModal();
-                            }}
-                          >
-                            <Text style={[styles.categoryButtonText, { color: theme.text }]}>
-                              {customTaskCategory} ▼
-                            </Text>
-                          </TouchableOpacity>
+                            placeholder="e.g., 3:30 PM"
+                            placeholderTextColor={theme.mode === 'dark' ? '#aaa' : '#888'}
+                            value={customTaskTime}
+                            onChangeText={setCustomTaskTime}
+                          />
                         </View>
                         
                         <TouchableOpacity 
-                          style={styles.taskOptionButton}
+                          style={[styles.taskOptionButton, { backgroundColor: theme.accent, marginTop: 50 }]}
                           onPress={addCustomTask}
                         >
-                          <Text style={styles.taskOptionButtonText}>Create Custom Task</Text>
+                          <Text style={styles.taskOptionButtonText}>Add Custom Task</Text>
                         </TouchableOpacity>
                       </View>
-                      
-                      {/* Cancel Button */}
-                      <TouchableOpacity 
-                        style={styles.cancelButton}
-                        onPress={() => setModalType('none')}
-                      >
-                        <Text style={styles.cancelButtonText}>Cancel</Text>
-                      </TouchableOpacity>
                     </>
+                    
+                    <TouchableOpacity 
+                      style={styles.cancelButton}
+                      onPress={closeAllModals}
+                    >
+                      <Text style={[styles.cancelButtonText, { color: theme.text }]}>Cancel</Text>
+                    </TouchableOpacity>
                   </View>
                 </TouchableWithoutFeedback>
               </View>
             )}
-            
+
+            {/* Category Selection Modal */}
             {modalType === 'category' && (
-              <TouchableWithoutFeedback onPress={() => setModalType('none')}>
-                <View style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: 'rgba(0,0,0,0.5)',
-                }}>
-                  <TouchableWithoutFeedback onPress={e => e.stopPropagation()}>
-                    <View 
-                      style={{
-                        width: width * 0.8,
-                        backgroundColor: theme.boxBackground,
-                        borderRadius: 15,
-                        padding: 20,
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 3.84,
-                        elevation: 5,
-                      }}
+              <View style={styles.modalOverlay}>
+                <View style={[styles.modalContent, { backgroundColor: theme.boxBackground }]}>
+                  <Text style={[styles.modalTitle, { color: theme.text }]}>Select Category</Text>
+                  
+                  {taskCategories.map((category, index) => (
+                    <TouchableOpacity 
+                      key={index} 
+                      style={[
+                        styles.categoryButton,
+                        { backgroundColor: theme.mode === 'dark' ? '#333' : '#f0f0f0' }
+                      ]}
+                      onPress={() => selectCategory(category)}
                     >
-                      {/* Category dropdown content */}
-                      <Text style={{ fontSize: 18, fontWeight: 'bold', color: theme.text, marginBottom: 20 }}>
-                        Select Category
-                      </Text>
-                      
-                      {taskCategories.map((category) => (
-                        <TouchableOpacity 
-                          key={category}
-                          style={{
-                            width: '100%',
-                            paddingVertical: 12,
-                            paddingHorizontal: 15,
-                            borderRadius: 8,
-                            marginBottom: 8,
-                            backgroundColor: customTaskCategory === category ? '#2196F3' : 'transparent',
-                          }}
-                          onPress={() => selectCategory(category)}
-                        >
-                          <Text style={{
-                            fontSize: 16,
-                            textAlign: 'center',
-                            color: customTaskCategory === category ? 'white' : theme.text,
-                            fontWeight: customTaskCategory === category ? 'bold' : 'normal',
-                          }}>
-                            {category}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                      
-                      <TouchableOpacity
-                        style={{
-                          marginTop: 10,
-                          padding: 12,
-                          backgroundColor: '#555',
-                          borderRadius: 8,
-                          width: '100%',
-                          alignItems: 'center',
-                        }}
-                        onPress={() => setModalType('none')}
-                      >
-                        <Text style={{ color: 'white', fontSize: 14 }}>Cancel</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </TouchableWithoutFeedback>
+                      <Text style={[styles.categoryButtonText, { color: theme.text }]}>{category}</Text>
+                    </TouchableOpacity>
+                  ))}
+                  
+                  <TouchableOpacity 
+                    style={styles.cancelButton}
+                    onPress={closeAllModals}
+                  >
+                    <Text style={[styles.cancelButtonText, { color: theme.text }]}>Cancel</Text>
+                  </TouchableOpacity>
                 </View>
-              </TouchableWithoutFeedback>
+              </View>
             )}
           </Modal>
 
-          <BottomNavigation theme={theme} activeScreen="homepage" />
+          <BottomNavigation theme={theme} activeScreen="settings" />
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

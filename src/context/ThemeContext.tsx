@@ -15,6 +15,13 @@ export const themes = {
     boxBackground: '#1C1C1E',
     selectedBackground: '#2C2C2E',
     gradientColors: ["#4A4A4A", "#1E1E1E"],
+    categoryColors: {
+      fitness: '#D13030', // darker red for white text
+      learning: '#30A030', // darker green for white text
+      mindfulness: '#2080D1', // darker blue for white text
+      social: '#D1A020', // darker yellow for white text
+      creativity: '#8030D1', // darker purple for white text
+    }
   },
   light: {
     mode: 'light',
@@ -28,6 +35,13 @@ export const themes = {
     boxBackground: '#F2F2F7',
     selectedBackground: '#E5E5EA',
     gradientColors: ["#E0E0E0", "#FFFFFF"],
+    categoryColors: {
+      fitness: '#CC3333', // darker red for white text
+      learning: '#33A033', // darker green for white text
+      mindfulness: '#3399CC', // darker blue for white text
+      social: '#CC9933', // darker yellow for white text
+      creativity: '#9933CC', // darker purple for white text
+    }
   }
 };
 

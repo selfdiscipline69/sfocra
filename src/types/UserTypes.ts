@@ -10,4 +10,6 @@ export interface AdditionalTask {
   image: string | null;
   completed: boolean;
   showImage: boolean;
+  category?: 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity';
+  color?: string;
 }

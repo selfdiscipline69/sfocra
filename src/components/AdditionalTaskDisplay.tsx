@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image } from 'react-native';
 import { AdditionalTask } from '../types/UserTypes';
-import WeeklyTrialBox from './WeeklyTrialBox';
+import WeeklyTrialBox, { useBoxTextColor } from './WeeklyTrialBox';
 
 interface AdditionalTaskDisplayProps {
   tasks: AdditionalTask[];
@@ -12,6 +12,18 @@ interface AdditionalTaskDisplayProps {
   onPickImage?: (index: number) => void;
   onToggleImageVisibility?: (index: number) => void;
 }
+
+// Component for the content of the additional task box
+const AdditionalTaskContent = ({ text }: { text: string }) => {
+  // Use the box text color from context
+  const textColor = useBoxTextColor();
+  
+  return (
+    <Text style={[styles.taskText, { color: textColor }]}>
+      {text}
+    </Text>
+  );
+};
 
 const AdditionalTaskDisplay = ({ 
   tasks, 
@@ -106,16 +118,14 @@ const AdditionalTaskDisplay = ({
             </View>
           </View>
         ) : (
-          // Simple version for HomepageScreen
-          <WeeklyTrialBox key={`additional-${index}`} title={`Extra Task ${index + 1}`}>
-            <Text
-              style={[
-                styles.taskText, 
-                { color: theme.mode === 'dark' ? 'white' : 'black' }
-              ]}
-            >
-              {task.text}
-            </Text>
+          // Normal version for Homepage
+          <WeeklyTrialBox 
+            key={`additional-${index}`} 
+            title={`Additional Task ${index + 1}`}
+            category={task.category}
+            backgroundColor={task.color}
+          >
+            <AdditionalTaskContent text={task.text} />
           </WeeklyTrialBox>
         )
       ))}
@@ -136,7 +146,7 @@ const styles = StyleSheet.create({
   taskText: {
     fontSize: 14,
     paddingVertical: 5,
-    textAlign: 'center',
+    textAlign: 'left',
     width: '100%',
     lineHeight: 18,
   },

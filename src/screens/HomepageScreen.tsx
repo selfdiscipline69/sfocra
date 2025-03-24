@@ -12,6 +12,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 // Custom hooks
 import useHomepageData from '../hooks/useHomepageData';
 import { useTheme } from '../context/ThemeContext';
+import { getTaskCategory } from '../utils/taskCategoryUtils';
 
 // Components
 import ProfileSection from '../components/ProfileSection';
@@ -27,6 +28,17 @@ const HomepageScreen = () => {
   const router = useRouter();
   const { theme } = useTheme();
   const { userData, content, actions } = useHomepageData();
+  
+  // Determine categories for tasks
+  const weeklyTrialCategory = React.useMemo(() => 
+    content.weeklyTrial ? getTaskCategory(content.weeklyTrial) : undefined, 
+    [content.weeklyTrial]
+  );
+  
+  const dailyTaskCategories = React.useMemo(() => 
+    content.dailyTasks.map(task => getTaskCategory(task)),
+    [content.dailyTasks]
+  );
   
   // Fix the infinite loop by using a ref to track if we've loaded data
   const dataLoadedRef = React.useRef(false);
@@ -78,7 +90,8 @@ const HomepageScreen = () => {
           {/* Weekly Trial Section */}
           <WeeklyTrialSection 
             weeklyTrial={content.weeklyTrial} 
-            theme={theme} 
+            theme={theme}
+            category={weeklyTrialCategory}
           />
 
           {/* Daily Tasks */}
@@ -86,6 +99,7 @@ const HomepageScreen = () => {
             tasks={content.dailyTasks} 
             onChangeTask={actions.handleTaskChange}
             theme={theme}
+            categories={dailyTaskCategories}
           />
           
           {/* Additional Tasks */}

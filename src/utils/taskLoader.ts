@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TaskItem, WeeklyTrialItem } from '../types/UserTypes'; // Adjust import if needed
+import { TaskItem, WeeklyTrialItem } from '../types/TaskTypes'; // Use TaskTypes instead of UserTypes
+import { getTaskCategory } from './taskCategoryUtils';
 
 /**
  * Loads user tasks from AsyncStorage with fallback to homepage data
@@ -27,6 +28,10 @@ export const loadTasksFromStorage = async () => {
         const parsedTrial = JSON.parse(savedWeeklyTrial);
         if (parsedTrial.text && parsedTrial.text.trim() !== '') {
           weeklyTrial = parsedTrial;
+          // Add category if not present
+          if (!weeklyTrial.category) {
+            weeklyTrial.category = getTaskCategory(weeklyTrial.text);
+          }
         }
       } else {
         // Try homepage's weekly trial
@@ -36,7 +41,8 @@ export const loadTasksFromStorage = async () => {
             text: weeklyTrialText,
             image: null,
             completed: false,
-            showImage: false
+            showImage: false,
+            category: getTaskCategory(weeklyTrialText)
           };
         }
       }
@@ -49,6 +55,14 @@ export const loadTasksFromStorage = async () => {
         // Filter out empty tasks
         tasks = Array.isArray(parsedTasks) ? 
           parsedTasks.filter(task => task.text && task.text.trim() !== '') : [];
+          
+        // Add categories to tasks that don't have them
+        tasks = tasks.map(task => {
+          if (!task.category) {
+            return { ...task, category: getTaskCategory(task.text) };
+          }
+          return task;
+        });
       } else {
         // Try homepage tasks - convert from strings to task objects if needed
         const dailyTasksStr = await AsyncStorage.getItem('dailyTasks');
@@ -65,7 +79,8 @@ export const loadTasksFromStorage = async () => {
                     text: task,
                     image: null,
                     completed: false,
-                    showImage: false
+                    showImage: false,
+                    category: getTaskCategory(task)
                   });
                 }
               }
@@ -87,6 +102,14 @@ export const loadTasksFromStorage = async () => {
         // Filter out empty tasks
         additionalTasks = Array.isArray(parsedAdditionalTasks) ?
           parsedAdditionalTasks.filter(task => task.text && task.text.trim() !== '') : [];
+          
+        // Add categories to additional tasks
+        additionalTasks = additionalTasks.map(task => {
+          if (!task.category) {
+            return { ...task, category: getTaskCategory(task.text) };
+          }
+          return task;
+        });
       }
     }
 

@@ -7,117 +7,117 @@ export const createStyles = (theme: any) => StyleSheet.create({
     container: {
         flex: 1,
         // backgroundColor will be applied dynamically
-        },
-        innerContainer: {
+    },
+    innerContainer: {
         flex: 1,
         paddingHorizontal: 5,
         paddingTop: 10,
-        },
-        instructionText: {
+    },
+    instructionText: {
         // color will be applied dynamically
         fontSize: 16,
         textAlign: 'center',
         marginVertical: 10,
         fontWeight: 'bold',
-        },
-        content: {
+    },
+    content: {
         paddingBottom: 80,
-        },
-        taskContainer: {
+    },
+    taskContainer: {
         borderRadius: 10,
         marginBottom: 15,
         overflow: 'hidden',
         width: width - 10,
-        },
-        weeklyTaskContainer: {
-        backgroundColor: 'rgba(180, 0, 0, 0.2)',
+    },
+    weeklyTaskContainer: {
+        backgroundColor: theme.mode === 'dark' ? 'rgba(180, 0, 0, 0.2)' : 'rgba(255, 100, 100, 0.15)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 0, 0, 0.3)',
-        },
-        dailyTaskContainer: {
-        backgroundColor: 'rgba(255, 0, 0, 0.1)',
+        borderColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.3)' : 'rgba(255, 100, 100, 0.3)',
+    },
+    dailyTaskContainer: {
+        backgroundColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.1)' : 'rgba(255, 100, 100, 0.1)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 0, 0, 0.2)',
-        },
-        completedTaskWeekly: {
-        backgroundColor: 'rgba(0, 120, 0, 0.3)',
+        borderColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.2)' : 'rgba(255, 100, 100, 0.2)',
+    },
+    completedTaskWeekly: {
+        backgroundColor: theme.mode === 'dark' ? 'rgba(0, 120, 0, 0.3)' : 'rgba(0, 180, 0, 0.15)',
         borderWidth: 1,
-        borderColor: 'rgba(0, 180, 0, 0.4)',
-        },
-        completedTaskDaily: {
-        backgroundColor: 'rgba(0, 150, 0, 0.2)',
+        borderColor: theme.mode === 'dark' ? 'rgba(0, 180, 0, 0.4)' : 'rgba(0, 180, 0, 0.3)',
+    },
+    completedTaskDaily: {
+        backgroundColor: theme.mode === 'dark' ? 'rgba(0, 150, 0, 0.2)' : 'rgba(0, 180, 0, 0.1)',
         borderWidth: 1,
-        borderColor: 'rgba(0, 180, 0, 0.3)',
-        },
-        taskHeader: {
+        borderColor: theme.mode === 'dark' ? 'rgba(0, 180, 0, 0.3)' : 'rgba(0, 180, 0, 0.2)',
+    },
+    taskHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 10,
         paddingHorizontal: 15,
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        },
-        taskTitle: {
+        backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.1)',
+    },
+    taskTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: 'white',
-        },
-        photoButton: {
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+        color: theme.text,
+    },
+    photoButton: {
+        backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)',
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 15,
-        },
-        photoButtonText: {
-        color: 'white',
+    },
+    photoButtonText: {
+        color: theme.text,
         fontSize: 12,
-        },
-        taskContent: {
+    },
+    taskContent: {
         padding: 15,
-        },
-        taskInput: {
+    },
+    taskInput: {
         fontSize: 14,
-        color: 'white',
-        textAlign: 'center',
+        color: theme.text,
+        textAlign: 'left',
         paddingVertical: 5,
         minHeight: 50,
-        },
-        imageContainer: {
+    },
+    imageContainer: {
         marginTop: 10,
         alignItems: 'center',
-        },
-        taskImage: {
+    },
+    taskImage: {
         width: width - 60,
         height: width - 60,
         borderRadius: 8,
         marginTop: 10,
-        },
-        showProofButton: {
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    },
+    showProofButton: {
+        backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)',
         paddingVertical: 8,
         paddingHorizontal: 15,
         borderRadius: 20,
         alignSelf: 'center',
         marginTop: 10,
-        },
-        showProofText: {
-        color: 'white',
+    },
+    showProofText: {
+        color: theme.text,
         fontSize: 12,
         textAlign: 'center',
-        },
-        addTaskButton: {
-        backgroundColor: '#444',
+    },
+    addTaskButton: {
+        backgroundColor: theme.accent,
         paddingVertical: 15,
         borderRadius: 10,
         alignItems: 'center',
         marginVertical: 15,
-        },
-        addTaskText: {
+    },
+    addTaskText: {
         color: 'white',
         fontWeight: 'bold',
         fontSize: 16,
-        },
-        bottomNav: {
+    },
+    bottomNav: {
         position: 'absolute',
         bottom: 0,
         left: 0,
@@ -127,201 +127,133 @@ export const createStyles = (theme: any) => StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 40,
         borderTopWidth: 1,
-        borderColor: 'gray',
-        backgroundColor: 'black',
-        },
-        icon: {
+        borderColor: theme.border,
+        backgroundColor: theme.background,
+    },
+    icon: {
         fontSize: 24,
-        color: 'white',
-        },
-        homeButton: {
-        backgroundColor: 'rgba(255, 0, 0, 0.8)',
+        color: theme.text,
+    },
+    homeButton: {
+        backgroundColor: theme.accent,
         paddingVertical: 8,
         paddingHorizontal: 20,
         borderRadius: 15,
         alignItems: 'center',
         justifyContent: 'center',
-        },
-        homeButtonText: {
+    },
+    homeButtonText: {
         color: 'white',
         fontWeight: 'bold',
         fontSize: 14,
-        },
-        taskTitleContainer: {
+    },
+    taskTitleContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        },
-        deleteButton: {
+    },
+    deleteButton: {
         padding: 5,
         marginRight: 5,
-        },
-        deleteButtonText: {
+    },
+    deleteButtonText: {
         fontSize: 16,
-        },
-        // Modal Styles
-        modalOverlay: {
+    },
+    // Modal Styles
+    modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        },
-        modalContent: {
-        backgroundColor: '#222',
+    },
+    modalContent: {
         width: '100%',
         borderRadius: 15,
         padding: 20,
         alignItems: 'center',
         maxHeight: '80%',
-        },
-        modalTitle: {
+    },
+    modalTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: 'white',
         marginBottom: 20,
         textAlign: 'center',
-        },
-        taskOptionContainer: {
+    },
+    taskOptionContainer: {
         width: '100%',
-        marginBottom: 15,
-        backgroundColor: '#333',
+        marginBottom: 25,
         borderRadius: 10,
-        padding: 15,
-        },
-        taskOptionTitle: {
+        padding: 5,
+    },
+    taskOptionTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: 'white',
         marginBottom: 10,
-        },
-        taskOptionText: {
-        color: '#ddd',
+    },
+    taskOptionText: {
         fontSize: 14,
         marginBottom: 15,
         textAlign: 'center',
-        },
-        taskOptionInput: {
-        backgroundColor: '#444',
+    },
+    taskOptionInput: {
         padding: 12,
         borderRadius: 8,
-        color: 'white',
         marginBottom: 15,
         width: '100%',
-        },
-        taskDetailsRow: {
+        height: 50,
+    },
+    taskDetailsRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 15,
-        },
-        taskDetailItem: {
+    },
+    taskDetailItem: {
         flex: 1,
         marginHorizontal: 5,
-        },
-        taskDetailLabel: {
-        color: '#ddd',
+    },
+    taskDetailLabel: {
         fontSize: 12,
         marginBottom: 5,
-        },
-        taskDetailInput: {
-        backgroundColor: '#444',
-        padding: 8,
+    },
+    taskDetailInput: {
+        padding: 12,
         borderRadius: 5,
-        color: 'white',
-        },
-        taskOptionButton: {
-        backgroundColor: 'rgba(255, 0, 0, 0.8)',
+        height: 45,
+        justifyContent: 'center',
+    },
+    taskOptionButton: {
+        backgroundColor: theme.accent,
         padding: 12,
         borderRadius: 8,
         alignItems: 'center',
-        },
-        taskOptionButtonText: {
+    },
+    taskOptionButtonText: {
         color: 'white',
         fontWeight: 'bold',
         fontSize: 14,
-        },
-        modalDivider: {
+    },
+    modalDivider: {
         height: 1,
-        backgroundColor: '#555',
         width: '100%',
         marginVertical: 15,
-        },
-        cancelButton: {
-        marginTop: 10,
-        backgroundColor: '#555',
+    },
+    cancelButton: {
+        marginTop: 15,
+        padding: 12,
+        width: '100%',
+        alignItems: 'center',
+    },
+    cancelButtonText: {
+        fontSize: 14,
+    },
+    categoryButton: {
+        width: '100%',
         padding: 12,
         borderRadius: 8,
-        width: '100%',
-        alignItems: 'center',
-        },
-        cancelButtonText: {
-        color: 'white',
-        fontSize: 14,
-        },
-        timeInputContainer: {
-        marginBottom: 15,
-        width: '100%',
-        },
-        navButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 40,
-        height: 40,
-        },
-        categoryButton: {
-        padding: 10,
-        borderRadius: 8,
-        minWidth: 90,
-        marginLeft: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-        borderColor: theme.mode === 'dark' ? '#444' : '#ddd',
-        },
-        categoryButtonText: {
-        fontSize: 14,
-        fontWeight: '500',
-        },
-        categoryModalOverlay: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        },
-        categoryModalContent: {
-        width: width - 40,
-        padding: 20,
-        borderRadius: 15,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        },
-        categoryModalTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        },
-        categoryOption: {
-        width: '100%',
-        paddingVertical: 12,
-        paddingHorizontal: 15,
-        borderRadius: 8,
         marginBottom: 8,
-        },
-        selectedCategoryOption: {
-        backgroundColor: '#2196F3',
-        },
-        categoryOptionText: {
+        alignItems: 'center',
+    },
+    categoryButtonText: {
         fontSize: 16,
-        textAlign: 'center',
-        },
-        selectedCategoryOptionText: {
-        color: 'white',
-        fontWeight: 'bold',
-        },
+    },
 });

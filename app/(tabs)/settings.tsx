@@ -107,11 +107,6 @@ export default function SettingsScreen() {
     }
   };
 
-  // Add back button handler
-  const handleBack = () => {
-    router.push({ pathname: '/(tabs)/homepage' });
-  };
-
   // Handler for settings item press
   const handleSettingPress = (item: SettingItem) => {
     if (item.title === 'Logout') {
@@ -163,14 +158,6 @@ export default function SettingsScreen() {
           },
           headerTitle: "Settings",
           headerTitleAlign: 'center',
-          headerRight: () => (
-            <TouchableOpacity
-              style={styles.topRightBackButton}
-              onPress={handleBack}
-            >
-              <Text style={[styles.topRightBackText, { color: theme.text }]}>Back</Text>
-            </TouchableOpacity>
-          ),
         }} 
       />
       
@@ -202,16 +189,5 @@ const styles = StyleSheet.create({
   },
   listContentContainer: {
     paddingHorizontal: 15,
-  },
-  topRightBackButton: {
-    backgroundColor: 'transparent',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    marginRight: 10,
-    borderRadius: 5,
-  },
-  topRightBackText: {
-    fontSize: 14,
-    fontWeight: 'bold',
   },
 });
