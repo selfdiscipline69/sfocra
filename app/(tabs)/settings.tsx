@@ -4,6 +4,7 @@ import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../../src/context/ThemeContext';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 
 // Import components
 import ProfileSection from '../../components/settings/ProfileSection';
@@ -13,18 +14,22 @@ import BottomNavigation from '../../components/BottomNavigation';
 
 const { width } = Dimensions.get('window');
 
-// Define SettingItem interface for type safety
+// Define SettingItem interface with enhanced functionality
 interface SettingItem {
   id: string;
   title: string;
   screen: string;
   isSpecial?: boolean;
   handler?: () => void;
+  isToggle?: boolean;
+  toggleValue?: boolean;
+  toggleHandler?: () => void;
+  rightElement?: () => React.ReactNode;
 }
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { theme } = useTheme();
+  const { theme, isDarkMode, toggleTheme } = useTheme();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [userToken, setUserToken] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
@@ -107,15 +112,29 @@ export default function SettingsScreen() {
     }
   };
 
+  // Navigate back to homepage
+  const handleBack = () => {
+    router.push({
+      pathname: '/(tabs)/homepage'
+    });
+  };
+
   // Handler for settings item press
   const handleSettingPress = (item: SettingItem) => {
-    if (item.title === 'Logout') {
+    if (item.isToggle && item.toggleHandler) {
+      item.toggleHandler();
+    } else if (item.title === 'Logout') {
       router.replace('/');
     } else if (item.handler) {
       item.handler();
-    } else {
-      router.push({ pathname: item.screen });
+    } else if (item.screen) {
+      router.push({ pathname: item.screen as any });
     }
+  };
+
+  // Theme toggle handler
+  const handleThemeToggle = () => {
+    toggleTheme(!isDarkMode);
   };
 
   // Debugging for navigation
@@ -124,13 +143,73 @@ export default function SettingsScreen() {
     router.push({ pathname: "/(tabs)/privacy" });
   };
 
-  // Settings data for FlatList
+  // Combined settings data for FlatList
   const settingsData: SettingItem[] = [
-    { id: '2', title: 'Appearance', screen: '/(tabs)/appearance' },
+    { 
+      id: '1', 
+      title: 'Theme', 
+      screen: '', 
+      isToggle: true,
+      toggleValue: isDarkMode,
+      toggleHandler: handleThemeToggle,
+      rightElement: () => (
+        <View style={styles.themeToggleContainer}>
+          <Text style={[styles.themeLabel, { color: theme.text }]}>
+            {isDarkMode ? 'Dark Mode' : 'Light Mode'}
+          </Text>
+          <TouchableOpacity 
+            style={[
+              styles.themeToggle, 
+              { backgroundColor: isDarkMode ? theme.accent : '#ccc' }
+            ]}
+            onPress={handleThemeToggle}
+          >
+            <View style={[
+              styles.toggleKnob, 
+              { 
+                backgroundColor: 'white',
+                transform: [{ translateX: isDarkMode ? 22 : 0 }]
+              }
+            ]} />
+          </TouchableOpacity>
+        </View>
+      )
+    },
     { id: '4', title: 'Privacy & Security', screen: '/(tabs)/privacy', handler: handlePrivacyNavigation },
     { id: '6', title: 'Change Password', screen: '/(tabs)/change_pw' },
     { id: '7', title: 'Logout', screen: '/', isSpecial: true },
   ];
+
+  // Enhanced setting item renderer to handle toggles
+  const renderSettingItem = ({ item }: { item: SettingItem }) => {
+    return (
+      <TouchableOpacity 
+        style={[
+          styles.settingItem, 
+          item.isSpecial && styles.specialSettingItem,
+          { 
+            borderBottomColor: theme.border,
+            backgroundColor: 'transparent'
+          }
+        ]}
+        onPress={() => handleSettingPress(item)}
+      >
+        <Text style={[
+          styles.settingText,
+          { color: item.isSpecial ? theme.accent : theme.text },
+          item.isSpecial && styles.specialSettingText
+        ]}>
+          {item.title}
+        </Text>
+        
+        {item.rightElement ? (
+          item.rightElement()
+        ) : (
+          <Text style={[styles.arrowIcon, { color: theme.subtext }]}>➝</Text>
+        )}
+      </TouchableOpacity>
+    );
+  };
 
   // Render header component for list
   const ListHeaderComponent = () => (
@@ -158,15 +237,21 @@ export default function SettingsScreen() {
           },
           headerTitle: "Settings",
           headerTitleAlign: 'center',
+          headerRight: () => (
+            <TouchableOpacity 
+              style={styles.topRightBackButton} 
+              onPress={handleBack}
+            >
+              <Text style={[styles.topRightBackText, { color: theme.text }]}>Back</Text>
+            </TouchableOpacity>
+          ),
         }} 
       />
       
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <FlatList
           data={settingsData}
-          renderItem={({ item }) => (
-            <SettingItem item={item} theme={theme} onPress={handleSettingPress} />
-          )}
+          renderItem={renderSettingItem}
           keyExtractor={item => item.id}
           style={[styles.settingsList, { backgroundColor: theme.background }]}
           showsVerticalScrollIndicator={false}
@@ -190,4 +275,63 @@ const styles = StyleSheet.create({
   listContentContainer: {
     paddingHorizontal: 15,
   },
+  settingItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    marginVertical: 2,
+  },
+  specialSettingItem: {
+    borderBottomWidth: 0,
+    marginTop: 15,
+  },
+  settingText: {
+    fontSize: 16,
+  },
+  specialSettingText: {
+    fontWeight: 'bold',
+  },
+  arrowIcon: {
+    fontSize: 16,
+  },
+  topRightBackButton: {
+    backgroundColor: 'transparent',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginRight: 10,
+    borderRadius: 5,
+  },
+  topRightBackText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  // Theme toggle styles
+  themeToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  themeLabel: {
+    marginRight: 10,
+    fontSize: 14,
+  },
+  themeToggle: {
+    width: 50,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    paddingHorizontal: 2,
+  },
+  toggleKnob: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+  }
 });
