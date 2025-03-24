@@ -2,651 +2,781 @@
   {
     "key": "1-1",
     "task": "Meditation",
-    "duration": "5 minutes"
+    "duration": "5 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-2",
     "task": "Meditation",
-    "duration": "10 minutes"
+    "duration": "10 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-3",
     "task": "Meditation",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-4",
     "task": "Meditation",
-    "duration": "25 minutes"
+    "duration": "25 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-5",
     "task": "Meditation",
-    "duration": "40 minutes"
+    "duration": "40 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-1",
     "task": "talk to a friend about your day (preferably call a friend you haven't talked to in a while)",
-    "duration": "10 minutes"
+    "duration": "10 minutes",
+    "category": "social"
   },
   {
     "key": "1-2",
     "task": "talk to a friend about your day (preferably call a friend you haven't talked to in a while)",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "social"
   },
   {
     "key": "1-3",
     "task": "talk to a friend about your day (preferably call a friend you haven't talked to in a while)",
-    "duration": "20 minutes"
+    "duration": "20 minutes",
+    "category": "social"
   },
   {
     "key": "1-4",
     "task": "talk to a friend about your day (preferably call a friend you haven't talked to in a while)",
-    "duration": "25 minutes"
+    "duration": "25 minutes",
+    "category": "social"
   },
   {
     "key": "1-5",
     "task": "talk to a friend about your day (preferably call a friend you haven't talked to in a while)",
-    "duration": "25 minutes"
+    "duration": "25 minutes",
+    "category": "social"
   },
   {
     "key": "1-1",
     "task": "Journaling emotions and thoughts",
-    "duration": "10 minutes"
+    "duration": "10 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-2",
     "task": "Journaling emotions and thoughts",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-3",
     "task": "Journaling emotions and thoughts",
-    "duration": "20 minutes"
+    "duration": "20 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-4",
     "task": "Journaling emotions and thoughts",
-    "duration": "25 minutes"
+    "duration": "25 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-5",
     "task": "Journaling emotions and thoughts",
-    "duration": "30 minutes"
+    "duration": "30 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-1",
     "task": "Book Reading",
-    "duration": "1 chapter/ 2 pages"
+    "duration": "1 chapter/ 2 pages",
+    "category": "learning"
   },
   {
     "key": "1-2",
     "task": "Book Reading",
-    "duration": "1 chapter/ 6 pages"
+    "duration": "1 chapter/ 6 pages",
+    "category": "learning"
   },
   {
     "key": "1-3",
     "task": "Book Reading",
-    "duration": "1 chapter/ 10 pages"
+    "duration": "1 chapter/ 10 pages",
+    "category": "learning"
   },
   {
     "key": "1-4",
     "task": "Book Reading",
-    "duration": "1 chapter/26 pages"
+    "duration": "1 chapter/26 pages",
+    "category": "learning"
   },
   {
     "key": "1-5",
     "task": "Book Reading",
-    "duration": "2 chapter/30 pages"
+    "duration": "2 chapter/30 pages",
+    "category": "learning"
   },
   {
     "key": "1-1",
     "task": "Listening to a podcast",
-    "duration": "1 episode/ 10 minutes"
+    "duration": "1 episode/ 10 minutes",
+    "category": "learning"
   },
   {
     "key": "1-2",
     "task": "Listening to a podcast",
-    "duration": "1 episode/ 20 minutes"
+    "duration": "1 episode/ 20 minutes",
+    "category": "learning"
   },
   {
     "key": "1-3",
     "task": "Listening to a podcast",
-    "duration": "1 episode/ 30 minutes"
+    "duration": "1 episode/ 30 minutes",
+    "category": "learning"
   },
   {
     "key": "1-4",
     "task": "Listening to a podcast",
-    "duration": "1 episode/ 50 minutes"
+    "duration": "1 episode/ 50 minutes",
+    "category": "learning"
   },
   {
     "key": "1-5",
     "task": "Listening to a podcast",
-    "duration": "2 episode/ 80 minutes"
+    "duration": "2 episode/ 80 minutes",
+    "category": "learning"
   },
   {
     "key": "1-1",
     "task": "Listening to chill/ mindful music",
-    "duration": "10 minutes"
+    "duration": "10 minutes",
+    "category": "learning"
   },
   {
     "key": "1-2",
     "task": "Listening to chill/ mindful music",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "learning"
   },
   {
     "key": "1-3",
     "task": "Listening to chill/ mindful music",
-    "duration": "20 minutes"
+    "duration": "20 minutes",
+    "category": "learning"
   },
   {
     "key": "1-4",
     "task": "Listening to chill/ mindful music",
-    "duration": "30 minutes"
+    "duration": "30 minutes",
+    "category": "learning"
   },
   {
     "key": "1-5",
     "task": "Listening to chill/ mindful music",
-    "duration": "40 minutes"
+    "duration": "40 minutes",
+    "category": "learning"
   },
   {
     "key": "1-1",
     "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "10 minutes"
+    "duration": "10 minutes",
+    "category": "creativity"
   },
   {
     "key": "1-2",
     "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "creativity"
   },
   {
     "key": "1-3",
     "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "25 minutes"
+    "duration": "25 minutes",
+    "category": "creativity"
   },
   {
     "key": "1-4",
     "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "40 minutes"
+    "duration": "40 minutes",
+    "category": "creativity"
   },
   {
     "key": "1-5",
     "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "50 minutes"
+    "duration": "50 minutes",
+    "category": "creativity"
   },
   {
     "key": "1-1",
     "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "10 minutes"
+    "duration": "10 minutes",
+    "category": "creativity"
   },
   {
     "key": "1-2",
     "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "creativity"
   },
   {
     "key": "1-3",
     "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "25 minutes"
+    "duration": "25 minutes",
+    "category": "creativity"
   },
   {
     "key": "1-4",
     "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "40 minutes"
+    "duration": "40 minutes",
+    "category": "creativity"
   },
   {
     "key": "1-5",
     "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "50 minutes"
+    "duration": "50 minutes",
+    "category": "creativity"
   },
   {
     "key": "1-1",
     "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "learning"
   },
   {
     "key": "1-2",
     "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration": "22 minutes"
+    "duration": "22 minutes",
+    "category": "learning"
   },
   {
     "key": "1-3",
     "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration": "30 minutes"
+    "duration": "30 minutes",
+    "category": "learning"
   },
   {
     "key": "1-4",
     "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration": "45 minutes"
+    "duration": "45 minutes",
+    "category": "learning"
   },
   {
     "key": "1-5", 
     "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration": "60 minutes"
+    "duration": "60 minutes",
+    "category": "learning"
   },
   {
     "key": "1-1",
     "task": "Self-reflection",
-    "duration": "10 minutes"
+    "duration": "10 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-2",
     "task": "Self-reflection",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-3",
     "task": "Self-reflection",
-    "duration": "20 minutes"
+    "duration": "20 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-4",
     "task": "Self-reflection",
-    "duration": "30 minutes"
+    "duration": "30 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-5",
     "task": "Self-reflection",
-    "duration": "40 minutes"
+    "duration": "40 minutes",
+    "category": "mindfulness"
   },
   {
     "key": "1-1",
     "task": "Skill Development (language, coding, math))",
-    "duration": "1 episode/ 10 minutes"
+    "duration": "1 episode/ 10 minutes",
+    "category": "learning"
   },
   {
     "key": "1-2",
     "task": "Skill Development (language, coding, math))",
-    "duration": "1 episode/ 20 minutes"
+    "duration": "1 episode/ 20 minutes",
+    "category": "learning"
   },
   {
     "key": "1-3",
     "task": "Skill Development (language, coding, math))",
-    "duration": "1 episode/ 30 minutes"
+    "duration": "1 episode/ 30 minutes",
+    "category": "learning"
   },
   {
     "key": "1-4",
     "task": "Skill Development (language, coding, math))",
-    "duration": "1 episode/ 45 minutes"
+    "duration": "1 episode/ 45 minutes",
+    "category": "learning"
   },
   {
     "key": "1-5",
     "task": "Skill Development (language, coding, math))",
-    "duration": "1 episode/ 60 minutes"
+    "duration": "1 episode/ 60 minutes",
+    "category": "learning"
   },
   {
     "key": "1-1",
     "task": "Watching educational documentary",
-    "duration": "1 episode/ 15 minutes"
+    "duration": "1 episode/ 15 minutes",
+    "category": "learning"
   },
   {
     "key": "1-2",
     "task": "Watching educational documentary",
-    "duration": "1 episode/ 25 minutes"
+    "duration": "1 episode/ 25 minutes",
+    "category": "learning"
   },
   {
     "key": "1-3",
     "task": "Watching educational documentary",
-    "duration": "1 episode/ 30 minutes"
+    "duration": "1 episode/ 30 minutes",
+    "category": "learning"
   },
   {
     "key": "1-4",
     "task": "Watching educational documentary",
-    "duration": "1 episode/ 45 minutes"
+    "duration": "1 episode/ 45 minutes",
+    "category": "learning"
   },
   {
     "key": "1-5",
     "task": "Watching educational documentary",
-    "duration": "1 episode/ 90 minutes"
+    "duration": "1 episode/ 90 minutes",
+    "category": "learning"
   },
   {
     "key": "1-1",
     "task": "Cooking",
-    "duration": "Cook a simple dish (e.g., scrambled eggs or a basic salad)"
+    "duration": "Cook a simple dish (e.g., scrambled eggs or a basic salad)",
+    "category": "creativity"
   },
   {
     "key": "1-2",
     "task": "Cooking",
-    "duration": "Cook a complete meal (e.g., main course with a side)"
+    "duration": "Cook a complete meal (e.g., main course with a side)",
+    "category": "creativity"
   },
   {
     "key": "1-3",
     "task": "Cooking",
-    "duration": "Cook a meal with a dessert (e.g., main course, side, and a simple dessert like fruit salad)"
+    "duration": "Cook a meal with a dessert (e.g., main course, side, and a simple dessert like fruit salad)",
+    "category": "creativity"
   },
   {
     "key": "1-4",
     "task": "Cooking",
-    "duration": "Cook a three-course meal (e.g., appetizer, main course, dessert)"
+    "duration": "Cook a three-course meal (e.g., appetizer, main course, dessert)",
+    "category": "creativity"
   },
   {
     "key": "1-5",
     "task": "Cooking",
-    "duration": "Cook a gourmet or fine dining dish (e.g., a complex recipe with multiple components)"
+    "duration": "Cook a gourmet or fine dining dish (e.g., a complex recipe with multiple components)",
+    "category": "creativity"
   },
   {
     "key": "1-1",
     "task": "article reading",
-    "duration": "1 articles"
+    "duration": "1 articles",
+    "category": "learning"
   },
   {
     "key": "1-2",
     "task": "article reading",
-    "duration": "2 articles"
+    "duration": "2 articles",
+    "category": "learning"
   },
   {
     "key": "1-3",
     "task": "article reading",
-    "duration": "2 articles"
+    "duration": "2 articles",
+    "category": "learning"
   },
   {
     "key": "1-4",
     "task": "article reading",
-    "duration": "3 articles"
+    "duration": "3 articles",
+    "category": "learning"
   },
   {
     "key": "1-5",
     "task": "article reading",
-    "duration": "5 articles"
+    "duration": "5 articles",
+    "category": "learning"
   },
   {
     "key": "2-1",
     "task": "Working out in the gym",
-    "duration": "30 minutes"
+    "duration": "30 minutes",
+    "category": "physical"
   },
   {
     "key": "2-2",
     "task": "Working out in the gym",
-    "duration": "45 minutes"
+    "duration": "45 minutes",
+    "category": "physical"
   },
   {
     "key": "2-3",
     "task": "Working out in the gym",
-    "duration": "60 minutes"
+    "duration": "60 minutes",
+    "category": "physical"
   },
   {
     "key": "2-4",
     "task": "Working out in the gym",
-    "duration": "90 minutes"
+    "duration": "90 minutes",
+    "category": "physical"
   },
   {
     "key": "2-5",
     "task": "Working out in the gym",
-    "duration": "120 minutes"
+    "duration": "120 minutes",
+    "category": "physical"
   },
   {
     "key": "2-1",
     "task": "Running",
-    "duration": "1.5 km"
+    "duration": "1.5 km",
+    "category": "physical"
   },
   {
     "key": "2-2",
     "task": "Running",
-    "duration": "3 km"
+    "duration": "3 km",
+    "category": "physical"
   },
   {
     "key": "2-3",
     "task": "Running",
-    "duration": "5 km"
+    "duration": "5 km",
+    "category": "physical"
   },
   {
     "key": "2-4",
     "task": "Running",
-    "duration": "7 km"
+    "duration": "7 km",
+    "category": "physical"
   },
   {
     "key": "2-5",
     "task": "Running",
-    "duration": "10 km"
+    "duration": "10 km",
+    "category": "physical"
   },
   {
     "key": "2-1",
     "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "5 minutes"
+    "duration": "5 minutes",
+    "category": "physical"
   },
   {
     "key": "2-2",
     "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "8 minutes"
+    "duration": "8 minutes",
+    "category": "physical"
   },
   {
     "key": "2-3",
     "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "10 minutes"
+    "duration": "10 minutes",
+    "category": "physical"
   },
   {
     "key": "2-4",
     "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "physical"
   },
   {
     "key": "2-5",
     "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "20 minutes"
+    "duration": "20 minutes",
+    "category": "physical"
   },
   {
     "key": "2-1",
     "task": "Outdoor cadio (e.g. Cycling, Hiking, swimming, etc.)",
-    "duration": "1.5 km/ 15 minutes"
+    "duration": "1.5 km/ 15 minutes",
+    "category": "physical"
   },
   {
     "key": "2-2",
     "task": "Outdoor cadio (e.g. Cycling, Hiking, swimming, etc.)",
-    "duration": "3 km/ 30 minutes"
+    "duration": "3 km/ 30 minutes",
+    "category": "physical"
   },
   {
     "key": "2-3",
     "task": "Outdoor cadio (e.g. Cycling, Hiking, swimming, etc.)",
-    "duration": "5 km/ 60 minutes"
+    "duration": "5 km/ 60 minutes",
+    "category": "physical"
   },
   {
     "key": "2-4",
     "task": "Outdoor cadio (e.g. Cycling, Hiking, swimming, etc.)",
-    "duration": "7 km/ 90 minutes"
+    "duration": "7 km/ 90 minutes",
+    "category": "physical"
   },
   {
     "key": "2-5",
     "task": "Outdoor cadio (e.g. Cycling, Hiking, swimming, etc.)",
-    "duration": "10 km/ 120 minutes"
+    "duration": "10 km/ 120 minutes",
+    "category": "physical"
   },
   {
     "key": "2-1",
     "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-    "duration": "2 sets"
+    "duration": "2 sets",
+    "category": "physical"
   },
   {
     "key": "2-2",
     "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-    "duration": "2 sets"
+    "duration": "2 sets",
+    "category": "physical"
   },
   {
     "key": "2-3",
     "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-    "duration": "3 sets"
+    "duration": "3 sets",
+    "category": "physical"
   },
   {
     "key": "2-4",
     "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-    "duration": "5 sets"
+    "duration": "5 sets",
+    "category": "physical"
   },
   {
     "key": "2-5",
     "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-    "duration": "10 sets"
+    "duration": "10 sets",
+    "category": "physical"
   },
   {
     "key": "2-1",
     "task": "Rhythmic Movement (Dancing, Yoga, Pilates, etc.)",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "physical"
   },
   {
     "key": "2-2",
     "task": "Rhythmic Movement (Dancing, Yoga, Pilates, etc.)",
-    "duration": "22 minutes"
+    "duration": "22 minutes",
+    "category": "physical"
   },
   {
     "key": "2-3",
     "task": "Rhythmic Movement (Dancing, Yoga, Pilates, etc.)",
-    "duration": "30 minutes"
+    "duration": "30 minutes",
+    "category": "physical"
   },
   {
     "key": "2-4",
     "task": "Rhythmic Movement (Dancing, Yoga, Pilates, etc.)",
-    "duration": "45 minutes"
+    "duration": "45 minutes",
+    "category": "physical"
   },
   {
     "key": "2-5",
     "task": "Rhythmic Movement (Dancing, Yoga, Pilates, etc.)",
-    "duration": "60 minutes"
+    "duration": "60 minutes",
+    "category": "physical"
   },
   {
     "key": "2-1",
     "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "30 minutes"
+    "duration": "30 minutes",
+    "category": "physical"
   },
   {
     "key": "2-2",
     "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "45 minutes"
+    "duration": "45 minutes",
+    "category": "physical"
   },
   {
     "key": "2-3",
     "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "60 minutes"
+    "duration": "60 minutes",
+    "category": "physical"
   },
   {
     "key": "2-4",
     "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "90 minutes"
+    "duration": "90 minutes",
+    "category": "physical"
   },
   {
     "key": "2-5",
     "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "120 minutes"
+    "duration": "120 minutes",
+    "category": "physical"
   },
   {
     "key": "3-1",
     "task": "Yoga session",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "physical"
   },
   {
     "key": "3-2",
     "task": "Yoga session",
-    "duration": "22 minutes"
+    "duration": "22 minutes",
+    "category": "physical"
   },
   {
     "key": "3-3",
     "task": "Yoga session",
-    "duration": "30 minutes"
+    "duration": "30 minutes",
+    "category": "physical"
   },
   {
     "key": "3-4",
     "task": "Yoga session",
-    "duration": "45 minutes"
+    "duration": "45 minutes",
+    "category": "physical"
   },
   {
     "key": "3-5",
     "task": "Yoga session",
-    "duration": "60 minutes"
+    "duration": "60 minutes",
+    "category": "physical"
   },
   {
     "key": "3-1",
     "task": "Walking",
-    "duration": "1.5 km"
+    "duration": "1.5 km",
+    "category": "physical"
   },
   {
     "key": "3-2",
     "task": "Walking",
-    "duration": "3 km"
+    "duration": "3 km",
+    "category": "physical"
   },
   {
     "key": "3-3",
     "task": "Walking",
-    "duration": "3 km"
+    "duration": "3 km",
+    "category": "physical"
   },
   {
     "key": "3-4",
     "task": "Walking",
-    "duration": "5 km"
+    "duration": "5 km",
+    "category": "physical"
   },
   {
     "key": "3-5",
     "task": "Walking",
-    "duration": "7 km"
+    "duration": "7 km",
+    "category": "physical"
   },
   {
     "key": "3-1",
     "task": "jogging to the nearest park for a reflection",
-    "duration": "10 minutes"
+    "duration": "10 minutes",
+    "category": "physical"
   },
   {
     "key": "3-2",
     "task": "jogging to the nearest park for a reflection",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "physical"
   },
   {
     "key": "3-3",
     "task": "jogging to the nearest park for a reflection",
-    "duration": "20 minutes"
+    "duration": "20 minutes",
+    "category": "physical"
   },
   {
     "key": "3-4",
     "task": "jogging to the nearest park for a reflection",
-    "duration": "30 minutes"
+    "duration": "30 minutes",
+    "category": "physical"
   },
   {
     "key": "3-5",
     "task": "jogging to the nearest park for a reflection",
-    "duration": "40 minutes"
+    "duration": "40 minutes",
+    "category": "physical"
   },
   {
     "key": "3-1",
     "task": "quality sleeping",
-    "duration": "at least 6 hours"
+    "duration": "at least 6 hours",
+    "category": "physical"
   },
   {
     "key": "3-2",
     "task": "quality sleeping",
-    "duration": "at least 7 hours"
+    "duration": "at least 7 hours",
+    "category": "physical"
   },
   {
     "key": "3-3",
     "task": "quality sleeping",
-    "duration": "at least 8 hours"
+    "duration": "at least 8 hours",
+    "category": "physical"
   },
   {
     "key": "3-4",
     "task": "quality sleeping",
-    "duration": "at least 8 hours"
+    "duration": "at least 8 hours",
+    "category": "physical"
   },
   {
     "key": "3-5",
     "task": "quality sleeping",
-    "duration": "at least 8 hours"
+    "duration": "at least 8 hours",
+    "category": "physical"
   },
   {
     "key": "3-1",
     "task": "Discover a new hobby group (explore community like reddit, facebook, e.g., fishing, coding, photography, etc.)",
-    "duration": "5 minutes"
+    "duration": "5 minutes",
+    "category": "social"
   },
   {
     "key": "3-2",
     "task": "Discover a new hobby group (explore community like reddit, facebook, e.g., fishing, coding, photography, etc.)",
-    "duration": "10 minutes"
+    "duration": "10 minutes",
+    "category": "social"
   },
   {
     "key": "3-3",
     "task": "Discover a new hobby group (explore community like reddit, facebook, e.g., fishing, coding, photography, etc.)",
-    "duration": "15 minutes"
+    "duration": "15 minutes",
+    "category": "social"
   },  
   {
     "key": "3-4",
     "task": "Discover a new hobby group (explore community like reddit, facebook, e.g., fishing, coding, photography, etc.)",
-    "duration": "20 minutes"
+    "duration": "20 minutes",
+    "category": "social"
   },
   {
     "key": "3-5",
     "task": "Discover a new hobby group (explore community like reddit, facebook, e.g., fishing, coding, photography, etc.)",
-    "duration": "25 minutes"
+    "duration": "25 minutes",
+    "category": "social"
   }
 ]
