@@ -1,86 +1,99 @@
 /**
- * Utility to determine the category of a task based on its content
+ * Utility to determine the category of a task based on Quest.json categories
  */
 
-type TaskCategory = 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity';
+export type TaskCategory = 'physical' | 'learning' | 'mindfulness' | 'social' | 'creativity';
 
-// Keywords that indicate which category a task belongs to
-const categoryKeywords = {
-  fitness: [
-    'workout', 'gym', 'run', 'running', 'exercise', 'stretching', 'flexibility', 
-    'outdoor cardio', 'cycling', 'hiking', 'swimming', 'walking', 'jogging', 'fitness'
-  ],
-  learning: [
-    'reading', 'book', 'podcast', 'documentary', 'educational', 'tutorial', 
-    'skill development', 'language', 'coding', 'math', 'article', 'learning'
-  ],
-  mindfulness: [
-    'meditation', 'journaling', 'self-reflection', 'mindful', 'yoga', 
-    'sleep', 'quality sleeping', 'mindfulness'
-  ],
-  social: [
-    'friend', 'talk', 'social', 'community', 'group', 'discover hobby group'
-  ],
-  creativity: [
-    'creative', 'painting', 'writing', 'musical', 'instruments', 'cooking', 'creativity'
-  ]
+/**
+ * Maps tasks to their categories based on Quest.json data
+ * This mapping should match the exact task names in Quest.json
+ */
+const taskToCategory: Record<string, TaskCategory> = {
+  // Mindfulness category tasks
+  "meditation": "mindfulness",
+  "journaling emotions and thoughts": "mindfulness",
+  "self-reflection": "mindfulness",
+  
+  // Learning category tasks
+  "book reading": "learning",
+  "listening to a podcast": "learning",
+  "listening to chill/ mindful music": "learning",
+  "online tutorial": "learning",
+  "skill development": "learning",
+  "watching educational documentary": "learning",
+  "article reading": "learning",
+  
+  // Creativity category tasks
+  "creative training": "creativity",
+  "cooking": "creativity",
+  
+  // Physical category tasks
+  "working out in the gym": "physical",
+  "running": "physical",
+  "flexibility and recovery": "physical",
+  "outdoor cadio": "physical", 
+  "bodyweight exercises": "physical",
+  "rhythmic movement": "physical",
+  "yoga session": "physical",
+  "walking": "physical",
+  "jogging to the nearest park for a reflection": "physical",
+  "quality sleeping": "physical",
+  
+  // Social category tasks
+  "talk to a friend about your day": "social",
+  "discover a new hobby group": "social"
 };
 
 /**
- * Determines the category of a task based on its content
+ * Extracts the task name from the formatted task text
+ * Example: "Meditation (5 minutes)" -> "meditation"
+ */
+const extractTaskName = (taskText: string): string => {
+  // First remove the duration part (anything in parentheses)
+  const withoutDuration = taskText.split('(')[0].trim().toLowerCase();
+  return withoutDuration;
+};
+
+/**
+ * Determines the category of a task based on Quest.json data
  * @param taskText The text content of the task
  * @returns The determined category or undefined if no match
  */
-export const determineTaskCategory = (taskText: string): TaskCategory | undefined => {
-  const lowercaseText = taskText.toLowerCase();
+export const getTaskCategory = (taskText: string): TaskCategory | undefined => {
+  if (!taskText) return undefined;
   
-  // Check each category's keywords
-  for (const [category, keywords] of Object.entries(categoryKeywords)) {
-    for (const keyword of keywords) {
-      if (lowercaseText.includes(keyword.toLowerCase())) {
-        return category as TaskCategory;
-      }
+  const taskName = extractTaskName(taskText);
+  
+  // Try to find an exact match first
+  if (taskToCategory[taskName]) {
+    return taskToCategory[taskName];
+  }
+  
+  // If no exact match, try to find a partial match
+  // This handles cases where the task text might be slightly different
+  // but still refers to the same task
+  for (const [key, category] of Object.entries(taskToCategory)) {
+    if (taskName.startsWith(key) || key.startsWith(taskName)) {
+      return category;
     }
   }
   
-  // If no category matches, return undefined
+  // If we still can't find a match, check if the task mentions
+  // any category names directly
+  for (const category of Object.values(taskToCategory)) {
+    if (taskName.includes(category)) {
+      return category as TaskCategory;
+    }
+  }
+  
+  // Default fallback - we might want to provide a default
+  // category or return undefined
   return undefined;
 };
 
 /**
- * Maps the key prefix from Quest.json to a category
- * 1-* = mindfulness/mental
- * 2-* = fitness 
- * 3-* = balanced (need to determine based on content)
+ * For backwards compatibility
  */
-export const categoryFromQuestKey = (key: string): TaskCategory | undefined => {
-  const pathPrefix = key.split('-')[0];
-  
-  switch (pathPrefix) {
-    case '1':
-      return 'mindfulness';
-    case '2':
-      return 'fitness';
-    case '3':
-      // For balanced path, we need to examine the content
-      return undefined;
-    default:
-      return undefined;
-  }
-};
-
-/**
- * Category mapper for weekly trial and daily tasks
- * @param text The text content of the task
- * @param key Optional key from quests data (if available)
- */
-export const getTaskCategory = (text: string, key?: string): TaskCategory | undefined => {
-  // First try with the key if available
-  if (key) {
-    const keyCategory = categoryFromQuestKey(key);
-    if (keyCategory) return keyCategory;
-  }
-  
-  // Otherwise determine from the text content
-  return determineTaskCategory(text);
-}; 
+export const determineTaskCategory = getTaskCategory;
+export const categoryFromQuestKey = (_key: string): TaskCategory | undefined => undefined;
+export const extractCategoryFromTask = getTaskCategory; 
