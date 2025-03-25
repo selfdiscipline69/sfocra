@@ -1,3 +1,9 @@
 {
-    "vscode-pets.position": "explorer"
+    "vscode-pets.position": "explorer",
+    "vscode-pets.petColor": "white",
+    "vscode-pets.petSize": "small",
+    "vscode-pets.petType": "horse",
+    "vscode-pets.theme": "winter",
+    "vscode-pets.throwBallWithMouse": true,
+    "vscode-pets.disableEffects": false
 }
