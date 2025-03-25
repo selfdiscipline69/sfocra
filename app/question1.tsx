@@ -27,14 +27,14 @@ export default function Question1() {
   }, [router]);
 
   // Function to handle option selection and expansion
-  const handleSelection = async (option) => {
+  const handleSelection = async (option: string) => {
     const { handleSelection: handleSelectionUtil } = require('../src/utils/handleSelectionUtil');
-    await handleSelectionUtil(option, userToken, selected, setSelected, setExpandedOption, pathToCode);
+    await handleSelectionUtil(1, option, userToken, selected, setSelected, setExpandedOption, pathToCode);
   };
 
   // Function to get description for an option
-  const getDescriptionKey = (option) => {
-    const pathCode = pathToCode[option];
+  const getDescriptionKey = (option: string): string => {
+    const pathCode = pathToCode[option as keyof typeof pathToCode];
     return `${pathCode}-0-0-0`;
   };
 
@@ -97,7 +97,7 @@ export default function Question1() {
             {expandedOption === option && (
               <View style={styles.descriptionBox}>
                 <Text style={styles.descriptionText}>
-                  {optionDescriptions[getDescriptionKey(option)]}
+                  {optionDescriptions[getDescriptionKey(option) as keyof typeof optionDescriptions]}
                 </Text>
               </View>
             )}

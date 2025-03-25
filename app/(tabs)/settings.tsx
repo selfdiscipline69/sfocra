@@ -237,14 +237,6 @@ export default function SettingsScreen() {
           },
           headerTitle: "Settings",
           headerTitleAlign: 'center',
-          headerRight: () => (
-            <TouchableOpacity 
-              style={styles.topRightBackButton} 
-              onPress={handleBack}
-            >
-              <Text style={[styles.topRightBackText, { color: theme.text }]}>Back</Text>
-            </TouchableOpacity>
-          ),
         }} 
       />
       

@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, Animated } from 'react-native';
 import { AdditionalTask } from '../types/UserTypes';
 import WeeklyTrialBox, { useBoxTextColor } from './WeeklyTrialBox';
+import { Swipeable } from 'react-native-gesture-handler';
 
 interface AdditionalTaskDisplayProps {
   tasks: AdditionalTask[];
@@ -11,6 +12,8 @@ interface AdditionalTaskDisplayProps {
   onDeleteTask?: (index: number) => void;
   onPickImage?: (index: number) => void;
   onToggleImageVisibility?: (index: number) => void;
+  onTaskComplete?: (index: number) => void;
+  onTaskCancel?: (index: number) => void;
 }
 
 // Component for the content of the additional task box
@@ -25,6 +28,50 @@ const AdditionalTaskContent = ({ text }: { text: string }) => {
   );
 };
 
+// Swipe right to delete component
+const DeleteAction = (progress: Animated.AnimatedInterpolation<number>, theme: any) => {
+  const trans = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [100, 0],
+  });
+  
+  return (
+    <Animated.View 
+      style={[
+        styles.rightAction,
+        {
+          backgroundColor: theme.mode === 'dark' ? '#D13030' : '#FF3B30',
+          transform: [{ translateX: trans }],
+        },
+      ]}
+    >
+      <Text style={styles.actionText}>Cancel</Text>
+    </Animated.View>
+  );
+};
+
+// Swipe left to complete component
+const CompleteAction = (progress: Animated.AnimatedInterpolation<number>, theme: any) => {
+  const trans = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-100, 0],
+  });
+  
+  return (
+    <Animated.View
+      style={[
+        styles.leftAction,
+        {
+          backgroundColor: theme.mode === 'dark' ? '#30A030' : '#34C759',
+          transform: [{ translateX: trans }],
+        },
+      ]}
+    >
+      <Text style={styles.actionText}>Done</Text>
+    </Animated.View>
+  );
+};
+
 const AdditionalTaskDisplay = ({ 
   tasks, 
   theme,
@@ -32,7 +79,9 @@ const AdditionalTaskDisplay = ({
   onChangeTask,
   onDeleteTask,
   onPickImage,
-  onToggleImageVisibility
+  onToggleImageVisibility,
+  onTaskComplete = () => {},
+  onTaskCancel = () => {}
 }: AdditionalTaskDisplayProps) => {
   if (tasks.length === 0) return null;
   
@@ -44,91 +93,102 @@ const AdditionalTaskDisplay = ({
         </Text>
       </View>
       
-      {tasks.filter(task => task.text && task.text.trim() !== '').map((task, index) => (
-        editable ? (
-          // Enhanced version for AddTaskScreen with full functionality
-          <View 
-            key={`additional-${index}`} 
-            style={[
-              styles.taskContainer, 
-              task.completed ? 
-                [styles.completedTaskDaily, { 
-                  backgroundColor: theme.mode === 'dark' ? 'rgba(0, 150, 0, 0.2)' : 'rgba(0, 150, 0, 0.1)',
-                  borderColor: theme.mode === 'dark' ? 'rgba(0, 180, 0, 0.3)' : 'rgba(0, 150, 0, 0.5)'
-                }] : 
-                [styles.dailyTaskContainer, { 
-                  backgroundColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.1)' : 'rgba(255, 0, 0, 0.05)',
-                  borderColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.2)' : 'rgba(255, 0, 0, 0.15)'
-                }]
-            ]}
-          >
-            <View style={styles.taskHeader}>
-              <View style={styles.taskTitleContainer}>
-                {onDeleteTask && (
+      {tasks
+        .map((task, index) => ({ task, index }))
+        .filter(item => item.task.text && item.task.text.trim() !== '')
+        .map(({ task, index }) => (
+          editable ? (
+            // Enhanced version for AddTaskScreen with full functionality
+            <View 
+              key={`additional-${index}`} 
+              style={[
+                styles.taskContainer, 
+                task.completed ? 
+                  [styles.completedTaskDaily, { 
+                    backgroundColor: theme.mode === 'dark' ? 'rgba(0, 150, 0, 0.2)' : 'rgba(0, 150, 0, 0.1)',
+                    borderColor: theme.mode === 'dark' ? 'rgba(0, 180, 0, 0.3)' : 'rgba(0, 150, 0, 0.5)'
+                  }] : 
+                  [styles.dailyTaskContainer, { 
+                    backgroundColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.1)' : 'rgba(255, 0, 0, 0.05)',
+                    borderColor: theme.mode === 'dark' ? 'rgba(255, 0, 0, 0.2)' : 'rgba(255, 0, 0, 0.15)'
+                  }]
+              ]}
+            >
+              <View style={styles.taskHeader}>
+                <View style={styles.taskTitleContainer}>
+                  {onDeleteTask && (
+                    <TouchableOpacity 
+                      style={styles.deleteButton}
+                      onPress={() => onDeleteTask(index)}
+                    >
+                      <Image 
+                        source={require('../../assets/icons/recycle-bin-icon-trash-bin-icon-png.png')} 
+                        style={[styles.deleteButtonIcon, { tintColor: theme.mode === 'dark' ? 'white' : 'white' }]} 
+                      />
+                    </TouchableOpacity>
+                  )}
+                  <Text style={[styles.taskTitle, { color: theme.text }]}>Extra Task {index + 1}</Text>
+                </View>
+                {onPickImage && (
                   <TouchableOpacity 
-                    style={styles.deleteButton}
-                    onPress={() => onDeleteTask(index)}
+                    style={[styles.photoButton, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)' }]}
+                    onPress={() => onPickImage(index)}
                   >
-                    <Image 
-                      source={require('../../assets/icons/recycle-bin-icon-trash-bin-icon-png.png')} 
-                      style={[styles.deleteButtonIcon, { tintColor: theme.mode === 'dark' ? 'white' : 'white' }]} 
-                    />
+                    <Text style={[styles.photoButtonText, { color: theme.text }]}>➕ Photo</Text>
                   </TouchableOpacity>
                 )}
-                <Text style={[styles.taskTitle, { color: theme.text }]}>Extra Task {index + 1}</Text>
               </View>
-              {onPickImage && (
-                <TouchableOpacity 
-                  style={[styles.photoButton, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)' }]}
-                  onPress={() => onPickImage(index)}
-                >
-                  <Text style={[styles.photoButtonText, { color: theme.text }]}>➕ Photo</Text>
-                </TouchableOpacity>
-              )}
+              <View style={styles.taskContent}>
+                <TextInput
+                  style={[styles.taskInput, { color: theme.text }]}
+                  value={task.text}
+                  onChangeText={(text) => onChangeTask && onChangeTask(index, text)}
+                  multiline={true}
+                  textAlign="center"
+                  editable={false}
+                />
+                
+                {task.image && task.showImage && (
+                  <View style={styles.imageContainer}>
+                    <Image 
+                      source={{ uri: task.image }} 
+                      style={styles.taskImage} 
+                    />
+                  </View>
+                )}
+                
+                {task.image && onToggleImageVisibility && (
+                  <TouchableOpacity 
+                    style={[styles.showProofButton, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)' }]}
+                    onPress={() => onToggleImageVisibility(index)}
+                  >
+                    <Text style={[styles.showProofText, { color: theme.text }]}>
+                      {task.showImage ? 'Hide Picture of Proof' : 'Show Picture of Proof'}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
-            <View style={styles.taskContent}>
-              <TextInput
-                style={[styles.taskInput, { color: theme.text }]}
-                value={task.text}
-                onChangeText={(text) => onChangeTask && onChangeTask(index, text)}
-                multiline={true}
-                textAlign="center"
-                editable={false}
-              />
-              
-              {task.image && task.showImage && (
-                <View style={styles.imageContainer}>
-                  <Image 
-                    source={{ uri: task.image }} 
-                    style={styles.taskImage} 
-                  />
-                </View>
-              )}
-              
-              {task.image && onToggleImageVisibility && (
-                <TouchableOpacity 
-                  style={[styles.showProofButton, { backgroundColor: theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)' }]}
-                  onPress={() => onToggleImageVisibility(index)}
-                >
-                  <Text style={[styles.showProofText, { color: theme.text }]}>
-                    {task.showImage ? 'Hide Picture of Proof' : 'Show Picture of Proof'}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-        ) : (
-          // Normal version for Homepage
-          <WeeklyTrialBox 
-            key={`additional-${index}`} 
-            title={`Additional Task ${index + 1}`}
-            category={task.category}
-            backgroundColor={task.color}
-          >
-            <AdditionalTaskContent text={task.text} />
-          </WeeklyTrialBox>
-        )
-      ))}
+          ) : (
+            // Normal version for Homepage with swipe functionality
+            <Swipeable
+              key={`additional-${index}`}
+              renderRightActions={(progress: Animated.AnimatedInterpolation<number>) => DeleteAction(progress, theme)}
+              renderLeftActions={(progress: Animated.AnimatedInterpolation<number>) => CompleteAction(progress, theme)}
+              onSwipeableRightOpen={() => onTaskCancel(index)}
+              onSwipeableLeftOpen={() => onTaskComplete(index)}
+            >
+              <WeeklyTrialBox 
+                title={`Additional Task ${index + 1}`}
+                category={task.category}
+                backgroundColor={task.color}
+              >
+                <AdditionalTaskContent text={task.text} />
+              </WeeklyTrialBox>
+            </Swipeable>
+          )
+        ))
+      }
     </>
   );
 };
@@ -225,6 +285,26 @@ const styles = StyleSheet.create({
   showProofText: {
     fontSize: 12,
   },
+  leftAction: {
+    flex: 1,
+    justifyContent: 'center',
+    marginBottom: 15,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
+  rightAction: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    marginBottom: 15,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  actionText: {
+    color: 'white',
+    fontWeight: '600',
+    padding: 20,
+  }
 });
 
 export default AdditionalTaskDisplay;

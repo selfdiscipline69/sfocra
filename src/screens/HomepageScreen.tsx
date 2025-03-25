@@ -11,7 +11,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Modal,
-  TextInput
+  TextInput,
+  Alert
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 
@@ -201,6 +202,85 @@ const HomepageScreen = () => {
   // Close all modals
   const closeAllModals = () => setModalType('none');
 
+  // Handle task completion when swiped left
+  const handleTaskComplete = (index: number) => {
+    // Create a completed task message
+    const completedTask = content.dailyTasks[index];
+    // You could store completed tasks in a different array or mark them with a status
+    
+    // For now, let's just show a toast or alert
+    Alert.alert("Task Completed", `You've completed: ${completedTask}`);
+    
+    // Clear the task using the existing handleTaskChange function
+    actions.handleTaskChange(index, "");
+  };
+
+  // Handle task cancellation when swiped right
+  const handleTaskCancel = (index: number) => {
+    // Create a canceled task message
+    const canceledTask = content.dailyTasks[index];
+    
+    // Confirm before canceling
+    Alert.alert(
+      "Cancel Task",
+      `Are you sure you want to cancel: ${canceledTask}?`,
+      [
+        {
+          text: "No",
+          style: "cancel"
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            // Clear the task using the existing handleTaskChange function
+            actions.handleTaskChange(index, "");
+          }
+        }
+      ]
+    );
+  };
+
+  // Handle additional task completion when swiped left
+  const handleAdditionalTaskComplete = (index: number) => {
+    // Create a completed task message
+    const completedTask = content.additionalTasks[index].text;
+    
+    // Show a toast or alert
+    Alert.alert("Task Completed", `You've completed: ${completedTask}`);
+    
+    // Remove the task from additionalTasks
+    const updatedTasks = [...content.additionalTasks];
+    updatedTasks.splice(index, 1);
+    actions.setAdditionalTasks(updatedTasks);
+  };
+
+  // Handle additional task cancellation when swiped right
+  const handleAdditionalTaskCancel = (index: number) => {
+    // Create a canceled task message
+    const canceledTask = content.additionalTasks[index].text;
+    
+    // Confirm before canceling
+    Alert.alert(
+      "Cancel Task",
+      `Are you sure you want to cancel: ${canceledTask}?`,
+      [
+        {
+          text: "No",
+          style: "cancel"
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            // Remove the task from additionalTasks
+            const updatedTasks = [...content.additionalTasks];
+            updatedTasks.splice(index, 1);
+            actions.setAdditionalTasks(updatedTasks);
+          }
+        }
+      ]
+    );
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -230,26 +310,36 @@ const HomepageScreen = () => {
           
           <View style={styles.spacerView} />
           
-          {/* Weekly Trial Section */}
-          <WeeklyTrialSection 
-            weeklyTrial={content.weeklyTrial} 
-            theme={theme}
-            category={weeklyTrialCategory as any}
-          />
+          {/* Weekly Trial Section - Wrap in a container with fixed height margin */}
+          <View style={styles.sectionContainer}>
+            <WeeklyTrialSection 
+              weeklyTrial={content.weeklyTrial} 
+              theme={theme}
+              category={weeklyTrialCategory as any}
+            />
+          </View>
 
-          {/* Daily Tasks */}
-          <DailyTaskInput 
-            tasks={content.dailyTasks} 
-            onChangeTask={actions.handleTaskChange}
-            theme={theme}
-            categories={dailyTaskCategories as any}
-          />
+          {/* Daily Tasks - Wrap in a container with minimum height */}
+          <View style={styles.tasksSectionContainer}>
+            <DailyTaskInput 
+              tasks={content.dailyTasks} 
+              onChangeTask={actions.handleTaskChange}
+              theme={theme}
+              categories={dailyTaskCategories as any}
+              onTaskComplete={handleTaskComplete}
+              onTaskCancel={handleTaskCancel}
+            />
+          </View>
           
           {/* Additional Tasks */}
-          <AdditionalTaskDisplay 
-            tasks={content.additionalTasks}
-            theme={theme}
-          />
+          <View style={styles.sectionContainer}>
+            <AdditionalTaskDisplay 
+              tasks={content.additionalTasks}
+              theme={theme}
+              onTaskComplete={handleAdditionalTaskComplete}
+              onTaskCancel={handleAdditionalTaskCancel}
+            />
+          </View>
           
           
           {/* Extra space at bottom for keyboard */}
@@ -572,6 +662,12 @@ const styles = StyleSheet.create({
   },
   categoryButtonText: {
     fontSize: 16,
+  },
+  sectionContainer: {
+    marginBottom: 10,
+  },
+  tasksSectionContainer: {
+    minHeight: 100,
   },
 });
 

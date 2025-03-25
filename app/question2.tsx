@@ -29,7 +29,7 @@ export default function Question2() {
   }, []);
 
   // Function to save selection to AsyncStorage and handle expansion
-  const handleSelection = async (option) => {
+  const handleSelection = async (option: string) => {
     const { handleSelection: handleSelectionUtil } = require('../src/utils/handleSelectionUtil');
     await handleSelectionUtil(
       2, // question number
@@ -44,8 +44,8 @@ export default function Question2() {
   };
 
   // Function to get description key for an option
-  const getDescriptionKey = (option) => {
-    const difficultyCode = difficultyToCode[option];
+  const getDescriptionKey = (option: string): string => {
+    const difficultyCode = difficultyToCode[option as keyof typeof difficultyToCode];
     return `0-${difficultyCode}-0-0`;
   };
 
@@ -115,7 +115,7 @@ export default function Question2() {
             {expandedOption === option && (
               <View style={styles.descriptionBox}>
                 <Text style={styles.descriptionText}>
-                  {optionDescriptions[getDescriptionKey(option)]}
+                  {optionDescriptions[getDescriptionKey(option) as keyof typeof optionDescriptions]}
                 </Text>
               </View>
             )}

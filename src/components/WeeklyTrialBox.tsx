@@ -18,6 +18,12 @@ const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children, catego
   
   // Get background color based on category or custom color
   const getBackgroundColor = () => {
+    // Special case for Weekly Trial - always white in dark mode and light gray in light mode
+    if (title === "Weekly Trial") {
+      return theme.mode === 'dark' ? '#FFFFFF' : '#F2F2F7';
+    }
+    
+    // For other components, use the original logic
     // Use custom background color if provided
     if (customBgColor) {
       return customBgColor;
@@ -31,8 +37,13 @@ const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children, catego
   };
   
   // Determine text color based on background brightness
-  // Change to white text for colored backgrounds
   const getTextColor = () => {
+    // Special case for Weekly Trial - always black text
+    if (title === "Weekly Trial") {
+      return '#000000';
+    }
+    
+    // For other components, use the original logic
     // For all categories or custom colors, use white text for better visibility
     if (category || customBgColor) {
       return '#FFFFFF'; // White text for all categories regardless of theme
@@ -49,7 +60,13 @@ const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children, catego
       <View
         style={[
           styles.boxContainer,
-          { backgroundColor }
+          { 
+            backgroundColor,
+            // Use a darker border for Weekly Trial in dark mode
+            borderColor: title === "Weekly Trial" && theme.mode === 'dark' 
+              ? 'rgba(0, 0, 0, 0.2)' 
+              : 'rgba(0, 0, 0, 0.1)'
+          }
         ]}
       >
         {/* Single unified content area with title at the top */}
@@ -79,7 +96,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)'
   },
   unifiedContainer: {
     padding: 15,
