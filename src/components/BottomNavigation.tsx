@@ -5,11 +5,16 @@ import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 
 interface BottomNavigationProps {
   theme: any; // Replace with proper theme type if available
+  onAddTaskPress: () => void;
 }
 
-const BottomNavigation = ({ theme }: BottomNavigationProps) => {
+const BottomNavigation = ({ theme, onAddTaskPress }: BottomNavigationProps) => {
   const router = useRouter();
   
+  const handleAddTaskPress = () => {
+    onAddTaskPress();
+  };
+
   return (
     <View style={[styles.bottomNav, { backgroundColor: theme.background, borderColor: theme.border }]}>
       <TouchableOpacity 
@@ -21,7 +26,7 @@ const BottomNavigation = ({ theme }: BottomNavigationProps) => {
       
       <TouchableOpacity 
         style={styles.homeButton}
-        onPress={() => router.push('/(tabs)/addTask')}
+        onPress={handleAddTaskPress}
       >
         <Text style={styles.homeButtonText}>Add Task</Text>
       </TouchableOpacity>

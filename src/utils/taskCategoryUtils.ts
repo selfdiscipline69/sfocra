@@ -2,7 +2,7 @@
  * Utility to determine the category of a task based on Quest.json categories
  */
 
-export type TaskCategory = 'physical' | 'learning' | 'mindfulness' | 'social' | 'creativity';
+export type TaskCategory = 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity' | 'physical';
 
 /**
  * Maps tasks to their categories based on Quest.json data
@@ -27,17 +27,17 @@ const taskToCategory: Record<string, TaskCategory> = {
   "creative training": "creativity",
   "cooking": "creativity",
   
-  // Physical category tasks
-  "working out in the gym": "physical",
-  "running": "physical",
-  "flexibility and recovery": "physical",
-  "outdoor cadio": "physical", 
-  "bodyweight exercises": "physical",
-  "rhythmic movement": "physical",
-  "yoga session": "physical",
-  "walking": "physical",
-  "jogging to the nearest park for a reflection": "physical",
-  "quality sleeping": "physical",
+  // Physical category tasks (map to fitness for compatibility)
+  "working out in the gym": "fitness",
+  "running": "fitness",
+  "flexibility and recovery": "fitness",
+  "outdoor cadio": "fitness",
+  "bodyweight exercises": "fitness",
+  "rhythmic movement": "fitness",
+  "yoga session": "fitness",
+  "walking": "fitness",
+  "jogging to the nearest park for a reflection": "fitness",
+  "quality sleeping": "fitness",
   
   // Social category tasks
   "talk to a friend about your day": "social",

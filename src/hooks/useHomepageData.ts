@@ -174,6 +174,16 @@ export default function useHomepageData() {
     });
   }, [userToken]);
 
+  // Add a dedicated function to set additional tasks
+  const updateAdditionalTasks = useCallback((tasks: AdditionalTask[]) => {
+    setAdditionalTasks(tasks);
+    
+    // Store the updated tasks
+    if (userToken) {
+      storageService.saveAdditionalTasks(userToken, tasks);
+    }
+  }, [userToken]);
+
   // Create a stable refreshData function
   const refreshData = useCallback(() => {
     loadUserData();
@@ -210,6 +220,7 @@ export default function useHomepageData() {
     handleTaskChange,
     handleQuoteChange,
     handleAdditionalTaskChange,
+    setAdditionalTasks: updateAdditionalTasks,
     refreshData,
   };
 
