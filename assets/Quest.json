@@ -1,782 +1,4056 @@
-[
-  {
-    "key": "1-1",
-    "task": "Meditation",
-    "duration": "5 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-2",
-    "task": "Meditation",
-    "duration": "10 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-3",
-    "task": "Meditation",
-    "duration": "15 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-4",
-    "task": "Meditation",
-    "duration": "25 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-5",
-    "task": "Meditation",
-    "duration": "40 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-1",
-    "task": "talk to a friend about your day (preferably call a friend you haven't talked to in a while)",
-    "duration": "10 minutes",
-    "category": "social"
-  },
-  {
-    "key": "1-2",
-    "task": "talk to a friend about your day (preferably call a friend you haven't talked to in a while)",
-    "duration": "15 minutes",
-    "category": "social"
-  },
-  {
-    "key": "1-3",
-    "task": "talk to a friend about your day (preferably call a friend you haven't talked to in a while)",
-    "duration": "20 minutes",
-    "category": "social"
-  },
-  {
-    "key": "1-4",
-    "task": "talk to a friend about your day (preferably call a friend you haven't talked to in a while)",
-    "duration": "25 minutes",
-    "category": "social"
-  },
-  {
-    "key": "1-5",
-    "task": "talk to a friend about your day (preferably call a friend you haven't talked to in a while)",
-    "duration": "25 minutes",
-    "category": "social"
-  },
-  {
-    "key": "1-1",
-    "task": "Journaling emotions and thoughts",
-    "duration": "10 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-2",
-    "task": "Journaling emotions and thoughts",
-    "duration": "15 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-3",
-    "task": "Journaling emotions and thoughts",
-    "duration": "20 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-4",
-    "task": "Journaling emotions and thoughts",
-    "duration": "25 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-5",
-    "task": "Journaling emotions and thoughts",
-    "duration": "30 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-1",
-    "task": "Book Reading",
-    "duration": "1 chapter/ 2 pages",
-    "category": "learning"
-  },
-  {
-    "key": "1-2",
-    "task": "Book Reading",
-    "duration": "1 chapter/ 6 pages",
-    "category": "learning"
-  },
-  {
-    "key": "1-3",
-    "task": "Book Reading",
-    "duration": "1 chapter/ 10 pages",
-    "category": "learning"
-  },
-  {
-    "key": "1-4",
-    "task": "Book Reading",
-    "duration": "1 chapter/26 pages",
-    "category": "learning"
-  },
-  {
-    "key": "1-5",
-    "task": "Book Reading",
-    "duration": "2 chapter/30 pages",
-    "category": "learning"
-  },
-  {
-    "key": "1-1",
-    "task": "Listening to a podcast",
-    "duration": "1 episode/ 10 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-2",
-    "task": "Listening to a podcast",
-    "duration": "1 episode/ 20 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-3",
-    "task": "Listening to a podcast",
-    "duration": "1 episode/ 30 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-4",
-    "task": "Listening to a podcast",
-    "duration": "1 episode/ 50 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-5",
-    "task": "Listening to a podcast",
-    "duration": "2 episode/ 80 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-1",
-    "task": "Listening to chill/ mindful music",
-    "duration": "10 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-2",
-    "task": "Listening to chill/ mindful music",
-    "duration": "15 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-3",
-    "task": "Listening to chill/ mindful music",
-    "duration": "20 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-4",
-    "task": "Listening to chill/ mindful music",
-    "duration": "30 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-5",
-    "task": "Listening to chill/ mindful music",
-    "duration": "40 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-1",
-    "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "10 minutes",
-    "category": "creativity"
-  },
-  {
-    "key": "1-2",
-    "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "15 minutes",
-    "category": "creativity"
-  },
-  {
-    "key": "1-3",
-    "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "25 minutes",
-    "category": "creativity"
-  },
-  {
-    "key": "1-4",
-    "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "40 minutes",
-    "category": "creativity"
-  },
-  {
-    "key": "1-5",
-    "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "50 minutes",
-    "category": "creativity"
-  },
-  {
-    "key": "1-1",
-    "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "10 minutes",
-    "category": "creativity"
-  },
-  {
-    "key": "1-2",
-    "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "15 minutes",
-    "category": "creativity"
-  },
-  {
-    "key": "1-3",
-    "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "25 minutes",
-    "category": "creativity"
-  },
-  {
-    "key": "1-4",
-    "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "40 minutes",
-    "category": "creativity"
-  },
-  {
-    "key": "1-5",
-    "task": "Creative Training (Painting, writing, musical instruments)",
-    "duration": "50 minutes",
-    "category": "creativity"
-  },
-  {
-    "key": "1-1",
-    "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration": "15 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-2",
-    "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration": "22 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-3",
-    "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration": "30 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-4",
-    "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration": "45 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-5", 
-    "task": "Online Tutorial (exercising, yoga, coding, language, communication)",
-    "duration": "60 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-1",
-    "task": "Self-reflection",
-    "duration": "10 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-2",
-    "task": "Self-reflection",
-    "duration": "15 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-3",
-    "task": "Self-reflection",
-    "duration": "20 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-4",
-    "task": "Self-reflection",
-    "duration": "30 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-5",
-    "task": "Self-reflection",
-    "duration": "40 minutes",
-    "category": "mindfulness"
-  },
-  {
-    "key": "1-1",
-    "task": "Skill Development (language, coding, math))",
-    "duration": "1 episode/ 10 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-2",
-    "task": "Skill Development (language, coding, math))",
-    "duration": "1 episode/ 20 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-3",
-    "task": "Skill Development (language, coding, math))",
-    "duration": "1 episode/ 30 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-4",
-    "task": "Skill Development (language, coding, math))",
-    "duration": "1 episode/ 45 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-5",
-    "task": "Skill Development (language, coding, math))",
-    "duration": "1 episode/ 60 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-1",
-    "task": "Watching educational documentary",
-    "duration": "1 episode/ 15 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-2",
-    "task": "Watching educational documentary",
-    "duration": "1 episode/ 25 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-3",
-    "task": "Watching educational documentary",
-    "duration": "1 episode/ 30 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-4",
-    "task": "Watching educational documentary",
-    "duration": "1 episode/ 45 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-5",
-    "task": "Watching educational documentary",
-    "duration": "1 episode/ 90 minutes",
-    "category": "learning"
-  },
-  {
-    "key": "1-1",
-    "task": "Cooking",
-    "duration": "Cook a simple dish (e.g., scrambled eggs or a basic salad)",
-    "category": "creativity"
-  },
-  {
-    "key": "1-2",
-    "task": "Cooking",
-    "duration": "Cook a complete meal (e.g., main course with a side)",
-    "category": "creativity"
-  },
-  {
-    "key": "1-3",
-    "task": "Cooking",
-    "duration": "Cook a meal with a dessert (e.g., main course, side, and a simple dessert like fruit salad)",
-    "category": "creativity"
-  },
-  {
-    "key": "1-4",
-    "task": "Cooking",
-    "duration": "Cook a three-course meal (e.g., appetizer, main course, dessert)",
-    "category": "creativity"
-  },
-  {
-    "key": "1-5",
-    "task": "Cooking",
-    "duration": "Cook a gourmet or fine dining dish (e.g., a complex recipe with multiple components)",
-    "category": "creativity"
-  },
-  {
-    "key": "1-1",
-    "task": "article reading",
-    "duration": "1 articles",
-    "category": "learning"
-  },
-  {
-    "key": "1-2",
-    "task": "article reading",
-    "duration": "2 articles",
-    "category": "learning"
-  },
-  {
-    "key": "1-3",
-    "task": "article reading",
-    "duration": "2 articles",
-    "category": "learning"
-  },
-  {
-    "key": "1-4",
-    "task": "article reading",
-    "duration": "3 articles",
-    "category": "learning"
-  },
-  {
-    "key": "1-5",
-    "task": "article reading",
-    "duration": "5 articles",
-    "category": "learning"
-  },
-  {
-    "key": "2-1",
-    "task": "Working out in the gym",
-    "duration": "30 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-2",
-    "task": "Working out in the gym",
-    "duration": "45 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-3",
-    "task": "Working out in the gym",
-    "duration": "60 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-4",
-    "task": "Working out in the gym",
-    "duration": "90 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-5",
-    "task": "Working out in the gym",
-    "duration": "120 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-1",
-    "task": "Running",
-    "duration": "1.5 km",
-    "category": "physical"
-  },
-  {
-    "key": "2-2",
-    "task": "Running",
-    "duration": "3 km",
-    "category": "physical"
-  },
-  {
-    "key": "2-3",
-    "task": "Running",
-    "duration": "5 km",
-    "category": "physical"
-  },
-  {
-    "key": "2-4",
-    "task": "Running",
-    "duration": "7 km",
-    "category": "physical"
-  },
-  {
-    "key": "2-5",
-    "task": "Running",
-    "duration": "10 km",
-    "category": "physical"
-  },
-  {
-    "key": "2-1",
-    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "5 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-2",
-    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "8 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-3",
-    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "10 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-4",
-    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "15 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-5",
-    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "20 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-1",
-    "task": "Outdoor cadio (e.g. Cycling, Hiking, swimming, etc.)",
-    "duration": "1.5 km/ 15 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-2",
-    "task": "Outdoor cadio (e.g. Cycling, Hiking, swimming, etc.)",
-    "duration": "3 km/ 30 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-3",
-    "task": "Outdoor cadio (e.g. Cycling, Hiking, swimming, etc.)",
-    "duration": "5 km/ 60 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-4",
-    "task": "Outdoor cadio (e.g. Cycling, Hiking, swimming, etc.)",
-    "duration": "7 km/ 90 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-5",
-    "task": "Outdoor cadio (e.g. Cycling, Hiking, swimming, etc.)",
-    "duration": "10 km/ 120 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-1",
-    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-    "duration": "2 sets",
-    "category": "physical"
-  },
-  {
-    "key": "2-2",
-    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-    "duration": "2 sets",
-    "category": "physical"
-  },
-  {
-    "key": "2-3",
-    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-    "duration": "3 sets",
-    "category": "physical"
-  },
-  {
-    "key": "2-4",
-    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-    "duration": "5 sets",
-    "category": "physical"
-  },
-  {
-    "key": "2-5",
-    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-    "duration": "10 sets",
-    "category": "physical"
-  },
-  {
-    "key": "2-1",
-    "task": "Rhythmic Movement (Dancing, Yoga, Pilates, etc.)",
-    "duration": "15 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-2",
-    "task": "Rhythmic Movement (Dancing, Yoga, Pilates, etc.)",
-    "duration": "22 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-3",
-    "task": "Rhythmic Movement (Dancing, Yoga, Pilates, etc.)",
-    "duration": "30 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-4",
-    "task": "Rhythmic Movement (Dancing, Yoga, Pilates, etc.)",
-    "duration": "45 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-5",
-    "task": "Rhythmic Movement (Dancing, Yoga, Pilates, etc.)",
-    "duration": "60 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-1",
-    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "30 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-2",
-    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "45 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-3",
-    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "60 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-4",
-    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "90 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "2-5",
-    "task": "Flexibility and Recovery (Stretching, Massage, Saunas)",
-    "duration": "120 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "3-1",
-    "task": "Yoga session",
-    "duration": "15 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "3-2",
-    "task": "Yoga session",
-    "duration": "22 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "3-3",
-    "task": "Yoga session",
-    "duration": "30 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "3-4",
-    "task": "Yoga session",
-    "duration": "45 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "3-5",
-    "task": "Yoga session",
-    "duration": "60 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "3-1",
-    "task": "Walking",
-    "duration": "1.5 km",
-    "category": "physical"
-  },
-  {
-    "key": "3-2",
-    "task": "Walking",
-    "duration": "3 km",
-    "category": "physical"
-  },
-  {
-    "key": "3-3",
-    "task": "Walking",
-    "duration": "3 km",
-    "category": "physical"
-  },
-  {
-    "key": "3-4",
-    "task": "Walking",
-    "duration": "5 km",
-    "category": "physical"
-  },
-  {
-    "key": "3-5",
-    "task": "Walking",
-    "duration": "7 km",
-    "category": "physical"
-  },
-  {
-    "key": "3-1",
-    "task": "jogging to the nearest park for a reflection",
-    "duration": "10 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "3-2",
-    "task": "jogging to the nearest park for a reflection",
-    "duration": "15 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "3-3",
-    "task": "jogging to the nearest park for a reflection",
-    "duration": "20 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "3-4",
-    "task": "jogging to the nearest park for a reflection",
-    "duration": "30 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "3-5",
-    "task": "jogging to the nearest park for a reflection",
-    "duration": "40 minutes",
-    "category": "physical"
-  },
-  {
-    "key": "3-1",
-    "task": "quality sleeping",
-    "duration": "at least 6 hours",
-    "category": "physical"
-  },
-  {
-    "key": "3-2",
-    "task": "quality sleeping",
-    "duration": "at least 7 hours",
-    "category": "physical"
-  },
-  {
-    "key": "3-3",
-    "task": "quality sleeping",
-    "duration": "at least 8 hours",
-    "category": "physical"
-  },
-  {
-    "key": "3-4",
-    "task": "quality sleeping",
-    "duration": "at least 8 hours",
-    "category": "physical"
-  },
-  {
-    "key": "3-5",
-    "task": "quality sleeping",
-    "duration": "at least 8 hours",
-    "category": "physical"
-  },
-  {
-    "key": "3-1",
-    "task": "Discover a new hobby group (explore community like reddit, facebook, e.g., fishing, coding, photography, etc.)",
-    "duration": "5 minutes",
-    "category": "social"
-  },
-  {
-    "key": "3-2",
-    "task": "Discover a new hobby group (explore community like reddit, facebook, e.g., fishing, coding, photography, etc.)",
-    "duration": "10 minutes",
-    "category": "social"
-  },
-  {
-    "key": "3-3",
-    "task": "Discover a new hobby group (explore community like reddit, facebook, e.g., fishing, coding, photography, etc.)",
-    "duration": "15 minutes",
-    "category": "social"
-  },  
-  {
-    "key": "3-4",
-    "task": "Discover a new hobby group (explore community like reddit, facebook, e.g., fishing, coding, photography, etc.)",
-    "duration": "20 minutes",
-    "category": "social"
-  },
-  {
-    "key": "3-5",
-    "task": "Discover a new hobby group (explore community like reddit, facebook, e.g., fishing, coding, photography, etc.)",
-    "duration": "25 minutes",
-    "category": "social"
+{
+  "progressiveChallenges": [
+    {
+      "id": "1-1",
+      "path": "mental",
+      "intensity": 1,
+      "title": "Mental Wellness Beginner",
+      "description": "Start your mental wellness journey with basic mindfulness, learning, and creativity activities",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Foundation in mindfulness with meditation and journaling",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "book-reading-1",
+                "cooking-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "creative-training-1",
+                "meditation-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "documentary-1",
+                "hobby-discovery-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "article-reading-1",
+                "meditation-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "self-reflection-1",
+                "skill-dev-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "book-reading-1",
+                "creative-training-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "podcast-1",
+                "social-talk-1"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Expanding learning with reading and skill development",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "book-reading-1",
+                "creative-training-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "documentary-1",
+                "skill-dev-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "chill-music-1",
+                "self-reflection-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "journaling-1",
+                "meditation-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "chill-music-1",
+                "documentary-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "cooking-1",
+                "social-talk-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "book-reading-1",
+                "meditation-1"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Creative expression and social connection",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "cooking-1",
+                "creative-training-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "book-reading-1",
+                "social-talk-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "cooking-1",
+                "journaling-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "hobby-discovery-1",
+                "podcast-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "creative-training-1",
+                "self-reflection-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "cooking-1",
+                "skill-dev-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "book-reading-1",
+                "hobby-discovery-1"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Integrating all mental practices into a sustainable routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "book-reading-1",
+                "creative-training-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "chill-music-1",
+                "skill-dev-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "article-reading-1",
+                "hobby-discovery-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "cooking-1",
+                "creative-training-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "documentary-1",
+                "podcast-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "journaling-1",
+                "social-talk-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "article-reading-1",
+                "skill-dev-1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1-2",
+      "path": "mental",
+      "intensity": 2,
+      "title": "Mental Wellness Easy",
+      "description": "Build upon your mental wellness foundation with slightly more challenging activities",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Foundation in mindfulness with meditation and journaling",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "chill-music-2",
+                "podcast-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "article-reading-2",
+                "social-talk-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "hobby-discovery-2",
+                "self-reflection-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "creative-training-2",
+                "documentary-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "book-reading-2",
+                "hobby-discovery-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "journaling-2",
+                "meditation-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "creative-training-2",
+                "hobby-discovery-2"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Expanding learning with reading and skill development",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "journaling-2",
+                "self-reflection-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "article-reading-2",
+                "hobby-discovery-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "documentary-2",
+                "self-reflection-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "article-reading-2",
+                "cooking-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "creative-training-2",
+                "skill-dev-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "cooking-2",
+                "journaling-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "creative-training-2",
+                "podcast-2"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Creative expression and social connection",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "article-reading-2",
+                "creative-training-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "chill-music-2",
+                "podcast-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "meditation-2",
+                "social-talk-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "cooking-2",
+                "journaling-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "article-reading-2",
+                "documentary-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "journaling-2",
+                "self-reflection-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "book-reading-2",
+                "hobby-discovery-2"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Integrating all mental practices into a sustainable routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "article-reading-2",
+                "hobby-discovery-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "chill-music-2",
+                "journaling-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "creative-training-2",
+                "hobby-discovery-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "cooking-2",
+                "social-talk-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "hobby-discovery-2",
+                "meditation-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "cooking-2",
+                "self-reflection-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "book-reading-2",
+                "hobby-discovery-2"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1-3",
+      "path": "mental",
+      "intensity": 3,
+      "title": "Mental Wellness Intermediate",
+      "description": "Develop a consistent mental wellness practice with medium-intensity activities",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Foundation in mindfulness with meditation and journaling",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "journaling-3",
+                "self-reflection-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "chill-music-3",
+                "creative-training-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "cooking-3",
+                "self-reflection-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "chill-music-3",
+                "skill-dev-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "documentary-3",
+                "journaling-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "podcast-3",
+                "social-talk-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "hobby-discovery-3",
+                "skill-dev-3"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Expanding learning with reading and skill development",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "creative-training-3",
+                "social-talk-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "chill-music-3",
+                "cooking-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "article-reading-3",
+                "self-reflection-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "cooking-3",
+                "skill-dev-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "article-reading-3",
+                "podcast-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "creative-training-3",
+                "journaling-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "hobby-discovery-3",
+                "podcast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Creative expression and social connection",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "documentary-3",
+                "podcast-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "article-reading-3",
+                "hobby-discovery-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "creative-training-3",
+                "journaling-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "book-reading-3",
+                "social-talk-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "documentary-3",
+                "skill-dev-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "cooking-3",
+                "hobby-discovery-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "meditation-3",
+                "podcast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Integrating all mental practices into a sustainable routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "hobby-discovery-3",
+                "journaling-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "cooking-3",
+                "skill-dev-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "podcast-3",
+                "self-reflection-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "journaling-3",
+                "skill-dev-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "meditation-3",
+                "self-reflection-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "book-reading-3",
+                "podcast-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "hobby-discovery-3",
+                "self-reflection-3"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1-4",
+      "path": "mental",
+      "intensity": 4,
+      "title": "Mental Wellness Advanced",
+      "description": "Challenge yourself with advanced mental wellness practices",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Foundation in mindfulness with meditation and journaling",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "documentary-4",
+                "self-reflection-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "creative-training-4",
+                "skill-dev-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "chill-music-4",
+                "self-reflection-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "documentary-4",
+                "journaling-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "cooking-4",
+                "skill-dev-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "article-reading-4",
+                "journaling-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "creative-training-4",
+                "hobby-discovery-4"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Expanding learning with reading and skill development",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "self-reflection-4",
+                "skill-dev-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "podcast-4",
+                "social-talk-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "chill-music-4",
+                "cooking-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "article-reading-4",
+                "podcast-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "hobby-discovery-4",
+                "journaling-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "article-reading-4",
+                "chill-music-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "book-reading-4",
+                "self-reflection-4"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Creative expression and social connection",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "documentary-4",
+                "podcast-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "article-reading-4",
+                "meditation-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "chill-music-4",
+                "creative-training-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "cooking-4",
+                "meditation-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "article-reading-4",
+                "skill-dev-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "hobby-discovery-4",
+                "self-reflection-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "meditation-4",
+                "social-talk-4"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Integrating all mental practices into a sustainable routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "journaling-4",
+                "meditation-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "podcast-4",
+                "skill-dev-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "article-reading-4",
+                "book-reading-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "hobby-discovery-4",
+                "social-talk-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "creative-training-4",
+                "podcast-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "article-reading-4",
+                "hobby-discovery-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "documentary-4",
+                "self-reflection-4"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1-5",
+      "path": "mental",
+      "intensity": 5,
+      "title": "Mental Wellness Expert",
+      "description": "Master intensive mental wellness techniques for long-term growth",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Foundation in mindfulness with meditation and journaling",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "self-reflection-5",
+                "skill-dev-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "podcast-5",
+                "social-talk-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "cooking-5",
+                "creative-training-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "book-reading-5",
+                "skill-dev-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "creative-training-5",
+                "podcast-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "chill-music-5",
+                "journaling-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "article-reading-5",
+                "documentary-5"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Expanding learning with reading and skill development",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "hobby-discovery-5",
+                "self-reflection-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "book-reading-5",
+                "documentary-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "chill-music-5",
+                "journaling-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "article-reading-5",
+                "social-talk-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "cooking-5",
+                "documentary-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "chill-music-5",
+                "social-talk-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "cooking-5",
+                "meditation-5"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Creative expression and social connection",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "article-reading-5",
+                "cooking-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "chill-music-5",
+                "meditation-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "podcast-5",
+                "skill-dev-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "chill-music-5",
+                "cooking-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "hobby-discovery-5",
+                "journaling-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "chill-music-5",
+                "skill-dev-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "creative-training-5",
+                "meditation-5"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Integrating all mental practices into a sustainable routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "book-reading-5",
+                "cooking-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "hobby-discovery-5",
+                "meditation-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "journaling-5",
+                "social-talk-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "documentary-5",
+                "hobby-discovery-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "meditation-5",
+                "self-reflection-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "article-reading-5",
+                "cooking-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "journaling-5",
+                "skill-dev-5"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2-1",
+      "path": "physical",
+      "intensity": 1,
+      "title": "Physical Wellness Beginner",
+      "description": "Start your physical wellness journey with gentle exercise and movement",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Building a foundation of basic movements",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "jogging-1",
+                "stretching-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "recovery-1",
+                "walking-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "good-sleep-1",
+                "jogging-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "bodyweight-1",
+                "stretching-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "gym-workout-1",
+                "jogging-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "good-sleep-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "running-1",
+                "stretching-1"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Increasing endurance with longer activities",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "gym-workout-1",
+                "rhythmic-movement-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "stretching-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "good-sleep-1",
+                "running-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "gym-workout-1",
+                "jogging-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "rhythmic-movement-1",
+                "walking-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "recovery-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "outdoor-cardio-1",
+                "rhythmic-movement-1"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Adding variety to your physical routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "gym-workout-1",
+                "rhythmic-movement-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "outdoor-cardio-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "good-sleep-1",
+                "running-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "bodyweight-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "good-sleep-1",
+                "stretching-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "gym-workout-1",
+                "running-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "jogging-1",
+                "outdoor-cardio-1"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Creating a balanced and sustainable exercise plan",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "running-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "stretching-1",
+                "walking-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "gym-workout-1",
+                "running-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "bodyweight-1",
+                "stretching-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "gym-workout-1",
+                "jogging-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "running-1",
+                "walking-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "good-sleep-1",
+                "gym-workout-1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2-2",
+      "path": "physical",
+      "intensity": 2,
+      "title": "Physical Wellness Easy",
+      "description": "Build upon your physical foundation with slightly more challenging activities",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Building a foundation of basic movements",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "bodyweight-2",
+                "stretching-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "jogging-2",
+                "recovery-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "running-2",
+                "stretching-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "good-sleep-2",
+                "jogging-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "gym-workout-2",
+                "walking-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "bodyweight-2",
+                "yoga-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "recovery-2",
+                "rhythmic-movement-2"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Increasing endurance with longer activities",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "recovery-2",
+                "yoga-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "bodyweight-2",
+                "rhythmic-movement-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "running-2",
+                "walking-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "bodyweight-2",
+                "yoga-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "good-sleep-2",
+                "jogging-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "rhythmic-movement-2",
+                "yoga-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "jogging-2",
+                "walking-2"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Adding variety to your physical routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "gym-workout-2",
+                "rhythmic-movement-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "outdoor-cardio-2",
+                "running-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "bodyweight-2",
+                "stretching-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "recovery-2",
+                "running-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "gym-workout-2",
+                "walking-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "good-sleep-2",
+                "rhythmic-movement-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "gym-workout-2",
+                "outdoor-cardio-2"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Creating a balanced and sustainable exercise plan",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "bodyweight-2",
+                "good-sleep-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "recovery-2",
+                "running-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "good-sleep-2",
+                "yoga-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "bodyweight-2",
+                "recovery-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "good-sleep-2",
+                "rhythmic-movement-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "jogging-2",
+                "walking-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "bodyweight-2",
+                "gym-workout-2"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2-3",
+      "path": "physical",
+      "intensity": 3,
+      "title": "Physical Wellness Intermediate",
+      "description": "Develop consistent fitness habits with medium-intensity exercises",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Building a foundation of basic movements",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "gym-workout-3",
+                "walking-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "jogging-3",
+                "yoga-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "outdoor-cardio-3",
+                "recovery-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "rhythmic-movement-3",
+                "running-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "bodyweight-3",
+                "recovery-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "outdoor-cardio-3",
+                "yoga-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "running-3",
+                "stretching-3"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Increasing endurance with longer activities",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "recovery-3",
+                "walking-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "jogging-3",
+                "outdoor-cardio-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "good-sleep-3",
+                "recovery-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "outdoor-cardio-3",
+                "walking-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "jogging-3",
+                "rhythmic-movement-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "gym-workout-3",
+                "walking-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "bodyweight-3",
+                "yoga-3"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Adding variety to your physical routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "bodyweight-3",
+                "good-sleep-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "outdoor-cardio-3",
+                "rhythmic-movement-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "good-sleep-3",
+                "walking-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "gym-workout-3",
+                "running-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "bodyweight-3",
+                "rhythmic-movement-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "jogging-3",
+                "yoga-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "bodyweight-3",
+                "gym-workout-3"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Creating a balanced and sustainable exercise plan",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "good-sleep-3",
+                "running-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "recovery-3",
+                "yoga-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "jogging-3",
+                "rhythmic-movement-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "running-3",
+                "yoga-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "gym-workout-3",
+                "rhythmic-movement-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "bodyweight-3",
+                "outdoor-cardio-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "good-sleep-3",
+                "recovery-3"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2-4",
+      "path": "physical",
+      "intensity": 4,
+      "title": "Physical Wellness Advanced",
+      "description": "Challenge yourself with advanced physical training",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Building a foundation of basic movements",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "recovery-4",
+                "yoga-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "rhythmic-movement-4",
+                "running-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "outdoor-cardio-4",
+                "yoga-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "rhythmic-movement-4",
+                "stretching-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "outdoor-cardio-4",
+                "recovery-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "jogging-4",
+                "rhythmic-movement-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "bodyweight-4",
+                "stretching-4"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Increasing endurance with longer activities",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "recovery-4",
+                "running-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "jogging-4",
+                "walking-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "bodyweight-4",
+                "rhythmic-movement-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "outdoor-cardio-4",
+                "yoga-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "rhythmic-movement-4",
+                "walking-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "bodyweight-4",
+                "recovery-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "rhythmic-movement-4",
+                "stretching-4"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Adding variety to your physical routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "outdoor-cardio-4",
+                "yoga-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "running-4",
+                "walking-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "outdoor-cardio-4",
+                "rhythmic-movement-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "running-4",
+                "stretching-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "outdoor-cardio-4",
+                "recovery-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "running-4",
+                "yoga-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "outdoor-cardio-4",
+                "stretching-4"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Creating a balanced and sustainable exercise plan",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "bodyweight-4",
+                "gym-workout-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "recovery-4",
+                "running-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "bodyweight-4",
+                "rhythmic-movement-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "recovery-4",
+                "stretching-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "jogging-4",
+                "outdoor-cardio-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "bodyweight-4",
+                "recovery-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "gym-workout-4",
+                "outdoor-cardio-4"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2-5",
+      "path": "physical",
+      "intensity": 5,
+      "title": "Physical Wellness Expert",
+      "description": "Master intensive physical training for peak performance",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Building a foundation of basic movements",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "bodyweight-5",
+                "gym-workout-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "running-5",
+                "stretching-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "outdoor-cardio-5",
+                "yoga-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "rhythmic-movement-5",
+                "walking-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "jogging-5",
+                "yoga-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "gym-workout-5",
+                "outdoor-cardio-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "bodyweight-5",
+                "stretching-5"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Increasing endurance with longer activities",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "walking-5",
+                "yoga-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "rhythmic-movement-5",
+                "stretching-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "jogging-5",
+                "walking-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "gym-workout-5",
+                "recovery-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "rhythmic-movement-5",
+                "running-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "outdoor-cardio-5",
+                "recovery-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "jogging-5",
+                "running-5"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Adding variety to your physical routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "recovery-5",
+                "stretching-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "rhythmic-movement-5",
+                "running-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "outdoor-cardio-5",
+                "recovery-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "bodyweight-5",
+                "rhythmic-movement-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "outdoor-cardio-5",
+                "yoga-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "jogging-5",
+                "stretching-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "outdoor-cardio-5",
+                "rhythmic-movement-5"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Creating a balanced and sustainable exercise plan",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "bodyweight-5",
+                "outdoor-cardio-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "gym-workout-5",
+                "stretching-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "jogging-5",
+                "yoga-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "bodyweight-5",
+                "gym-workout-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "rhythmic-movement-5",
+                "yoga-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "gym-workout-5",
+                "outdoor-cardio-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "running-5",
+                "walking-5"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3-1",
+      "path": "balanced",
+      "intensity": 1,
+      "title": "Balanced Wellness Beginner",
+      "description": "Develop a holistic approach to wellness with a balance of mental and physical activities",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Establishing basic mental and physical practices",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "creative-training-1",
+                "podcast-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "article-reading-1",
+                "book-reading-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "jogging-1",
+                "walking-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "article-reading-1",
+                "journaling-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "meditation-1",
+                "podcast-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "book-reading-1",
+                "walking-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "journaling-1",
+                "stretching-1"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Balancing mind and body with consistent practice",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "article-reading-1",
+                "meditation-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "self-reflection-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "article-reading-1",
+                "recovery-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "self-reflection-1",
+                "stretching-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "jogging-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "article-reading-1",
+                "self-reflection-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "bodyweight-1",
+                "journaling-1"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Integrating wellness into daily life",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "walking-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "jogging-1",
+                "skill-dev-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "podcast-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "book-reading-1",
+                "jogging-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "podcast-1",
+                "walking-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "creative-training-1",
+                "recovery-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "bodyweight-1",
+                "walking-1"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Creating a sustainable holistic routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "recovery-1",
+                "skill-dev-1"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "jogging-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "journaling-1",
+                "meditation-1"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "walking-1",
+                "yoga-1"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "creative-training-1",
+                "jogging-1"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "article-reading-1",
+                "podcast-1"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "creative-training-1",
+                "journaling-1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3-2",
+      "path": "balanced",
+      "intensity": 2,
+      "title": "Balanced Wellness Easy",
+      "description": "Build a more consistent wellness routine with slightly more challenging activities",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Establishing basic mental and physical practices",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "bodyweight-2",
+                "podcast-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "meditation-2",
+                "recovery-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "jogging-2",
+                "yoga-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "journaling-2",
+                "self-reflection-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "meditation-2",
+                "yoga-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "article-reading-2",
+                "bodyweight-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "journaling-2",
+                "stretching-2"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Balancing mind and body with consistent practice",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "book-reading-2",
+                "walking-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "bodyweight-2",
+                "skill-dev-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "creative-training-2",
+                "meditation-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "self-reflection-2",
+                "walking-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "bodyweight-2",
+                "meditation-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "article-reading-2",
+                "jogging-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "creative-training-2",
+                "recovery-2"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Integrating wellness into daily life",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "podcast-2",
+                "self-reflection-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "book-reading-2",
+                "skill-dev-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "journaling-2",
+                "recovery-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "bodyweight-2",
+                "self-reflection-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "recovery-2",
+                "walking-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "meditation-2",
+                "skill-dev-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "self-reflection-2",
+                "walking-2"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Creating a sustainable holistic routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "podcast-2",
+                "stretching-2"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "article-reading-2",
+                "journaling-2"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "podcast-2",
+                "skill-dev-2"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "bodyweight-2",
+                "yoga-2"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "article-reading-2",
+                "skill-dev-2"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "stretching-2",
+                "walking-2"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "book-reading-2",
+                "creative-training-2"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3-3",
+      "path": "balanced",
+      "intensity": 3,
+      "title": "Balanced Wellness Intermediate",
+      "description": "Integrate medium-intensity activities into a balanced wellness practice",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Establishing basic mental and physical practices",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "article-reading-3",
+                "stretching-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "creative-training-3",
+                "yoga-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "self-reflection-3",
+                "walking-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "bodyweight-3",
+                "podcast-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "jogging-3",
+                "recovery-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "bodyweight-3",
+                "creative-training-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "walking-3",
+                "yoga-3"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Balancing mind and body with consistent practice",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "book-reading-3",
+                "self-reflection-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "walking-3",
+                "yoga-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "book-reading-3",
+                "recovery-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "jogging-3",
+                "skill-dev-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "book-reading-3",
+                "yoga-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "creative-training-3",
+                "podcast-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "bodyweight-3",
+                "journaling-3"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Integrating wellness into daily life",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "jogging-3",
+                "journaling-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "bodyweight-3",
+                "self-reflection-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "article-reading-3",
+                "skill-dev-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "creative-training-3",
+                "self-reflection-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "bodyweight-3",
+                "yoga-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "podcast-3",
+                "self-reflection-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "creative-training-3",
+                "meditation-3"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Creating a sustainable holistic routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "journaling-3",
+                "walking-3"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "podcast-3",
+                "yoga-3"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "jogging-3",
+                "skill-dev-3"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "podcast-3",
+                "stretching-3"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "article-reading-3",
+                "journaling-3"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "bodyweight-3",
+                "creative-training-3"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "journaling-3",
+                "yoga-3"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3-4",
+      "path": "balanced",
+      "intensity": 4,
+      "title": "Balanced Wellness Advanced",
+      "description": "Challenge yourself with advanced mental and physical techniques",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Establishing basic mental and physical practices",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "jogging-4",
+                "skill-dev-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "creative-training-4",
+                "journaling-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "book-reading-4",
+                "jogging-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "skill-dev-4",
+                "stretching-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "self-reflection-4",
+                "yoga-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "book-reading-4",
+                "walking-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "journaling-4",
+                "self-reflection-4"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Balancing mind and body with consistent practice",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "journaling-4",
+                "yoga-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "article-reading-4",
+                "creative-training-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "book-reading-4",
+                "yoga-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "meditation-4",
+                "skill-dev-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "book-reading-4",
+                "podcast-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "self-reflection-4",
+                "stretching-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "article-reading-4",
+                "recovery-4"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Integrating wellness into daily life",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "creative-training-4",
+                "stretching-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "journaling-4",
+                "skill-dev-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "article-reading-4",
+                "podcast-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "jogging-4",
+                "stretching-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "journaling-4",
+                "meditation-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "creative-training-4",
+                "skill-dev-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "article-reading-4",
+                "bodyweight-4"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Creating a sustainable holistic routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "bodyweight-4",
+                "book-reading-4"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "journaling-4",
+                "meditation-4"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "bodyweight-4",
+                "walking-4"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "article-reading-4",
+                "meditation-4"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "journaling-4",
+                "podcast-4"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "meditation-4",
+                "stretching-4"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "article-reading-4",
+                "book-reading-4"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3-5",
+      "path": "balanced",
+      "intensity": 5,
+      "title": "Balanced Wellness Expert",
+      "description": "Master intensive wellness practices for optimal mind-body health",
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "weeklyTrial": "Establishing basic mental and physical practices",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "jogging-5",
+                "meditation-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "podcast-5",
+                "recovery-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "bodyweight-5",
+                "skill-dev-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "book-reading-5",
+                "journaling-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "jogging-5",
+                "yoga-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "journaling-5",
+                "podcast-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "creative-training-5",
+                "walking-5"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "weeklyTrial": "Balancing mind and body with consistent practice",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "stretching-5",
+                "walking-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "creative-training-5",
+                "self-reflection-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "book-reading-5",
+                "yoga-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "article-reading-5",
+                "self-reflection-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "creative-training-5",
+                "journaling-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "jogging-5",
+                "meditation-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "article-reading-5",
+                "book-reading-5"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "weeklyTrial": "Integrating wellness into daily life",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "stretching-5",
+                "yoga-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "book-reading-5",
+                "self-reflection-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "meditation-5",
+                "yoga-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "creative-training-5",
+                "journaling-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "article-reading-5",
+                "stretching-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "jogging-5",
+                "recovery-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "skill-dev-5",
+                "walking-5"
+              ]
+            }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "weeklyTrial": "Creating a sustainable holistic routine",
+          "days": [
+            {
+              "dayNumber": 1,
+              "tasks": [
+                "meditation-5",
+                "self-reflection-5"
+              ]
+            },
+            {
+              "dayNumber": 2,
+              "tasks": [
+                "recovery-5",
+                "yoga-5"
+              ]
+            },
+            {
+              "dayNumber": 3,
+              "tasks": [
+                "article-reading-5",
+                "podcast-5"
+              ]
+            },
+            {
+              "dayNumber": 4,
+              "tasks": [
+                "book-reading-5",
+                "self-reflection-5"
+              ]
+            },
+            {
+              "dayNumber": 5,
+              "tasks": [
+                "bodyweight-5",
+                "journaling-5"
+              ]
+            },
+            {
+              "dayNumber": 6,
+              "tasks": [
+                "recovery-5",
+                "stretching-5"
+              ]
+            },
+            {
+              "dayNumber": 7,
+              "tasks": [
+                "creative-training-5",
+                "skill-dev-5"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "taskLibrary": {
+    "meditation-1": {
+      "task": "Meditation",
+      "duration": "5 minutes",
+      "category": "mindfulness"
+    },
+    "meditation-2": {
+      "task": "Meditation",
+      "duration": "10 minutes",
+      "category": "mindfulness"
+    },
+    "meditation-3": {
+      "task": "Meditation",
+      "duration": "15 minutes",
+      "category": "mindfulness"
+    },
+    "meditation-4": {
+      "task": "Meditation",
+      "duration": "25 minutes",
+      "category": "mindfulness"
+    },
+    "meditation-5": {
+      "task": "Meditation",
+      "duration": "40 minutes",
+      "category": "mindfulness"
+    },
+    "journaling-1": {
+      "task": "Journaling emotions and thoughts",
+      "duration": "10 minutes",
+      "category": "mindfulness"
+    },
+    "journaling-2": {
+      "task": "Journaling emotions and thoughts",
+      "duration": "15 minutes",
+      "category": "mindfulness"
+    },
+    "journaling-3": {
+      "task": "Journaling emotions and thoughts",
+      "duration": "20 minutes",
+      "category": "mindfulness"
+    },
+    "journaling-4": {
+      "task": "Journaling emotions and thoughts",
+      "duration": "25 minutes",
+      "category": "mindfulness"
+    },
+    "journaling-5": {
+      "task": "Journaling emotions and thoughts",
+      "duration": "30 minutes",
+      "category": "mindfulness"
+    },
+    "self-reflection-1": {
+      "task": "Self-reflection",
+      "duration": "10 minutes",
+      "category": "mindfulness"
+    },
+    "self-reflection-2": {
+      "task": "Self-reflection",
+      "duration": "15 minutes",
+      "category": "mindfulness"
+    },
+    "self-reflection-3": {
+      "task": "Self-reflection",
+      "duration": "20 minutes",
+      "category": "mindfulness"
+    },
+    "self-reflection-4": {
+      "task": "Self-reflection",
+      "duration": "30 minutes",
+      "category": "mindfulness"
+    },
+    "self-reflection-5": {
+      "task": "Self-reflection",
+      "duration": "40 minutes",
+      "category": "mindfulness"
+    },
+    "book-reading-1": {
+      "task": "Book Reading",
+      "duration": "1 chapter/2 pages",
+      "category": "learning"
+    },
+    "book-reading-2": {
+      "task": "Book Reading",
+      "duration": "1 chapter/6 pages",
+      "category": "learning"
+    },
+    "book-reading-3": {
+      "task": "Book Reading",
+      "duration": "1 chapter/10 pages",
+      "category": "learning"
+    },
+    "book-reading-4": {
+      "task": "Book Reading",
+      "duration": "1 chapter/26 pages",
+      "category": "learning"
+    },
+    "book-reading-5": {
+      "task": "Book Reading",
+      "duration": "2 chapters/30 pages",
+      "category": "learning"
+    },
+    "podcast-1": {
+      "task": "Listening to a podcast",
+      "duration": "10 minutes",
+      "category": "learning"
+    },
+    "podcast-2": {
+      "task": "Listening to a podcast",
+      "duration": "20 minutes",
+      "category": "learning"
+    },
+    "podcast-3": {
+      "task": "Listening to a podcast",
+      "duration": "30 minutes",
+      "category": "learning"
+    },
+    "podcast-4": {
+      "task": "Listening to a podcast",
+      "duration": "50 minutes",
+      "category": "learning"
+    },
+    "podcast-5": {
+      "task": "Listening to a podcast",
+      "duration": "80 minutes",
+      "category": "learning"
+    },
+    "chill-music-1": {
+      "task": "Listening to chill/mindful music",
+      "duration": "10 minutes",
+      "category": "learning"
+    },
+    "chill-music-2": {
+      "task": "Listening to chill/mindful music",
+      "duration": "15 minutes",
+      "category": "learning"
+    },
+    "chill-music-3": {
+      "task": "Listening to chill/mindful music",
+      "duration": "20 minutes",
+      "category": "learning"
+    },
+    "chill-music-4": {
+      "task": "Listening to chill/mindful music",
+      "duration": "30 minutes",
+      "category": "learning"
+    },
+    "chill-music-5": {
+      "task": "Listening to chill/mindful music",
+      "duration": "40 minutes",
+      "category": "learning"
+    },
+    "creative-training-1": {
+      "task": "Creative Training (Painting, writing, musical instruments)",
+      "duration": "10 minutes",
+      "category": "creativity"
+    },
+    "creative-training-2": {
+      "task": "Creative Training (Painting, writing, musical instruments)",
+      "duration": "15 minutes",
+      "category": "creativity"
+    },
+    "creative-training-3": {
+      "task": "Creative Training (Painting, writing, musical instruments)",
+      "duration": "25 minutes",
+      "category": "creativity"
+    },
+    "creative-training-4": {
+      "task": "Creative Training (Painting, writing, musical instruments)",
+      "duration": "40 minutes",
+      "category": "creativity"
+    },
+    "creative-training-5": {
+      "task": "Creative Training (Painting, writing, musical instruments)",
+      "duration": "50 minutes",
+      "category": "creativity"
+    },
+    "online-tutorial-1": {
+      "task": "Online Tutorial (coding, language, communication)",
+      "duration": "15 minutes",
+      "category": "learning"
+    },
+    "online-tutorial-2": {
+      "task": "Online Tutorial (coding, language, communication)",
+      "duration": "22 minutes",
+      "category": "learning"
+    },
+    "online-tutorial-3": {
+      "task": "Online Tutorial (coding, language, communication)",
+      "duration": "30 minutes",
+      "category": "learning"
+    },
+    "online-tutorial-4": {
+      "task": "Online Tutorial (coding, language, communication)",
+      "duration": "45 minutes",
+      "category": "learning"
+    },
+    "online-tutorial-5": {
+      "task": "Online Tutorial (coding, language, communication)",
+      "duration": "60 minutes",
+      "category": "learning"
+    },
+    "skill-dev-1": {
+      "task": "Skill Development (language, coding, math)",
+      "duration": "10 minutes",
+      "category": "learning"
+    },
+    "skill-dev-2": {
+      "task": "Skill Development (language, coding, math)",
+      "duration": "20 minutes",
+      "category": "learning"
+    },
+    "skill-dev-3": {
+      "task": "Skill Development (language, coding, math)",
+      "duration": "30 minutes",
+      "category": "learning"
+    },
+    "skill-dev-4": {
+      "task": "Skill Development (language, coding, math)",
+      "duration": "45 minutes",
+      "category": "learning"
+    },
+    "skill-dev-5": {
+      "task": "Skill Development (language, coding, math)",
+      "duration": "60 minutes",
+      "category": "learning"
+    },
+    "documentary-1": {
+      "task": "Watching educational documentary",
+      "duration": "15 minutes",
+      "category": "learning"
+    },
+    "documentary-2": {
+      "task": "Watching educational documentary",
+      "duration": "25 minutes",
+      "category": "learning"
+    },
+    "documentary-3": {
+      "task": "Watching educational documentary",
+      "duration": "30 minutes",
+      "category": "learning"
+    },
+    "documentary-4": {
+      "task": "Watching educational documentary",
+      "duration": "45 minutes",
+      "category": "learning"
+    },
+    "documentary-5": {
+      "task": "Watching educational documentary",
+      "duration": "90 minutes",
+      "category": "learning"
+    },
+    "cooking-1": {
+      "task": "Cooking",
+      "duration": "Cook a simple dish",
+      "category": "creativity"
+    },
+    "cooking-2": {
+      "task": "Cooking",
+      "duration": "Cook a complete meal",
+      "category": "creativity"
+    },
+    "cooking-3": {
+      "task": "Cooking",
+      "duration": "Cook a meal with a dessert",
+      "category": "creativity"
+    },
+    "cooking-4": {
+      "task": "Cooking",
+      "duration": "Cook a three-course meal",
+      "category": "creativity"
+    },
+    "cooking-5": {
+      "task": "Cooking",
+      "duration": "Cook a gourmet dish",
+      "category": "creativity"
+    },
+    "article-reading-1": {
+      "task": "Article reading",
+      "duration": "1 article",
+      "category": "learning"
+    },
+    "article-reading-2": {
+      "task": "Article reading",
+      "duration": "2 articles",
+      "category": "learning"
+    },
+    "article-reading-3": {
+      "task": "Article reading",
+      "duration": "3 articles",
+      "category": "learning"
+    },
+    "article-reading-4": {
+      "task": "Article reading",
+      "duration": "4 articles",
+      "category": "learning"
+    },
+    "article-reading-5": {
+      "task": "Article reading",
+      "duration": "5 articles",
+      "category": "learning"
+    },
+    "social-talk-1": {
+      "task": "Talk to a friend about your day",
+      "duration": "10 minutes",
+      "category": "social"
+    },
+    "social-talk-2": {
+      "task": "Talk to a friend about your day",
+      "duration": "15 minutes",
+      "category": "social"
+    },
+    "social-talk-3": {
+      "task": "Talk to a friend about your day",
+      "duration": "20 minutes",
+      "category": "social"
+    },
+    "social-talk-4": {
+      "task": "Talk to a friend about your day",
+      "duration": "25 minutes",
+      "category": "social"
+    },
+    "social-talk-5": {
+      "task": "Talk to a friend about your day",
+      "duration": "30 minutes",
+      "category": "social"
+    },
+    "hobby-discovery-1": {
+      "task": "Discover a new hobby group",
+      "duration": "5 minutes",
+      "category": "social"
+    },
+    "hobby-discovery-2": {
+      "task": "Discover a new hobby group",
+      "duration": "10 minutes",
+      "category": "social"
+    },
+    "hobby-discovery-3": {
+      "task": "Discover a new hobby group",
+      "duration": "15 minutes",
+      "category": "social"
+    },
+    "hobby-discovery-4": {
+      "task": "Discover a new hobby group",
+      "duration": "20 minutes",
+      "category": "social"
+    },
+    "hobby-discovery-5": {
+      "task": "Discover a new hobby group",
+      "duration": "25 minutes",
+      "category": "social"
+    },
+    "gym-workout-1": {
+      "task": "Working out in the gym",
+      "duration": "30 minutes",
+      "category": "physical"
+    },
+    "gym-workout-2": {
+      "task": "Working out in the gym",
+      "duration": "45 minutes",
+      "category": "physical"
+    },
+    "gym-workout-3": {
+      "task": "Working out in the gym",
+      "duration": "60 minutes",
+      "category": "physical"
+    },
+    "gym-workout-4": {
+      "task": "Working out in the gym",
+      "duration": "90 minutes",
+      "category": "physical"
+    },
+    "gym-workout-5": {
+      "task": "Working out in the gym",
+      "duration": "120 minutes",
+      "category": "physical"
+    },
+    "running-1": {
+      "task": "Running",
+      "duration": "1.5 km",
+      "category": "physical"
+    },
+    "running-2": {
+      "task": "Running",
+      "duration": "3 km",
+      "category": "physical"
+    },
+    "running-3": {
+      "task": "Running",
+      "duration": "5 km",
+      "category": "physical"
+    },
+    "running-4": {
+      "task": "Running",
+      "duration": "7 km",
+      "category": "physical"
+    },
+    "running-5": {
+      "task": "Running",
+      "duration": "10 km",
+      "category": "physical"
+    },
+    "stretching-1": {
+      "task": "Flexibility and Recovery (Stretching)",
+      "duration": "5 minutes",
+      "category": "physical"
+    },
+    "stretching-2": {
+      "task": "Flexibility and Recovery (Stretching)",
+      "duration": "8 minutes",
+      "category": "physical"
+    },
+    "stretching-3": {
+      "task": "Flexibility and Recovery (Stretching)",
+      "duration": "10 minutes",
+      "category": "physical"
+    },
+    "stretching-4": {
+      "task": "Flexibility and Recovery (Stretching)",
+      "duration": "15 minutes",
+      "category": "physical"
+    },
+    "stretching-5": {
+      "task": "Flexibility and Recovery (Stretching)",
+      "duration": "20 minutes",
+      "category": "physical"
+    },
+    "outdoor-cardio-1": {
+      "task": "Outdoor cardio (Cycling, Hiking, Swimming)",
+      "duration": "15 minutes",
+      "category": "physical"
+    },
+    "outdoor-cardio-2": {
+      "task": "Outdoor cardio (Cycling, Hiking, Swimming)",
+      "duration": "30 minutes",
+      "category": "physical"
+    },
+    "outdoor-cardio-3": {
+      "task": "Outdoor cardio (Cycling, Hiking, Swimming)",
+      "duration": "60 minutes",
+      "category": "physical"
+    },
+    "outdoor-cardio-4": {
+      "task": "Outdoor cardio (Cycling, Hiking, Swimming)",
+      "duration": "90 minutes",
+      "category": "physical"
+    },
+    "outdoor-cardio-5": {
+      "task": "Outdoor cardio (Cycling, Hiking, Swimming)",
+      "duration": "120 minutes",
+      "category": "physical"
+    },
+    "bodyweight-1": {
+      "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+      "duration": "2 sets",
+      "category": "physical"
+    },
+    "bodyweight-2": {
+      "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+      "duration": "3 sets",
+      "category": "physical"
+    },
+    "bodyweight-3": {
+      "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+      "duration": "4 sets",
+      "category": "physical"
+    },
+    "bodyweight-4": {
+      "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+      "duration": "5 sets",
+      "category": "physical"
+    },
+    "bodyweight-5": {
+      "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+      "duration": "10 sets",
+      "category": "physical"
+    },
+    "rhythmic-movement-1": {
+      "task": "Rhythmic Movement (Dancing, Pilates)",
+      "duration": "15 minutes",
+      "category": "physical"
+    },
+    "rhythmic-movement-2": {
+      "task": "Rhythmic Movement (Dancing, Pilates)",
+      "duration": "22 minutes",
+      "category": "physical"
+    },
+    "rhythmic-movement-3": {
+      "task": "Rhythmic Movement (Dancing, Pilates)",
+      "duration": "30 minutes",
+      "category": "physical"
+    },
+    "rhythmic-movement-4": {
+      "task": "Rhythmic Movement (Dancing, Pilates)",
+      "duration": "45 minutes",
+      "category": "physical"
+    },
+    "rhythmic-movement-5": {
+      "task": "Rhythmic Movement (Dancing, Pilates)",
+      "duration": "60 minutes",
+      "category": "physical"
+    },
+    "yoga-1": {
+      "task": "Yoga session",
+      "duration": "15 minutes",
+      "category": "physical"
+    },
+    "yoga-2": {
+      "task": "Yoga session",
+      "duration": "22 minutes",
+      "category": "physical"
+    },
+    "yoga-3": {
+      "task": "Yoga session",
+      "duration": "30 minutes",
+      "category": "physical"
+    },
+    "yoga-4": {
+      "task": "Yoga session",
+      "duration": "45 minutes",
+      "category": "physical"
+    },
+    "yoga-5": {
+      "task": "Yoga session",
+      "duration": "60 minutes",
+      "category": "physical"
+    },
+    "walking-1": {
+      "task": "Walking",
+      "duration": "1.5 km",
+      "category": "physical"
+    },
+    "walking-2": {
+      "task": "Walking",
+      "duration": "3 km",
+      "category": "physical"
+    },
+    "walking-3": {
+      "task": "Walking",
+      "duration": "4 km",
+      "category": "physical"
+    },
+    "walking-4": {
+      "task": "Walking",
+      "duration": "5 km",
+      "category": "physical"
+    },
+    "walking-5": {
+      "task": "Walking",
+      "duration": "7 km",
+      "category": "physical"
+    },
+    "jogging-1": {
+      "task": "Jogging",
+      "duration": "10 minutes",
+      "category": "physical"
+    },
+    "jogging-2": {
+      "task": "Jogging",
+      "duration": "15 minutes",
+      "category": "physical"
+    },
+    "jogging-3": {
+      "task": "Jogging",
+      "duration": "20 minutes",
+      "category": "physical"
+    },
+    "jogging-4": {
+      "task": "Jogging",
+      "duration": "30 minutes",
+      "category": "physical"
+    },
+    "jogging-5": {
+      "task": "Jogging",
+      "duration": "40 minutes",
+      "category": "physical"
+    },
+    "good-sleep-1": {
+      "task": "Quality sleeping",
+      "duration": "at least 6 hours",
+      "category": "physical"
+    },
+    "good-sleep-2": {
+      "task": "Quality sleeping",
+      "duration": "at least 7 hours",
+      "category": "physical"
+    },
+    "good-sleep-3": {
+      "task": "Quality sleeping",
+      "duration": "at least 8 hours",
+      "category": "physical"
+    },
+    "recovery-1": {
+      "task": "Rest & Recovery (light stretching, relaxation)",
+      "duration": "15 minutes",
+      "category": "physical"
+    },
+    "recovery-2": {
+      "task": "Rest & Recovery (light stretching, relaxation)",
+      "duration": "20 minutes",
+      "category": "physical"
+    },
+    "recovery-3": {
+      "task": "Rest & Recovery (light stretching, relaxation)",
+      "duration": "30 minutes",
+      "category": "physical"
+    },
+    "recovery-4": {
+      "task": "Rest & Recovery (light stretching, relaxation)",
+      "duration": "40 minutes",
+      "category": "physical"
+    },
+    "recovery-5": {
+      "task": "Rest & Recovery (light stretching, relaxation)",
+      "duration": "60 minutes",
+      "category": "physical"
+    }
   }
-]
+}

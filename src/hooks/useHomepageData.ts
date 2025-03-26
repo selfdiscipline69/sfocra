@@ -4,6 +4,57 @@ import * as storageService from '../utils/StorageUtils';
 import quotesData from '../../assets/Quote.json';
 import questsData from '../../assets/Quest.json';
 
+// Define interfaces for the new quest structure
+interface DayTask {
+  dayNumber: number;
+  tasks: string[];
+}
+
+interface Week {
+  weekNumber: number;
+  weeklyTrial: string;
+  days: DayTask[];
+}
+
+interface Challenge {
+  id: string;
+  path: string;
+  intensity: number;
+  title: string;
+  description: string;
+  weeks: Week[];
+}
+
+interface QuestData {
+  progressiveChallenges: Challenge[];
+  taskLibrary: Record<string, any>;
+}
+
+// WeeklyTrial type to match our updated component
+interface WeeklyTrialData {
+  title: string;
+  description: string;
+  weeklyTrialSummary: string;
+}
+
+interface TaskLibraryItem {
+  task: string;
+  category: string;
+  intensities: {
+    [key: string]: {
+      duration: string;
+    }
+  }
+}
+
+// Helper function to determine task category from task ID with safe access
+const getTaskCategory = (taskId: string, taskLibrary: Record<string, TaskLibraryItem> | undefined): string => {
+  if (!taskId || !taskLibrary) return 'general';
+  
+  const task = taskLibrary[taskId];
+  return task ? task.category : 'general';
+};
+
 export default function useHomepageData() {
   // User data states
   const [email, setEmail] = useState<string>('');
@@ -19,11 +70,15 @@ export default function useHomepageData() {
     question4: null,
   });
   
-  // Content states
+  // Content states - updated weeklyTrial to object type
   const [dailyQuote, setDailyQuote] = useState<string>('');
   const [dailyTasks, setDailyTasks] = useState<string[]>(['', '']);
-  const [weeklyTrial, setWeeklyTrial] = useState<string | null>(null);
+  const [dailyTaskIds, setDailyTaskIds] = useState<string[]>(['', '']);
+  const [weeklyTrial, setWeeklyTrial] = useState<WeeklyTrialData | null>(null);
   const [additionalTasks, setAdditionalTasks] = useState<AdditionalTask[]>([]);
+  const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(null);
+  const [currentWeek, setCurrentWeek] = useState<number>(1);
+  const [currentDay, setCurrentDay] = useState<number>(1);
 
   // Load user data from storage - use useCallback to ensure stable function reference
   const loadUserData = useCallback(async () => {
@@ -41,12 +96,47 @@ export default function useHomepageData() {
       
       const tasks = await storageService.getAdditionalTasks(userData.userToken);
       setAdditionalTasks(tasks);
+      
+      // Load saved progress
+      const savedProgress = await storageService.getChallengeProgress(userData.userToken);
+      if (savedProgress) {
+        setCurrentWeek(savedProgress.week);
+        setCurrentDay(savedProgress.day);
+      }
     }
   }, []);
 
-  // Load quests and quotes - use useCallback
-  const loadQuestsAndQuotes = useCallback(async (refreshWeeklyTrial = true) => {
+  // Load quests and quotes with time checks
+  const loadQuestsAndQuotes = useCallback(async (forceRefresh = false) => {
     try {
+      // Check if we need to refresh based on date
+      const shouldRefreshDailyTasks = forceRefresh || await storageService.shouldRefreshDaily(userToken);
+      const shouldRefreshWeeklyTrial = forceRefresh || await storageService.shouldRefreshWeekly(userToken);
+      
+      if (!shouldRefreshDailyTasks && !shouldRefreshWeeklyTrial) {
+        console.log("No refresh needed based on timestamps");
+        return;
+      }
+      
+      // Type guard for Quest data
+      // Add safety check for questsData
+      if (!questsData || typeof questsData !== 'object') {
+        console.error('Quest data is not available or not in the expected format');
+        handleLoadError(true);
+        return;
+      }
+      
+      // Safely cast questsData
+      const typedQuestData = questsData as unknown as QuestData;
+      
+      // Verify required structure exists
+      if (!typedQuestData.progressiveChallenges || !Array.isArray(typedQuestData.progressiveChallenges) || 
+          !typedQuestData.taskLibrary || typeof typedQuestData.taskLibrary !== 'object') {
+        console.error('Quest data is missing required structure', typedQuestData);
+        handleLoadError(true);
+        return;
+      }
+      
       const classKey = await storageService.getUserClassKey(userToken);
       
       if (!classKey) {
@@ -54,70 +144,195 @@ export default function useHomepageData() {
           "No user class information found",
           "Please complete the classification process"
         ]);
+        setDailyTaskIds(['', '']);
         
-        if (refreshWeeklyTrial) {
-          setWeeklyTrial("No user class information found");
-          await storageService.saveWeeklyTrial("No user class information found");
+        if (shouldRefreshWeeklyTrial) {
+          setWeeklyTrial({
+            title: "No user class information",
+            description: "Please complete the classification process",
+            weeklyTrialSummary: ""
+          });
+          await storageService.saveWeeklyTrial(JSON.stringify({
+            title: "No user class information",
+            description: "Please complete the classification process",
+            weeklyTrialSummary: ""
+          }));
         }
         return;
       }
       
-      // Extract path and difficulty from class key
-      const pathDifficultyKey = classKey.split('-').slice(0, 2).join('-');
+      // Parse the class key to get path code and intensity
+      // Format should be like: "1-3" (path code 1, intensity 3)
+      const parts = classKey.split('-');
+      if (parts.length < 2) {
+        console.error('Invalid class key format:', classKey);
+        handleLoadError(true);
+        return;
+      }
       
-      // Filter quests matching this path-difficulty
-      const matchingQuests = questsData.filter(quest => quest.key === pathDifficultyKey);
-      let availableQuests = [...matchingQuests];
+      const [pathCode, intensityStr] = parts;
+      const intensity = parseInt(intensityStr, 10);
       
-      // Handle weekly trial
-      if (refreshWeeklyTrial) {
-        if (availableQuests.length === 0) {
-          setWeeklyTrial("No quests available for your class type");
-          await storageService.saveWeeklyTrial("No quests available for your class type");
-        } else {
-          const weeklyQuestCount = Math.min(5, availableQuests.length);
-          const weeklyQuests = [];
+      if (isNaN(intensity)) {
+        console.error('Invalid intensity in class key:', classKey);
+        handleLoadError(true);
+        return;
+      }
+      
+      // Get all challenges matching this path code and intensity
+      const matchingChallenges = typedQuestData.progressiveChallenges.filter(
+        challenge => challenge.id && challenge.id.startsWith(`${pathCode}-${intensity}`)
+      );
+      
+      if (matchingChallenges.length === 0) {
+        // No matching challenges
+        console.warn(`No challenges found for ${pathCode}-${intensity}`);
+        setWeeklyTrial({
+          title: "No challenge available",
+          description: "No challenge matching your profile was found",
+          weeklyTrialSummary: "Please try a different profile"
+        });
+        setCurrentChallenge(null);
+        setDailyTasks(["No matching challenges for your profile", "Please try a different profile"]);
+        setDailyTaskIds(['', '']);
+        
+        if (shouldRefreshWeeklyTrial) {
+          await storageService.saveWeeklyTrial(JSON.stringify({
+            title: "No challenge available",
+            description: "No challenge matching your profile was found",
+            weeklyTrialSummary: "Please try a different profile"
+          }));
+        }
+        return;
+      }
+      
+      // Randomly select one of the matching challenges or use the previously selected one
+      let selectedChallenge = currentChallenge;
+      
+      // If we don't have a challenge yet, or if we're refreshing, select a new one
+      if (!selectedChallenge || forceRefresh) {
+        const randomIndex = Math.floor(Math.random() * matchingChallenges.length);
+        selectedChallenge = matchingChallenges[randomIndex];
+        setCurrentChallenge(selectedChallenge);
+      }
+      
+      // Safety check for selected challenge
+      if (!selectedChallenge || !selectedChallenge.weeks || !Array.isArray(selectedChallenge.weeks) || 
+          selectedChallenge.weeks.length === 0) {
+        console.error('Selected challenge has no weeks data');
+        handleLoadError(true);
+        return;
+      }
+      
+      // Get the current week and day data
+      const weekIndex = Math.min(currentWeek - 1, selectedChallenge.weeks.length - 1);
+      const selectedWeek = selectedChallenge.weeks[weekIndex];
+      
+      if (!selectedWeek || !selectedWeek.days || !Array.isArray(selectedWeek.days) || 
+          selectedWeek.days.length === 0) {
+        console.error('Selected week has no days data');
+        handleLoadError(true);
+        return;
+      }
+      
+      // Get the day data
+      const dayIndex = Math.min(currentDay - 1, selectedWeek.days.length - 1);
+      const selectedDay = selectedWeek.days[dayIndex];
+      
+      if (!selectedDay || !selectedDay.tasks || !Array.isArray(selectedDay.tasks)) {
+        console.error('Selected day has no tasks data');
+        handleLoadError(true);
+        return;
+      }
+      
+      // Set weekly trial data
+      const weeklyTrialData: WeeklyTrialData = {
+        title: selectedChallenge.title || "Challenge",
+        description: selectedChallenge.description || "No description available",
+        weeklyTrialSummary: selectedWeek.weeklyTrial || "No weekly trial summary available"
+      };
+      
+      setWeeklyTrial(weeklyTrialData);
+      await storageService.saveWeeklyTrial(JSON.stringify(weeklyTrialData));
+      
+      // Set daily tasks from the selected day
+      const tasks = selectedDay.tasks;
+      
+      // In case there are more than 2 tasks, trim to just the first 2
+      const taskIds = tasks.slice(0, 2);
+      if (taskIds.length === 0) {
+        // No tasks found
+        setDailyTasks(["No tasks for this day", "Please check back tomorrow"]);
+        setDailyTaskIds(['', '']);
+        return;
+      }
+      
+      // Format task text with duration from the task library
+      const taskLibrary = typedQuestData.taskLibrary;
+      const formattedTasks = taskIds.map(taskId => {
+        // Ensure taskId is a string and exists in the library
+        if (!taskId || typeof taskId !== 'string' || !taskLibrary[taskId]) {
+          return `Unknown task: ${taskId}`;
+        }
+        
+        const taskInfo = taskLibrary[taskId];
+        if (!taskInfo) return `Unknown task: ${taskId}`;
+        
+        // Get the challenge intensity or default to 3
+        const targetIntensity = selectedChallenge?.intensity?.toString() || "3";
+        
+        // Get task intensities
+        const intensities = taskInfo.intensities || {};
+        
+        // Try to get duration at the target intensity
+        let duration;
+        
+        // First try exact intensity level
+        if (intensities[targetIntensity]?.duration) {
+          duration = intensities[targetIntensity].duration;
+        }
+        // If not found, try to find any available intensity
+        else {
+          // Get available intensity levels
+          const availableLevels = Object.keys(intensities);
           
-          for (let i = 0; i < weeklyQuestCount; i++) {
-            if (availableQuests.length === 0) break;
-            const randomIndex = Math.floor(Math.random() * availableQuests.length);
-            const selectedQuest = availableQuests.splice(randomIndex, 1)[0];
-            weeklyQuests.push(selectedQuest);
-          }
-          
-          if (weeklyQuests.length > 0) {
-            const formattedWeeklyQuests = weeklyQuests.map(quest => 
-              `${quest.task} (${quest.duration})`
-            ).join('\n\n');
+          if (availableLevels.length > 0) {
+            // Sort intensity levels numerically (1, 2, 3...)
+            availableLevels.sort((a, b) => parseInt(a) - parseInt(b));
             
-            setWeeklyTrial(formattedWeeklyQuests);
-            await storageService.saveWeeklyTrial(formattedWeeklyQuests);
-          } else {
-            setWeeklyTrial("Not enough quests available for your class type");
-            await storageService.saveWeeklyTrial("Not enough quests available for your class type");
+            // Get the closest available intensity level
+            let closestLevel = availableLevels[0];
+            let minDiff = Math.abs(parseInt(targetIntensity) - parseInt(availableLevels[0]));
+            
+            for (const level of availableLevels) {
+              const diff = Math.abs(parseInt(targetIntensity) - parseInt(level));
+              if (diff < minDiff) {
+                minDiff = diff;
+                closestLevel = level;
+              }
+            }
+            
+            // Use the closest intensity level's duration
+            if (intensities[closestLevel]?.duration) {
+              duration = intensities[closestLevel].duration;
+            }
           }
         }
-      }
-      
-      // Handle daily tasks
-      const dailyTasksArray = [];
-      
-      for (let i = 0; i < 2; i++) {
-        if (availableQuests.length === 0) {
-          dailyTasksArray.push("Not enough quests available for your class type");
-        } else {
-          const randomIndex = Math.floor(Math.random() * availableQuests.length);
-          const selectedQuest = availableQuests.splice(randomIndex, 1)[0];
-          const taskText = `${selectedQuest.task} (${selectedQuest.duration})`;
-          dailyTasksArray.push(taskText);
+        
+        // If still no duration, use a default
+        if (!duration) {
+          duration = "standard duration";
         }
-      }
+        
+        return `${taskInfo.task} (${duration})`;
+      });
       
-      setDailyTasks(dailyTasksArray);
-      await storageService.saveDailyTasks(dailyTasksArray, userToken);
+      setDailyTasks(formattedTasks);
+      setDailyTaskIds(taskIds);
+      await storageService.saveDailyTasks(formattedTasks, userToken);
       
       // Handle daily quote
-      if (quotesData.length > 0) {
+      if (quotesData && Array.isArray(quotesData) && quotesData.length > 0) {
         const randomIndex = Math.floor(Math.random() * quotesData.length);
         const randomQuote = quotesData[randomIndex];
         
@@ -130,20 +345,79 @@ export default function useHomepageData() {
         setDailyQuote("The unexamined life is not worth living - Socrates");
       }
       
+      // Update the timestamps after successful refresh
+      const now = new Date().getTime();
+      const timestamps: {daily?: number, weekly?: number} = {};
+      
+      if (shouldRefreshDailyTasks) {
+        timestamps.daily = now;
+      }
+      
+      if (shouldRefreshWeeklyTrial) {
+        timestamps.weekly = now;
+      }
+      
+      await storageService.saveLastRefreshTimestamps(userToken, timestamps);
+      
     } catch (error) {
       console.error('Error loading quests and quotes:', error);
+      handleLoadError(true); // Refresh all on error
+    }
+  }, [userToken, currentChallenge, currentWeek, currentDay]);
+
+  // Handle error state
+  const handleLoadError = (refreshWeeklyTrial: boolean) => {
       if (refreshWeeklyTrial) {
-        setWeeklyTrial("Error loading weekly trial");
+      setWeeklyTrial({
+        title: "Error loading challenge",
+        description: "There was a problem loading your weekly challenge",
+        weeklyTrialSummary: "Please try again later"
+      });
       }
       
       setDailyTasks([
         "Error loading daily task 1",
         "Error loading daily task 2"
       ]);
+    setDailyTaskIds(['', '']);
       
       setDailyQuote("Error loading daily quote");
+  };
+  
+  // Get task categories based on task IDs
+  const getTaskCategories = useCallback(() => {
+    if (!questsData || !dailyTaskIds || !Array.isArray(dailyTaskIds)) {
+      return ['undefined', 'undefined'];
     }
-  }, [userToken]); // userToken is the only dependency here
+    
+    try {
+      const typedQuestData = questsData as unknown as QuestData;
+      // Guard against undefined task library
+      if (!typedQuestData || !typedQuestData.taskLibrary) {
+        return dailyTaskIds.map(() => undefined);
+      }
+      
+      const taskLibrary = typedQuestData.taskLibrary;
+      
+      return dailyTaskIds.map(taskId => {
+        if (!taskId) return undefined;
+        const category = getTaskCategory(taskId, taskLibrary);
+        
+        // Convert category names to expected component props
+        switch (category) {
+          case 'physical': return 'fitness';
+          case 'mindfulness': return 'mindfulness';
+          case 'learning': return 'learning';
+          case 'social': return 'social'; 
+          case 'creativity': return 'creativity';
+          default: return undefined;
+        }
+      });
+    } catch (error) {
+      console.error('Error getting task categories:', error);
+      return dailyTaskIds.map(() => undefined);
+    }
+  }, [dailyTaskIds]);
 
   // Update task handlers - use useCallback
   const handleTaskChange = useCallback((index: number, newTask: string) => {
@@ -210,8 +484,12 @@ export default function useHomepageData() {
   const content = {
     dailyQuote,
     dailyTasks,
+    dailyTaskIds,
     weeklyTrial,
     additionalTasks,
+    currentChallenge,
+    currentWeek,
+    currentDay,
   };
 
   const actions = {
@@ -222,6 +500,7 @@ export default function useHomepageData() {
     handleAdditionalTaskChange,
     setAdditionalTasks: updateAdditionalTasks,
     refreshData,
+    getTaskCategories,
   };
 
   return { userData, content, actions };

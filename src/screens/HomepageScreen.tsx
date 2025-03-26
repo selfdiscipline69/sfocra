@@ -70,15 +70,27 @@ const HomepageScreen = () => {
   // Define available categories
   const taskCategories = ["General", "Fitness", "Knowledge", "Mindfulness", "Social", "Creativity"];
   
-  // Determine categories for tasks
-  const weeklyTrialCategory = React.useMemo(() => 
-    content.weeklyTrial ? getTaskCategory(content.weeklyTrial) : undefined, 
-    [content.weeklyTrial]
-  );
+  // Update weekly trial category determination to use challenge ID instead of title
+  const weeklyTrialCategory = React.useMemo(() => {
+    if (!content.weeklyTrial || !content.currentChallenge) return undefined;
+    
+    // Extract path code from the ID (format: "path-intensity-variation")
+    const challengeId = content.currentChallenge.id;
+    const pathCode = challengeId.split('-')[0];
+    
+    // Map path code to category
+    switch(pathCode) {
+      case '1': return 'mindfulness'; // Mental path
+      case '2': return 'fitness';     // Physical path
+      case '3': return 'social';      // Balanced path
+      default: return 'general';
+    }
+  }, [content.weeklyTrial, content.currentChallenge]);
   
+  // Use the task categories from the task library
   const dailyTaskCategories = React.useMemo(() => 
-    content.dailyTasks.map(task => getTaskCategory(task)),
-    [content.dailyTasks]
+    actions.getTaskCategories(),
+    [actions, content.dailyTaskIds]
   );
   
   // Fix the infinite loop by using a ref to track if we've loaded data
@@ -101,32 +113,72 @@ const HomepageScreen = () => {
 
   // Generate a random task for the modal
   const generateRandomTask = () => {
-    if (questsData.length > 0) {
-      const randomIndex = Math.floor(Math.random() * questsData.length);
-      const randomQuest = questsData[randomIndex];
+    try {
+      // Access task library from the structured quest data
+      const typedQuestData = questsData as any;
+      const taskLibrary = typedQuestData?.taskLibrary;
       
-      // Extract category from the key if it exists, or use a default
-      const category = randomQuest.key ? 
-        (randomQuest.key.startsWith('1-') ? 'Mindfulness' :
-         randomQuest.key.startsWith('2-') ? 'Fitness' :
-         randomQuest.key.startsWith('3-') ? 'General' : 'General') : 
-        'General';
+      if (!taskLibrary || typeof taskLibrary !== 'object') {
+        return {
+          task: "New task",
+          duration: '30',
+          category: "General"
+        };
+      }
       
-      setRandomTask(randomQuest.task || "Task");
-      setRandomTaskDuration(randomQuest.duration || '30');
+      // Get all task keys
+      const taskKeys = Object.keys(taskLibrary);
+      if (taskKeys.length === 0) {
+        return {
+          task: "New task",
+          duration: '30',
+          category: "General"
+        };
+      }
+      
+      // Pick a random task
+      const randomKey = taskKeys[Math.floor(Math.random() * taskKeys.length)];
+      const randomTaskObj = taskLibrary[randomKey];
+      
+      if (!randomTaskObj) {
+        return {
+          task: "New task",
+          duration: '30',
+          category: "General"
+        };
+      }
+      
+      // Map category to UI category
+      let category = "General";
+      switch(randomTaskObj.category?.toLowerCase()) {
+        case 'physical': category = 'Fitness'; break;
+        case 'mindfulness': category = 'Mindfulness'; break;
+        case 'learning': category = 'Knowledge'; break;
+        case 'social': category = 'Social'; break;
+        case 'creativity': category = 'Creativity'; break;
+      }
+      
+      // Get a random intensity level between 1-3 for simplicity
+      const intensityLevel = Math.floor(Math.random() * 3) + 1;
+      const duration = randomTaskObj.intensities?.[intensityLevel]?.duration || '30';
+      
+      setRandomTask(randomTaskObj.task || "Task");
+      setRandomTaskDuration(duration);
       setRandomTaskCategory(category);
       
       return {
-        task: randomQuest.task || "Task",
-        duration: randomQuest.duration || '30',
+        task: randomTaskObj.task || "Task",
+        duration: duration,
         category: category
       };
+    } catch (error) {
+      console.error('Error generating random task:', error);
+      return {
+        task: "New task",
+        duration: '30',
+        category: "General"
+      };
     }
-    return {
-      task: "New task",
-      duration: '30',
-      category: "General"
-    };
   };
 
   // Show the modal to add new task
@@ -310,7 +362,7 @@ const HomepageScreen = () => {
           
           <View style={styles.spacerView} />
           
-          {/* Weekly Trial Section - Wrap in a container with fixed height margin */}
+          {/* Weekly Trial Section - Update to pass the new data structure */}
           <View style={styles.sectionContainer}>
             <WeeklyTrialSection 
               weeklyTrial={content.weeklyTrial} 
@@ -319,13 +371,13 @@ const HomepageScreen = () => {
             />
           </View>
 
-          {/* Daily Tasks - Wrap in a container with minimum height */}
+          {/* Daily Tasks - Using categories from task library */}
           <View style={styles.tasksSectionContainer}>
             <DailyTaskInput 
               tasks={content.dailyTasks} 
               onChangeTask={actions.handleTaskChange}
               theme={theme}
-              categories={dailyTaskCategories as any}
+              categories={dailyTaskCategories}
               onTaskComplete={handleTaskComplete}
               onTaskCancel={handleTaskCancel}
             />

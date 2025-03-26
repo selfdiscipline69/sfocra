@@ -1,0 +1,275 @@
+{
+    "meditation": {
+      "task": "Meditation",
+      "category": "mindfulness",
+      "intensities": {
+        "1": {"duration": "5 minutes"},
+        "2": {"duration": "10 minutes"},
+        "3": {"duration": "15 minutes"},
+        "4": {"duration": "25 minutes"},
+        "5": {"duration": "40 minutes"}
+      }
+    },
+    "journaling": {
+      "task": "Journaling emotions and thoughts",
+      "category": "mindfulness",
+      "intensities": {
+        "1": {"duration": "10 minutes"},
+        "2": {"duration": "15 minutes"},
+        "3": {"duration": "20 minutes"},
+        "4": {"duration": "25 minutes"},
+        "5": {"duration": "30 minutes"}
+      }
+    },
+    "self-reflection": {
+      "task": "Self-reflection",
+      "category": "mindfulness",
+      "intensities": {
+        "1": {"duration": "10 minutes"},
+        "2": {"duration": "15 minutes"},
+        "3": {"duration": "20 minutes"},
+        "4": {"duration": "30 minutes"},
+        "5": {"duration": "40 minutes"}
+      }
+    },
+    "book-reading": {
+      "task": "Book Reading",
+      "category": "learning",
+      "intensities": {
+        "1": {"duration": "1 chapter/2 pages"},
+        "2": {"duration": "1 chapter/6 pages"},
+        "3": {"duration": "1 chapter/10 pages"},
+        "4": {"duration": "1 chapter/26 pages"},
+        "5": {"duration": "2 chapters/30 pages"}
+      }
+    },
+    "podcast": {
+      "task": "Listening to a podcast",
+      "category": "learning",
+      "intensities": {
+        "1": {"duration": "10 minutes"},
+        "2": {"duration": "20 minutes"},
+        "3": {"duration": "30 minutes"},
+        "4": {"duration": "50 minutes"},
+        "5": {"duration": "80 minutes"}
+      }
+    },
+    "chill-music": {
+      "task": "Listening to chill/mindful music",
+      "category": "learning",
+      "intensities": {
+        "1": {"duration": "10 minutes"},
+        "2": {"duration": "15 minutes"},
+        "3": {"duration": "20 minutes"},
+        "4": {"duration": "30 minutes"},
+        "5": {"duration": "40 minutes"}
+      }
+    },
+    "creative-training": {
+      "task": "Creative Training (Painting, writing, musical instruments)",
+      "category": "creativity",
+      "intensities": {
+        "1": {"duration": "10 minutes"},
+        "2": {"duration": "15 minutes"},
+        "3": {"duration": "25 minutes"},
+        "4": {"duration": "40 minutes"},
+        "5": {"duration": "50 minutes"}
+      }
+    },
+    "online-tutorial": {
+      "task": "Online Tutorial (coding, language, communication)",
+      "category": "learning",
+      "intensities": {
+        "1": {"duration": "15 minutes"},
+        "2": {"duration": "22 minutes"},
+        "3": {"duration": "30 minutes"},
+        "4": {"duration": "45 minutes"},
+        "5": {"duration": "60 minutes"}
+      }
+    },
+    "skill-dev": {
+      "task": "Skill Development (language, coding, math)",
+      "category": "learning",
+      "intensities": {
+        "1": {"duration": "10 minutes"},
+        "2": {"duration": "20 minutes"},
+        "3": {"duration": "30 minutes"},
+        "4": {"duration": "45 minutes"},
+        "5": {"duration": "60 minutes"}
+      }
+    },
+    "documentary": {
+      "task": "Watching educational documentary",
+      "category": "learning",
+      "intensities": {
+        "1": {"duration": "15 minutes"},
+        "2": {"duration": "25 minutes"},
+        "3": {"duration": "30 minutes"},
+        "4": {"duration": "45 minutes"},
+        "5": {"duration": "90 minutes"}
+      }
+    },
+    "cooking": {
+      "task": "Cooking",
+      "category": "creativity",
+      "intensities": {
+        "1": {"duration": "Cook a simple dish"},
+        "2": {"duration": "Cook a complete meal"},
+        "3": {"duration": "Cook a meal with a dessert"},
+        "4": {"duration": "Cook a three-course meal"},
+        "5": {"duration": "Cook a gourmet dish"}
+      }
+    },
+    "article-reading": {
+      "task": "Article reading",
+      "category": "learning",
+      "intensities": {
+        "1": {"duration": "1 article"},
+        "2": {"duration": "2 articles"},
+        "3": {"duration": "3 articles"},
+        "4": {"duration": "4 articles"},
+        "5": {"duration": "5 articles"}
+      }
+    },
+    "social-talk": {
+      "task": "Talk to a friend about your day",
+      "category": "social",
+      "intensities": {
+        "1": {"duration": "10 minutes"},
+        "2": {"duration": "15 minutes"},
+        "3": {"duration": "20 minutes"},
+        "4": {"duration": "25 minutes"},
+        "5": {"duration": "30 minutes"}
+      }
+    },
+    "hobby-discovery": {
+      "task": "Discover a new hobby group",
+      "category": "social",
+      "intensities": {
+        "1": {"duration": "5 minutes"},
+        "2": {"duration": "10 minutes"},
+        "3": {"duration": "15 minutes"},
+        "4": {"duration": "20 minutes"},
+        "5": {"duration": "25 minutes"}
+      }
+    },
+    "gym-workout": {
+      "task": "Working out in the gym",
+      "category": "physical",
+      "intensities": {
+        "1": {"duration": "30 minutes"},
+        "2": {"duration": "45 minutes"},
+        "3": {"duration": "60 minutes"},
+        "4": {"duration": "90 minutes"},
+        "5": {"duration": "120 minutes"}
+      }
+    },
+    "running": {
+      "task": "Running",
+      "category": "physical",
+      "intensities": {
+        "1": {"duration": "1.5 km"},
+        "2": {"duration": "3 km"},
+        "3": {"duration": "5 km"},
+        "4": {"duration": "7 km"},
+        "5": {"duration": "10 km"}
+      }
+    },
+    "stretching": {
+      "task": "Flexibility and Recovery (Stretching)",
+      "category": "physical",
+      "intensities": {
+        "1": {"duration": "5 minutes"},
+        "2": {"duration": "8 minutes"},
+        "3": {"duration": "10 minutes"},
+        "4": {"duration": "15 minutes"},
+        "5": {"duration": "20 minutes"}
+      }
+    },
+    "outdoor-cardio": {
+      "task": "Outdoor cardio (Cycling, Hiking, Swimming)",
+      "category": "physical",
+      "intensities": {
+        "1": {"duration": "15 minutes"},
+        "2": {"duration": "30 minutes"},
+        "3": {"duration": "60 minutes"},
+        "4": {"duration": "90 minutes"},
+        "5": {"duration": "120 minutes"}
+      }
+    },
+    "bodyweight": {
+      "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+      "category": "physical",
+      "intensities": {
+        "1": {"duration": "2 sets"},
+        "2": {"duration": "3 sets"},
+        "3": {"duration": "4 sets"},
+        "4": {"duration": "5 sets"},
+        "5": {"duration": "10 sets"}
+      }
+    },
+    "rhythmic-movement": {
+      "task": "Rhythmic Movement (Dancing, Pilates)",
+      "category": "physical",
+      "intensities": {
+        "1": {"duration": "15 minutes"},
+        "2": {"duration": "22 minutes"},
+        "3": {"duration": "30 minutes"},
+        "4": {"duration": "45 minutes"},
+        "5": {"duration": "60 minutes"}
+      }
+    },
+    "yoga": {
+      "task": "Yoga session",
+      "category": "physical",
+      "intensities": {
+        "1": {"duration": "15 minutes"},
+        "2": {"duration": "22 minutes"},
+        "3": {"duration": "30 minutes"},
+        "4": {"duration": "45 minutes"},
+        "5": {"duration": "60 minutes"}
+      }
+    },
+    "walking": {
+      "task": "Walking",
+      "category": "physical",
+      "intensities": {
+        "1": {"duration": "1.5 km"},
+        "2": {"duration": "3 km"},
+        "3": {"duration": "4 km"},
+        "4": {"duration": "5 km"},
+        "5": {"duration": "7 km"}
+      }
+    },
+    "jogging": {
+      "task": "Jogging",
+      "category": "physical",
+      "intensities": {
+        "1": {"duration": "10 minutes"},
+        "2": {"duration": "15 minutes"},
+        "3": {"duration": "20 minutes"},
+        "4": {"duration": "30 minutes"},
+        "5": {"duration": "40 minutes"}
+      }
+    },
+    "good-sleep": {
+      "task": "Quality sleeping",
+      "category": "physical",
+      "intensities": {
+        "1": {"duration": "at least 6 hours"},
+        "2": {"duration": "at least 7 hours"},
+        "3": {"duration": "at least 8 hours"}
+      }
+    },
+    "recovery": {
+      "task": "Rest & Recovery (light stretching, relaxation)",
+      "category": "physical",
+      "intensities": {
+        "1": {"duration": "15 minutes"},
+        "2": {"duration": "20 minutes"},
+        "3": {"duration": "30 minutes"},
+        "4": {"duration": "40 minutes"},
+        "5": {"duration": "60 minutes"}
+      }
+    }
+}

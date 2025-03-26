@@ -1,6 +1,12 @@
+# How to run: python assets\generate_quests.py --generate --variations 3
+# This will generate a Quest.json file with 3 variations for each path-intensity combination
+# The Quest.json file will be saved in the assets folder
+
 import json
 import os
 import copy
+import random
+import argparse
 
 def apply_intensity_multiplier(activity, intensity, intensity_multipliers):
     """
@@ -20,100 +26,262 @@ def apply_intensity_multiplier(activity, intensity, intensity_multipliers):
     else:
         return f"intensity modification is required, standard is {activity['duration_minutes']}"
 
-def generate_quest_json():
-    """
-    Generate a complete Quest.json file with activities at different intensity levels
-    Ensures the generated file exactly matches the base activities defined here
-    """
-    # Base activities with standard durations (100% intensity level)
-    base_activities = [
-        # Mind activities (path 1)
-        {"path": 1, "task": "Meditation", "duration_minutes": 30},
-        {"path": 1, "task": "Journaling emotions and thoughts", "duration_minutes": 15},
-        {"path": 1, "task": "Book Reading", "duration_minutes": "1 chapter"},
-        {"path": 1, "task": "Listening to a podcast", "duration_minutes": "1 episode"},
-        {"path": 1, "task": "Listening to chill/ mindful music", "duration_minutes": 20},
-        {"path": 1, "task": "Drawing or painting", "duration_minutes": 45},
-        {"path": 1, "task": "Creative writing (poetry, short stories)", "duration_minutes": 30},
-        {"path": 1, "task": "Playing a musical instrument", "duration_minutes": 45},
-        {"path": 1, "task": "Online Tutorial (exercising, yoga, coding, language, communication)", "duration_minutes": 30},
-        {"path": 1, "task": "Self-reflection", "duration_minutes": 20},
-        {"path": 1, "task": "Learning a new language (e.g., via app)", "duration_minutes": 25},
-        {"path": 1, "task": "Watching educational documentary", "duration_minutes": 45},
-        {"path": 1, "task": "Cook a fine dinner", "duration_minutes": "1 time"},
-        {"path": 1, "task": "article reading", "duration_minutes": "3 articles"},
-        
-        # Body activities (path 2)
-        {"path": 2, "task": "Working out in the gym", "duration_minutes": 60},
-        {"path": 2, "task": "Running", "duration_minutes": "5 km"},
-        {"path": 2, "task": "Stretching", "duration_minutes": 10},
-        {"path": 2, "task": "Cycling", "duration_minutes": "15 km"},
-        {"path": 2, "task": "Bodyweight exercises (push-ups, squats, etc.)", "duration_minutes": "3 sets"},
-        {"path": 2, "task": "hiking", "duration_minutes": "10 km"},
-        {"path": 2, "task": "Swimming", "duration_minutes": "1 km"},
-        {"path": 2, "task": "Dancing", "duration_minutes": 30},
-        {"path": 2, "task": "yoga or Pilates", "duration_minutes": 45},
-        {"path": 2, "task": "massages for muscle recovery", "duration_minutes": 60},
-        
-        # Balanced activities (path 3)
-        {"path": 3, "task": "Yoga session", "duration_minutes": 30},
-        {"path": 3, "task": "Walking", "duration_minutes": "3 km"},
-        {"path": 3, "task": "Mindfulness practice (e.g., mindful eating)", "duration_minutes": 20},
-        {"path": 3, "task": "Gratitude reflection", "duration_minutes": 10},
-    ]
+def load_task_library():
+    """Load the task library from JSON file"""
+    try:
+        with open('assets/TaskLibrary.json', 'r', encoding='utf8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print("Error: TaskLibrary.json not found in assets directory")
+        exit(1)
+    except json.JSONDecodeError:
+        print("Error: TaskLibrary.json is not valid JSON")
+        exit(1)
 
-    # Intensity multipliers
-    intensity_multipliers = {
-        1: 0.5,  # 50% of standard duration
-        2: 0.75, # 75% of standard duration
-        3: 1.0,  # 100% of standard duration (original)
-        4: 1.5,  # 150% of standard duration
-        5: 2.0   # 200% of standard duration
+def generate_weekly_plan(path, intensity, week_number, task_library):
+    """Generate a 7-day plan with appropriate tasks for the path and intensity"""
+    # Define appropriate tasks for each path
+    path_tasks = {
+        "mental": ["meditation", "journaling", "book-reading", "podcast", "chill-music", 
+                  "self-reflection", "creative-training", "article-reading", "skill-dev",
+                  "documentary", "cooking", "social-talk", "hobby-discovery"],
+        "physical": ["walking", "bodyweight", "stretching", "yoga", "jogging", 
+                    "rhythmic-movement", "recovery", "good-sleep", "outdoor-cardio",
+                    "gym-workout", "running"],
+        "balanced": ["meditation", "walking", "journaling", "bodyweight", "book-reading",
+                    "yoga", "stretching", "creative-training", "recovery", "podcast",
+                    "self-reflection", "jogging", "article-reading", "skill-dev"]
+    }
+    
+    # Define weekly themes based on week number
+    weekly_themes = {
+        "mental": {
+            1: "Foundation in mindfulness with meditation and journaling",
+            2: "Expanding learning with reading and skill development",
+            3: "Creative expression and social connection", 
+            4: "Integrating all mental practices into a sustainable routine"
+        },
+        "physical": {
+            1: "Building a foundation of basic movements",
+            2: "Increasing endurance with longer activities",
+            3: "Adding variety to your physical routine",
+            4: "Creating a balanced and sustainable exercise plan"
+        },
+        "balanced": {
+            1: "Establishing basic mental and physical practices",
+            2: "Balancing mind and body with consistent practice",
+            3: "Integrating wellness into daily life",
+            4: "Creating a sustainable holistic routine"
+        }
+    }
+    
+    # Filter tasks for this path and check if they exist in task_library with the current intensity
+    available_tasks = []
+    for task in path_tasks[path]:
+        # Check if task exists and has the current intensity level
+        if (task in task_library and 
+            str(intensity) in task_library[task]["intensities"]):
+            available_tasks.append(task)
+    
+    if len(available_tasks) < 2:
+        print(f"Warning: Not enough tasks available for {path} at intensity {intensity}")
+        # Fallback to using any tasks that are available
+        available_tasks = [task for task in task_library 
+                          if str(intensity) in task_library[task]["intensities"]]
+    
+    # Create 7 days of paired tasks
+    daily_tasks = []
+    used_task_pairs = set()  # Track task pairs to avoid exact duplicates
+    used_tasks_consecutive_days = []  # Track last day's tasks to avoid consecutive repetition
+    
+    for day in range(1, 8):
+        # Keep trying until we get a suitable pair
+        max_attempts = 20  # Prevent infinite loops
+        attempts = 0
+        
+        while attempts < max_attempts:
+            attempts += 1
+            
+            # Select two different tasks for this day
+            candidate_tasks = [t for t in available_tasks if t not in used_tasks_consecutive_days]
+            
+            # If we can't avoid consecutive repetition, use all available tasks
+            if len(candidate_tasks) < 2:
+                candidate_tasks = available_tasks
+            
+            # If still not enough tasks, show error and use what we have
+            if len(candidate_tasks) < 2:
+                print(f"Error: Not enough unique tasks for {path} path, intensity {intensity}, day {day}")
+                if len(available_tasks) >= 2:
+                    day_tasks = random.sample(available_tasks, 2)
+                else:
+                    # Extreme fallback - just use the first task twice if we have at least one
+                    task = available_tasks[0] if available_tasks else "meditation"
+                    day_tasks = [task, task]
+                break
+            
+            day_tasks = random.sample(candidate_tasks, 2)
+            day_tasks.sort()  # Sort to make comparison consistent
+            task_pair = tuple(day_tasks)
+            
+            # Avoid using the same pair of tasks twice
+            if task_pair not in used_task_pairs:
+                used_task_pairs.add(task_pair)
+                break
+        
+        # Format task IDs with intensity
+        task_ids = [f"{task}-{intensity}" for task in day_tasks]
+        
+        # Update tracking for consecutive days
+        used_tasks_consecutive_days = day_tasks
+        
+        daily_tasks.append({
+            "dayNumber": day,
+            "tasks": task_ids
+        })
+    
+    # Create the weekly plan
+    return {
+        "weekNumber": week_number,
+        "weeklyTrial": weekly_themes[path][week_number],
+        "days": daily_tasks
     }
 
-    # Generate all quest entries with varying intensities
-    all_quests = []
-
-    print(f"DEBUG: Generating quests from {len(base_activities)} base activities")
-    for activity in base_activities:
-        print(f"DEBUG: Processing activity: {activity['task']}")
-        for intensity in range(1, 6):  # Intensity levels from 1 to 5
-            # For each base activity, create a quest entry for each intensity level
-            quest = {
-                "key": f"{activity['path']}-{intensity}",
-                "task": activity["task"],
-            }
-            
-            # Apply intensity multiplier if duration is a number, otherwise use the special message
-            if isinstance(activity["duration_minutes"], int):
-                quest["duration_minutes"] = round(activity["duration_minutes"] * intensity_multipliers[intensity])
-            else:
-                if intensity == 3:  # Standard intensity (100%)
-                    quest["duration_minutes"] = activity["duration_minutes"]
-                else:
-                    quest["duration_minutes"] = f"intensity modification is required, standard is {activity['duration_minutes']}"
-                    
-            all_quests.append(quest)
-
-    # Get the absolute path for Quest.json
-    quest_json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Quest.json')
-    print(f"DEBUG: Will write to absolute path: {quest_json_path}")
+def generate_challenge(path, intensity, task_library):
+    """Generate a complete 4-week challenge for a path and intensity"""
+    # Path code mapping
+    path_codes = {
+        "mental": "1",
+        "physical": "2", 
+        "balanced": "3"
+    }
     
-    # Skip deletion and directly overwrite
-    with open(quest_json_path, 'w', encoding='utf8') as f:
-        json.dump(all_quests, f, indent=2)
-    print(f"Successfully generated Quest.json with {len(all_quests)} quest entries ({len(base_activities)} base activities × 5 intensity levels)")
-    print(f"File saved to: {quest_json_path}")
+    titles = {
+        "mental": {
+            1: "Mental Wellness Beginner",
+            2: "Mental Wellness Easy",
+            3: "Mental Wellness Intermediate",
+            4: "Mental Wellness Advanced",
+            5: "Mental Wellness Expert"
+        },
+        "physical": {
+            1: "Physical Wellness Beginner",
+            2: "Physical Wellness Easy",
+            3: "Physical Wellness Intermediate",
+            4: "Physical Wellness Advanced",
+            5: "Physical Wellness Expert"
+        },
+        "balanced": {
+            1: "Balanced Wellness Beginner",
+            2: "Balanced Wellness Easy",
+            3: "Balanced Wellness Intermediate",
+            4: "Balanced Wellness Advanced",
+            5: "Balanced Wellness Expert"
+        }
+    }
+    
+    descriptions = {
+        "mental": {
+            1: "Start your mental wellness journey with basic mindfulness, learning, and creativity activities",
+            2: "Build upon your mental wellness foundation with slightly more challenging activities",
+            3: "Develop a consistent mental wellness practice with medium-intensity activities",
+            4: "Challenge yourself with advanced mental wellness practices",
+            5: "Master intensive mental wellness techniques for long-term growth"
+        },
+        "physical": {
+            1: "Start your physical wellness journey with gentle exercise and movement",
+            2: "Build upon your physical foundation with slightly more challenging activities",
+            3: "Develop consistent fitness habits with medium-intensity exercises",
+            4: "Challenge yourself with advanced physical training",
+            5: "Master intensive physical training for peak performance"
+        },
+        "balanced": {
+            1: "Develop a holistic approach to wellness with a balance of mental and physical activities",
+            2: "Build a more consistent wellness routine with slightly more challenging activities",
+            3: "Integrate medium-intensity activities into a balanced wellness practice",
+            4: "Challenge yourself with advanced mental and physical techniques",
+            5: "Master intensive wellness practices for optimal mind-body health"
+        }
+    }
+    
+    # Generate 4 weeks of plans
+    weeks = []
+    for week in range(1, 5):
+        weeks.append(generate_weekly_plan(path, intensity, week, task_library))
+    
+    # Create the complete challenge with new ID format
+    return {
+        "id": f"{path_codes[path]}-{intensity}", # Use path_codes instead of path name
+        "path": path,
+        "intensity": intensity,
+        "title": titles[path][intensity],
+        "description": descriptions[path][intensity],
+        "weeks": weeks
+    }
 
-    return all_quests
+def generate_quest_json(num_variations=1):
+    """Generate a complete Quest.json file with challenges at different intensity levels"""
+    # Load the task library
+    task_library = load_task_library()
+    
+    # Create quests structure
+    quests = {
+        "progressiveChallenges": [],
+        "taskLibrary": {}
+    }
+    
+    # Generate challenges for each path and intensity combination
+    paths = ["mental", "physical", "balanced"]
+    intensities = [1, 2, 3, 4, 5]
+    
+    for path in paths:
+        for intensity in intensities:
+            for variation in range(1, num_variations + 1):
+                challenge = generate_challenge(path, intensity, task_library)
+                
+                # Add variation suffix if multiple variations
+                if num_variations > 1:
+                    challenge["id"] = f"{challenge['id']}-{variation}"  # Just add the number
+                    challenge["title"] = f"{challenge['title']} ({variation})"  # No "Variation" text
+                
+                quests["progressiveChallenges"].append(challenge)
+                print(f"Generated: {challenge['title']}")
+    
+    # Prepare the task library for the output file
+    for task_id, task_info in task_library.items():
+        for intensity in intensities:
+            intensity_key = str(intensity)
+            if intensity_key in task_info["intensities"]:
+                full_task_id = f"{task_id}-{intensity}"
+                quests["taskLibrary"][full_task_id] = {
+                    "task": task_info["task"],
+                    "duration": task_info["intensities"][intensity_key]["duration"],
+                    "category": task_info["category"]
+                }
+    
+    # Write to Quest.json
+    quest_json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Quest.json')
+    with open(quest_json_path, 'w', encoding='utf8') as f:
+        json.dump(quests, f, indent=2)
+    
+    print(f"Successfully generated Quest.json with {len(quests['progressiveChallenges'])} challenges")
+    print(f"File saved to: {quest_json_path}")
+    
+    return quests
 
 def read_quests():
+    """Read existing Quest.json file or generate a new one"""
     quest_json_path = os.path.join(os.path.dirname(__file__), 'Quest.json')
     if (os.path.exists(quest_json_path)):
-        with open(quest_json_path, 'r', encoding='utf8') as f:
-            quests = json.load(f)
-        print(f"Loaded existing Quest.json with {len(quests)} quest entries")
-        return quests
+        try:
+            with open(quest_json_path, 'r', encoding='utf8') as f:
+                quests = json.load(f)
+            print(f"Loaded existing Quest.json with {len(quests['progressiveChallenges'])} challenges")
+            return quests
+        except (json.JSONDecodeError, KeyError) as e:
+            print(f"Error reading Quest.json: {e}")
+            print("Generating new quests...")
+            return generate_quest_json()
     else:
         print("Quest.json not found. Generating new quests...")
         return generate_quest_json()
@@ -138,34 +306,35 @@ def display_quest_info(quest):
     """Display formatted quest information"""
     print("\n" + "-" * 80)
     print("Current Quest Information:")
-    print(f"Key: {quest['key']}")
-    print(f"Task: {quest['task']}")
-    print(f"Duration: {quest['duration_minutes']} minutes")
+    print(f"ID: {quest['id']}")
+    print(f"Title: {quest['title']}")
+    print(f"Description: {quest['description']}")
     print("-" * 80)
 
 def edit_quest(quests):
+    """Interactive function to edit the quests"""
     while True:
         print("\n" + "-" * 80)
-        print("Welcome to the quests generation function, what do you want to do with the quests?")
+        print("Quest Generation Utility")
+        print("-" * 80)
         print("E: Exit program")
         print("R: Read and edit quests")
-        print("O: Use default quests (regenerates Quest.json with base activities)")
-        print("N: Create a new quest")
-        action = input("Enter your choice (E/R/O/N): ").strip().upper()
+        print("G: Generate new Quest.json")
+        print("V: Generate multiple variations")
+        action = input("Enter your choice (E/R/G/V): ").strip().upper()
         
         if action == 'E':
-            print("\n" + "-" * 80)
-            print("Exiting program.")
+            print("\nExiting program.")
             break
-        elif action == 'O':
-            print("\n" + "-" * 80)
-            print("Regenerating quests using default base activities...")
+            
+        elif action == 'G':
+            print("\nGenerating new Quest.json with default settings...")
             
             # Get the absolute path for Quest.json
             quest_json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Quest.json')
-            print(f"Quest.json location: {quest_json_path}")
+            print(f"Quest.json will be saved to: {quest_json_path}")
             
-            # First ensure the old file is deleted
+            # First ensure the old file is deleted if it exists
             try:
                 if (os.path.exists(quest_json_path)):
                     # Force file close in case it's being held open
@@ -175,19 +344,10 @@ def edit_quest(quests):
                     # Try to remove the file
                     os.remove(quest_json_path)
                     print(f"Old Quest.json file removed successfully from: {quest_json_path}")
-                else:
-                    print("No existing Quest.json file found.")
             except Exception as e:
                 print(f"Warning: Could not remove old file: {e}")
-                # If deletion fails, try a more aggressive approach
-                try:
-                    import subprocess
-                    subprocess.run(['rm', '-f', quest_json_path], check=True)
-                    print("Used system command to force remove the file.")
-                except Exception as e2:
-                    print(f"Failed to remove file using system command: {e2}")
             
-            # Generate new quests with fresh data and return them directly
+            # Generate new quests
             quests = generate_quest_json()
             
             # Verify the file exists with the correct content
@@ -196,19 +356,38 @@ def edit_quest(quests):
                 print(f"Verified: New Quest.json file created with size {file_size} bytes.")
             else:
                 print("Warning: Failed to create new Quest.json file.")
-            
-            print("\n" + "-" * 80)
-            print("Default quests have been generated and loaded. You can now read and edit them.")
-        elif action == 'N':
-            create_new_quest(quests)
+                
+        elif action == 'V':
+            try:
+                num_variations = int(input("Enter number of variations for each path-intensity combination: ").strip())
+                if num_variations < 1:
+                    print("Number of variations must be at least 1. Using default of 1.")
+                    num_variations = 1
+                elif num_variations > 10:
+                    confirm = input(f"Warning: Generating {num_variations} variations will create a very large file. Continue? (y/n): ").strip().lower()
+                    if confirm != 'y':
+                        print("Operation cancelled.")
+                        continue
+                
+                print(f"\nGenerating Quest.json with {num_variations} variations per path-intensity...")
+                quests = generate_quest_json(num_variations)
+                
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+                
         elif action == 'R':
-            print("\n" + "-" * 80)
             # First, show available paths to help the user
-            available_paths = sorted(set(q['key'] for q in quests))
-            print(f"Available paths (examples): {', '.join(available_paths[:5])}, ...")
+            print("\nAvailable paths:")
+            if 'progressiveChallenges' in quests:
+                unique_paths = sorted(set(q['id'] for q in quests['progressiveChallenges']))
+                for i, path in enumerate(unique_paths):
+                    print(f"{i+1}. {path}")
+            else:
+                print("No paths available. Please generate quests first.")
+                continue
             
             print("\n" + "-" * 80)
-            print("Instructions for path-to-code key:")
+            print("Instructions for path selection:")
             print("Enter a path code like '1-2' (path 1, intensity 2)")
             print("You can also enter '12' which will be converted to '1-2'")
             print("A: Show all quests")
@@ -217,340 +396,114 @@ def edit_quest(quests):
             
             path_to_code = input("\nEnter the path-to-code key: ").strip()
             if (path_to_code.upper() == 'E'):
-                print("\n" + "-" * 80)
-                print("Exiting program.")
+                print("\nExiting program.")
                 return
             if path_to_code.upper() == 'B':
                 continue
             if path_to_code.upper() == 'A':
-                print("\n" + "-" * 80)
-                print("Showing all quests:")
+                print("\nShowing all quests:")
                 print("-" * 80)
-                for idx, quest in enumerate(quests):
-                    print(f"Quest {idx}: Key: {quest['key']} | Task: {quest['task']} | Duration: {quest['duration_minutes']} minutes")
+                for idx, quest in enumerate(quests['progressiveChallenges']):
+                    print(f"Quest {idx}: ID: {quest['id']} | Title: {quest['title']}")
                 print("-" * 80)
                 input("Press Enter to continue...")
                 continue
             
             # Normalize path code to handle both "12" and "1-2" formats
             normalized_path = normalize_path_code(path_to_code)
-            print("\n" + "-" * 80)
-            print(f"Looking for quests with path '{normalized_path}'...")
+            print(f"\nLooking for quests with path '{normalized_path}'...")
             
-            filtered_quests = [q for q in quests if q['key'] == normalized_path]
+            filtered_quests = [q for q in quests['progressiveChallenges'] if q['id'] == normalized_path]
             
             if not filtered_quests:
-                print("\n" + "-" * 80)
-                print(f"No quests found with path '{normalized_path}'. Please try again.")
+                print(f"\nNo quests found with path '{normalized_path}'. Please try again.")
                 continue
             
-            print("\n" + "-" * 80)
-            print(f"Found {len(filtered_quests)} quests matching path '{normalized_path}':")
+            print(f"\nFound {len(filtered_quests)} quests matching path '{normalized_path}':")
             print("-" * 80)
             for idx, quest in enumerate(filtered_quests):
-                # Format the output to be more readable
-                print(f"Index: {idx} | Key: {quest['key']} | Task: {quest['task']} | Duration: {quest['duration_minutes']} minutes")
+                print(f"Index: {idx} | ID: {quest['id']} | Title: {quest['title']}")
             print("-" * 80)
             
+            # Display details of the first quest for reference
+            display_quest_info(filtered_quests[0])
+            
+            # Show weekly plan structure for the first quest
+            if len(filtered_quests) > 0 and 'weeks' in filtered_quests[0]:
+                print("\nWeekly Plans Preview:")
+                for week in filtered_quests[0]['weeks']:
+                    print(f"Week {week['weekNumber']}: {week['weeklyTrial']}")
+                    for i, day in enumerate(week['days']):
+                        if i < 2:  # Just show first two days for brevity
+                            tasks = ", ".join(day['tasks'])
+                            print(f"  Day {day['dayNumber']}: {tasks}")
+                    if len(week['days']) > 2:
+                        print("  ...")
+                print("-" * 80)
+            
+            print("\nOptions:")
+            print("Enter a number to see more details about that quest")
+            print("B: Back to path selection")
+            print("E: Exit program")
+            
+            option = input("Your choice: ").strip()
+            
+            if option.upper() == 'E':
+                print("\nExiting program.")
+                return
+            if option.upper() == 'B':
+                continue
+                
             try:
-                print("\n" + "-" * 80)
-                print("Options:")
-                print("Enter a number to edit that quest")
-                print("N: Add a new quest")
-                print("B: Back to path selection")
-                print("E: Exit program")
-                index_input = input("Enter your choice: ").strip()
-                
-                if index_input.upper() == 'E':
-                    print("\n" + "-" * 80)
-                    print("Exiting program.")
-                    return
-                if index_input.upper() == 'B':
-                    continue
-                if index_input.upper() == 'N':
-                    create_new_quest(quests)
-                    continue
-                
-                # Check if input is numerical
-                if not index_input.isdigit():
-                    print("\n" + "-" * 80)
-                    print("Invalid input. Index should be a number.")
-                    continue
+                idx = int(option)
+                if 0 <= idx < len(filtered_quests):
+                    quest = filtered_quests[idx]
+                    display_quest_info(quest)
                     
-                index_key = int(index_input)
-                if index_key >= len(filtered_quests):
-                    print("\n" + "-" * 80)
-                    print(f"Index {index_key} is out of range. Please enter a value between 0 and {len(filtered_quests)-1}.")
-                    continue
+                    # Show each week's plan
+                    if 'weeks' in quest:
+                        print("\nWeeks:")
+                        for week in quest['weeks']:
+                            print(f"\nWeek {week['weekNumber']}: {week['weeklyTrial']}")
+                            for day in week['days']:
+                                # Lookup task details from taskLibrary
+                                task_details = []
+                                for task_id in day['tasks']:
+                                    if task_id in quests['taskLibrary']:
+                                        task_info = quests['taskLibrary'][task_id]
+                                        task_details.append(f"{task_info['task']} ({task_info['duration']})")
+                                    else:
+                                        task_details.append(task_id)
+                                
+                                tasks_str = ", ".join(task_details)
+                                print(f"  Day {day['dayNumber']}: {tasks_str}")
                     
-                quest_to_edit = filtered_quests[index_key]
-                # Store original quest for undo functionality
-                original_quest = copy.deepcopy(quest_to_edit)
-                
-                # Display the current quest
-                display_quest_info(quest_to_edit)
-                
-                # Edit category/key
-                print("\n" + "-" * 80)
-                print("Category/Key Editing:")
-                print("Enter new key to change the category (format: 'X-Y' or 'XY')")
-                print("Leave empty to keep current value")
-                print("U: Undo all changes and revert to original")
-                print("E: Exit program")
-                print("B: Back to quest selection without saving")
-                
-                new_key = input(f"Current key: '{quest_to_edit['key']}'\nYour input: ").strip()
-                
-                if new_key.upper() == 'E':
-                    print("\n" + "-" * 80)
-                    print("Exiting program.")
-                    return
-                if new_key.upper() == 'B':
-                    print("\n" + "-" * 80)
-                    print("Going back to quest selection without saving changes.")
-                    continue
-                if new_key.upper() == 'U':
-                    quest_to_edit = original_quest
-                    print("\n" + "-" * 80)
-                    print("Changes undone. Reverted to original quest.")
-                    display_quest_info(quest_to_edit)
-                
-                key_changed = False
-                if new_key and new_key.upper() not in ['E', 'B', 'U']:
-                    # Normalize the new key format
-                    new_key = normalize_path_code(new_key)
-                    quest_to_edit['key'] = new_key
-                    key_changed = True
-                    print("\n" + "-" * 80)
-                    print("Key updated.")
-                    display_quest_info(quest_to_edit)
-                
-                # Edit task
-                print("\n" + "-" * 80)
-                print("Task Editing:")
-                print("Enter new text to change the task")
-                print("Leave empty to keep current value")
-                print("U: Undo all changes and revert to original")
-                print("E: Exit program")
-                print("B: Back to quest selection without saving")
-                
-                new_task = input(f"Current task: '{quest_to_edit['task']}'\nYour input: ").strip()
-                
-                if new_task.upper() == 'E':
-                    print("\n" + "-" * 80)
-                    print("Exiting program.")
-                    return
-                if new_task.upper() == 'B':
-                    print("\n" + "-" * 80)
-                    print("Going back to quest selection without saving changes.")
-                    continue
-                if new_task.upper() == 'U':
-                    quest_to_edit = original_quest
-                    print("\n" + "-" * 80)
-                    print("Changes undone. Reverted to original quest.")
-                    display_quest_info(quest_to_edit)
-                elif new_task and new_task.upper() not in ['E', 'B', 'U']:
-                    quest_to_edit['task'] = new_task
-                    print("\n" + "-" * 80)
-                    print("Task updated.")
-                    display_quest_info(quest_to_edit)
-                
-                # Edit duration
-                print("\n" + "-" * 80)
-                print("Duration Editing:")
-                print("Enter new number to change the duration")
-                print("Leave empty to keep current value")
-                print("U: Undo all changes and revert to original")
-                print("E: Exit program")
-                print("B: Back to quest selection without saving")
-                
-                new_duration = input(f"Current duration: '{quest_to_edit['duration_minutes']}' minutes\nYour input: ").strip()
-                
-                if new_duration.upper() == 'E':
-                    print("\n" + "-" * 80)
-                    print("Exiting program.")
-                    return
-                if new_duration.upper() == 'B':
-                    print("\n" + "-" * 80)
-                    print("Going back to quest selection without saving changes.")
-                    continue
-                if new_duration.upper() == 'U':
-                    quest_to_edit = original_quest
-                    print("\n" + "-" * 80)
-                    print("Changes undone. Reverted to original quest.")
-                    display_quest_info(quest_to_edit)
-                elif new_duration and new_duration.upper() not in ['E', 'B', 'U']:
-                    # Try to convert to int if possible
-                    try:
-                        quest_to_edit['duration_minutes'] = int(new_duration)
-                    except ValueError:
-                        quest_to_edit['duration_minutes'] = new_duration
-                    print("\n" + "-" * 80)
-                    print("Duration updated.")
-                    display_quest_info(quest_to_edit)
-                
-                print("\n" + "-" * 80)
-                print("Save Options:")
-                print("S: Save changes")
-                print("U: Undo all changes and revert to original")
-                print("E: Exit without saving")
-                print("B: Back to quest selection without saving")
-                
-                save_input = input("Your choice: ").strip().upper()
-                
-                if save_input == 'S':
-                    # If key was changed, we need to remove the old quest and add the new one
-                    if key_changed:
-                        # First, find and remove the original quest
-                        for idx, quest in enumerate(quests):
-                            if quest['key'] == original_quest['key'] and quest['task'] == original_quest['task']:
-                                quests.pop(idx)
-                                break
-                        # Then add the edited quest
-                        quests.append(quest_to_edit)
-                    else:
-                        # Just update the existing quest
-                        for idx, quest in enumerate(quests):
-                            if quest['key'] == quest_to_edit['key'] and quest['task'] == original_quest['task']:
-                                quests[idx] = quest_to_edit
-                                break
-                    
-                    with open(os.path.join(os.path.dirname(__file__), 'Quest.json'), 'w', encoding='utf8') as f:
-                        json.dump(quests, f, indent=2)
-                    print("\n" + "-" * 80)
-                    print("Quest updated and saved.")
-                    
-                elif save_input == 'U':
-                    print("\n" + "-" * 80)
-                    print("Changes undone. Reverted to original quest.")
-                    continue
-                elif save_input == 'E':
-                    print("\n" + "-" * 80)
-                    print("Exiting program.")
-                    return
-                elif save_input == 'B':
-                    print("\n" + "-" * 80)
-                    print("Going back without saving changes.")
-                    continue
-                    
+                    input("\nPress Enter to continue...")
+                else:
+                    print("Invalid index. Please enter a number within the range shown.")
             except ValueError:
-                print("\n" + "-" * 80)
-                print("Invalid index. Please enter a numeric value.")
-                continue
-            except IndexError:
-                print("\n" + "-" * 80)
-                print(f"Index {index_input} is out of range. Please enter a value between 0 and {len(filtered_quests)-1}.")
-                continue
+                print("Invalid input. Please enter a numeric value.")
+                
         else:
-            print("\n" + "-" * 80)
-            print("Invalid option. Please enter 'E' to exit, 'R' to read quests, 'N' to create a new quest, or 'O' to use default quests.")
-
-def create_new_quest(quests):
-    """Create a new quest from scratch"""
-    print("\n" + "-" * 80)
-    print("Creating a new quest:")
-    
-    # Get the path/key
-    while True:
-        print("\nEnter the key in format 'X-Y' or 'XY' (e.g., '1-2' or '12'):")
-        print("B: Back to main menu")
-        print("E: Exit program")
-        
-        key_input = input("Your input: ").strip()
-        
-        if key_input.upper() == 'E':
-            print("\n" + "-" * 80)
-            print("Exiting program.")
-            exit()
-        if key_input.upper() == 'B':
-            return
-        
-        try:
-            # Normalize the key
-            normalized_key = normalize_path_code(key_input)
-            # Validate key format
-            path, intensity = normalized_key.split('-')
-            int(path)
-            int(intensity)
-            break
-        except:
-            print("\n" + "-" * 80)
-            print("Invalid key format. Please use format 'X-Y' or 'XY' with numbers.")
-    
-    # Get the task
-    print("\n" + "-" * 80)
-    print("Enter the task description:")
-    print("B: Back to main menu")
-    print("E: Exit program")
-    
-    task_input = input("Your input: ").strip()
-    
-    if task_input.upper() == 'E':
-        print("\n" + "-" * 80)
-        print("Exiting program.")
-        exit()
-    if task_input.upper() == 'B':
-        return
-    
-    # Get the duration
-    print("\n" + "-" * 80)
-    print("Enter the duration in minutes (numbers only):")
-    print("B: Back to main menu")
-    print("E: Exit program")
-    
-    while True:
-        duration_input = input("Your input: ").strip()
-        
-        if duration_input.upper() == 'E':
-            print("\n" + "-" * 80)
-            print("Exiting program.")
-            exit()
-        if duration_input.upper() == 'B':
-            return
-        
-        try:
-            duration = int(duration_input)
-            break
-        except:
-            print("Invalid duration. Please enter a number.")
-    
-    # Create the new quest
-    new_quest = {
-        "key": normalized_key,
-        "task": task_input,
-        "duration_minutes": duration
-    }
-    
-    # Display the new quest
-    print("\n" + "-" * 80)
-    print("New Quest Created:")
-    print(f"Key: {new_quest['key']}")
-    print(f"Task: {new_quest['task']}")
-    print(f"Duration: {new_quest['duration_minutes']} minutes")
-    
-    # Confirm adding
-    print("\n" + "-" * 80)
-    print("S: Save this new quest")
-    print("B: Cancel and go back")
-    print("E: Exit without saving")
-    
-    save_choice = input("Your choice: ").strip().upper()
-    
-    if save_choice == 'S':
-        quests.append(new_quest)
-        with open(os.path.join(os.path.dirname(__file__), 'Quest.json'), 'w', encoding='utf8') as f:
-            json.dump(quests, f, indent=2)
-        print("\n" + "-" * 80)
-        print("New quest saved successfully!")
-    elif save_choice == 'E':
-        print("\n" + "-" * 80)
-        print("Exiting program.")
-        exit()
-    else:
-        print("\n" + "-" * 80)
-        print("New quest creation canceled.")
+            print("\nInvalid option. Please enter E, R, G, or V.")
 
 if __name__ == "__main__":
-    # First check if Quest.json exists, otherwise generate it
-    quests = read_quests()
-    edit_quest(quests)
+    parser = argparse.ArgumentParser(description='Generate Quest.json with progressive challenges')
+    parser.add_argument('--variations', '-v', type=int, default=1, 
+                        help='Number of variations to generate for each path-intensity combination')
+    parser.add_argument('--generate', '-g', action='store_true',
+                        help='Generate new Quest.json file without interactive mode')
+    parser.add_argument('--interactive', '-i', action='store_true',
+                        help='Run in interactive mode')
+    
+    args = parser.parse_args()
+    
+    if args.generate:
+        generate_quest_json(num_variations=args.variations)
+    elif args.interactive:
+        quests = read_quests()
+        edit_quest(quests)
+    else:
+        # By default, run in interactive mode
+        quests = read_quests()
+        edit_quest(quests)
