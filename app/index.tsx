@@ -1,6 +1,17 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable, ImageBackground } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, Pressable, ImageBackground, Button, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const clearAsyncStorage = async () => {
+  try {
+    await AsyncStorage.clear();
+    Alert.alert('Success', 'AsyncStorage cleared');
+  } catch (error) {
+    console.error('Error clearing AsyncStorage:', error);
+    Alert.alert('Error', 'Failed to clear AsyncStorage');
+  }
+};
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -17,6 +28,7 @@ export default function WelcomeScreen() {
       >
         <View style={styles.overlay}>
           <Text style={styles.text}>Tap to Continue</Text>
+          <Button title="Clear AsyncStorage" onPress={clearAsyncStorage} />
         </View>
       </ImageBackground>
     </Pressable>

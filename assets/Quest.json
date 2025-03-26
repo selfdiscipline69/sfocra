@@ -3438,305 +3438,305 @@
   ],
   "taskLibrary": {
     "meditation-1": {
-      "task": "Meditation",
-      "duration": "5 minutes",
-      "category": "mindfulness"
-    },
+    "task": "Meditation",
+    "duration": "5 minutes",
+    "category": "mindfulness"
+  },
     "meditation-2": {
-      "task": "Meditation",
-      "duration": "10 minutes",
-      "category": "mindfulness"
-    },
+    "task": "Meditation",
+    "duration": "10 minutes",
+    "category": "mindfulness"
+  },
     "meditation-3": {
-      "task": "Meditation",
-      "duration": "15 minutes",
-      "category": "mindfulness"
-    },
+    "task": "Meditation",
+    "duration": "15 minutes",
+    "category": "mindfulness"
+  },
     "meditation-4": {
-      "task": "Meditation",
-      "duration": "25 minutes",
-      "category": "mindfulness"
-    },
+    "task": "Meditation",
+    "duration": "25 minutes",
+    "category": "mindfulness"
+  },
     "meditation-5": {
-      "task": "Meditation",
-      "duration": "40 minutes",
-      "category": "mindfulness"
-    },
+    "task": "Meditation",
+    "duration": "40 minutes",
+    "category": "mindfulness"
+  },
     "journaling-1": {
       "task": "Journaling emotions and thoughts",
-      "duration": "10 minutes",
+    "duration": "10 minutes",
       "category": "mindfulness"
-    },
+  },
     "journaling-2": {
       "task": "Journaling emotions and thoughts",
-      "duration": "15 minutes",
+    "duration": "15 minutes",
       "category": "mindfulness"
-    },
+  },
     "journaling-3": {
       "task": "Journaling emotions and thoughts",
-      "duration": "20 minutes",
+    "duration": "20 minutes",
       "category": "mindfulness"
-    },
+  },
     "journaling-4": {
       "task": "Journaling emotions and thoughts",
-      "duration": "25 minutes",
+    "duration": "25 minutes",
       "category": "mindfulness"
     },
     "journaling-5": {
-      "task": "Journaling emotions and thoughts",
+    "task": "Journaling emotions and thoughts",
       "duration": "30 minutes",
       "category": "mindfulness"
     },
     "self-reflection-1": {
       "task": "Self-reflection",
-      "duration": "10 minutes",
-      "category": "mindfulness"
-    },
+    "duration": "10 minutes",
+    "category": "mindfulness"
+  },
     "self-reflection-2": {
       "task": "Self-reflection",
-      "duration": "15 minutes",
-      "category": "mindfulness"
-    },
+    "duration": "15 minutes",
+    "category": "mindfulness"
+  },
     "self-reflection-3": {
       "task": "Self-reflection",
-      "duration": "20 minutes",
-      "category": "mindfulness"
-    },
+    "duration": "20 minutes",
+    "category": "mindfulness"
+  },
     "self-reflection-4": {
       "task": "Self-reflection",
       "duration": "30 minutes",
-      "category": "mindfulness"
-    },
+    "category": "mindfulness"
+  },
     "self-reflection-5": {
       "task": "Self-reflection",
       "duration": "40 minutes",
-      "category": "mindfulness"
-    },
+    "category": "mindfulness"
+  },
     "book-reading-1": {
-      "task": "Book Reading",
+    "task": "Book Reading",
       "duration": "1 chapter/2 pages",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "book-reading-2": {
-      "task": "Book Reading",
+    "task": "Book Reading",
       "duration": "1 chapter/6 pages",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "book-reading-3": {
-      "task": "Book Reading",
+    "task": "Book Reading",
       "duration": "1 chapter/10 pages",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "book-reading-4": {
-      "task": "Book Reading",
-      "duration": "1 chapter/26 pages",
-      "category": "learning"
-    },
+    "task": "Book Reading",
+    "duration": "1 chapter/26 pages",
+    "category": "learning"
+  },
     "book-reading-5": {
-      "task": "Book Reading",
+    "task": "Book Reading",
       "duration": "2 chapters/30 pages",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "podcast-1": {
-      "task": "Listening to a podcast",
+    "task": "Listening to a podcast",
       "duration": "10 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "podcast-2": {
-      "task": "Listening to a podcast",
+    "task": "Listening to a podcast",
       "duration": "20 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "podcast-3": {
-      "task": "Listening to a podcast",
+    "task": "Listening to a podcast",
       "duration": "30 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "podcast-4": {
-      "task": "Listening to a podcast",
+    "task": "Listening to a podcast",
       "duration": "50 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "podcast-5": {
-      "task": "Listening to a podcast",
+    "task": "Listening to a podcast",
       "duration": "80 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "chill-music-1": {
       "task": "Listening to chill/mindful music",
-      "duration": "10 minutes",
-      "category": "learning"
-    },
+    "duration": "10 minutes",
+    "category": "learning"
+  },
     "chill-music-2": {
       "task": "Listening to chill/mindful music",
-      "duration": "15 minutes",
-      "category": "learning"
-    },
+    "duration": "15 minutes",
+    "category": "learning"
+  },
     "chill-music-3": {
       "task": "Listening to chill/mindful music",
-      "duration": "20 minutes",
-      "category": "learning"
-    },
+    "duration": "20 minutes",
+    "category": "learning"
+  },
     "chill-music-4": {
       "task": "Listening to chill/mindful music",
-      "duration": "30 minutes",
-      "category": "learning"
-    },
+    "duration": "30 minutes",
+    "category": "learning"
+  },
     "chill-music-5": {
       "task": "Listening to chill/mindful music",
-      "duration": "40 minutes",
-      "category": "learning"
-    },
+    "duration": "40 minutes",
+    "category": "learning"
+  },
     "creative-training-1": {
-      "task": "Creative Training (Painting, writing, musical instruments)",
-      "duration": "10 minutes",
-      "category": "creativity"
-    },
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": "10 minutes",
+    "category": "creativity"
+  },
     "creative-training-2": {
-      "task": "Creative Training (Painting, writing, musical instruments)",
-      "duration": "15 minutes",
-      "category": "creativity"
-    },
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": "15 minutes",
+    "category": "creativity"
+  },
     "creative-training-3": {
-      "task": "Creative Training (Painting, writing, musical instruments)",
-      "duration": "25 minutes",
-      "category": "creativity"
-    },
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": "25 minutes",
+    "category": "creativity"
+  },
     "creative-training-4": {
-      "task": "Creative Training (Painting, writing, musical instruments)",
-      "duration": "40 minutes",
-      "category": "creativity"
-    },
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": "40 minutes",
+    "category": "creativity"
+  },
     "creative-training-5": {
-      "task": "Creative Training (Painting, writing, musical instruments)",
-      "duration": "50 minutes",
-      "category": "creativity"
-    },
+    "task": "Creative Training (Painting, writing, musical instruments)",
+    "duration": "50 minutes",
+    "category": "creativity"
+  },
     "online-tutorial-1": {
       "task": "Online Tutorial (coding, language, communication)",
-      "duration": "15 minutes",
-      "category": "learning"
-    },
+    "duration": "15 minutes",
+    "category": "learning"
+  },
     "online-tutorial-2": {
       "task": "Online Tutorial (coding, language, communication)",
-      "duration": "22 minutes",
-      "category": "learning"
-    },
+    "duration": "22 minutes",
+    "category": "learning"
+  },
     "online-tutorial-3": {
       "task": "Online Tutorial (coding, language, communication)",
-      "duration": "30 minutes",
-      "category": "learning"
-    },
+    "duration": "30 minutes",
+    "category": "learning"
+  },
     "online-tutorial-4": {
       "task": "Online Tutorial (coding, language, communication)",
-      "duration": "45 minutes",
-      "category": "learning"
-    },
+    "duration": "45 minutes",
+    "category": "learning"
+  },
     "online-tutorial-5": {
       "task": "Online Tutorial (coding, language, communication)",
-      "duration": "60 minutes",
-      "category": "learning"
-    },
+    "duration": "60 minutes",
+    "category": "learning"
+  },
     "skill-dev-1": {
       "task": "Skill Development (language, coding, math)",
-      "duration": "10 minutes",
+    "duration": "10 minutes",
       "category": "learning"
     },
     "skill-dev-2": {
       "task": "Skill Development (language, coding, math)",
-      "duration": "20 minutes",
+    "duration": "20 minutes",
       "category": "learning"
-    },
+  },
     "skill-dev-3": {
       "task": "Skill Development (language, coding, math)",
-      "duration": "30 minutes",
-      "category": "learning"
-    },
+    "duration": "30 minutes",
+    "category": "learning"
+  },
     "skill-dev-4": {
       "task": "Skill Development (language, coding, math)",
       "duration": "45 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "skill-dev-5": {
       "task": "Skill Development (language, coding, math)",
       "duration": "60 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "documentary-1": {
-      "task": "Watching educational documentary",
+    "task": "Watching educational documentary",
       "duration": "15 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "documentary-2": {
-      "task": "Watching educational documentary",
+    "task": "Watching educational documentary",
       "duration": "25 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "documentary-3": {
-      "task": "Watching educational documentary",
+    "task": "Watching educational documentary",
       "duration": "30 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "documentary-4": {
-      "task": "Watching educational documentary",
+    "task": "Watching educational documentary",
       "duration": "45 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "documentary-5": {
-      "task": "Watching educational documentary",
+    "task": "Watching educational documentary",
       "duration": "90 minutes",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "cooking-1": {
-      "task": "Cooking",
+    "task": "Cooking",
       "duration": "Cook a simple dish",
-      "category": "creativity"
-    },
+    "category": "creativity"
+  },
     "cooking-2": {
-      "task": "Cooking",
+    "task": "Cooking",
       "duration": "Cook a complete meal",
-      "category": "creativity"
-    },
+    "category": "creativity"
+  },
     "cooking-3": {
-      "task": "Cooking",
+    "task": "Cooking",
       "duration": "Cook a meal with a dessert",
-      "category": "creativity"
-    },
+    "category": "creativity"
+  },
     "cooking-4": {
-      "task": "Cooking",
+    "task": "Cooking",
       "duration": "Cook a three-course meal",
-      "category": "creativity"
-    },
+    "category": "creativity"
+  },
     "cooking-5": {
-      "task": "Cooking",
+    "task": "Cooking",
       "duration": "Cook a gourmet dish",
-      "category": "creativity"
-    },
+    "category": "creativity"
+  },
     "article-reading-1": {
       "task": "Article reading",
       "duration": "1 article",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "article-reading-2": {
       "task": "Article reading",
-      "duration": "2 articles",
-      "category": "learning"
-    },
+    "duration": "2 articles",
+    "category": "learning"
+  },
     "article-reading-3": {
       "task": "Article reading",
       "duration": "3 articles",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "article-reading-4": {
       "task": "Article reading",
       "duration": "4 articles",
-      "category": "learning"
-    },
+    "category": "learning"
+  },
     "article-reading-5": {
       "task": "Article reading",
-      "duration": "5 articles",
-      "category": "learning"
-    },
+    "duration": "5 articles",
+    "category": "learning"
+  },
     "social-talk-1": {
       "task": "Talk to a friend about your day",
       "duration": "10 minutes",
@@ -3788,255 +3788,255 @@
       "category": "social"
     },
     "gym-workout-1": {
-      "task": "Working out in the gym",
-      "duration": "30 minutes",
-      "category": "physical"
-    },
+    "task": "Working out in the gym",
+    "duration": "30 minutes",
+    "category": "physical"
+  },
     "gym-workout-2": {
-      "task": "Working out in the gym",
-      "duration": "45 minutes",
-      "category": "physical"
-    },
+    "task": "Working out in the gym",
+    "duration": "45 minutes",
+    "category": "physical"
+  },
     "gym-workout-3": {
-      "task": "Working out in the gym",
-      "duration": "60 minutes",
-      "category": "physical"
-    },
+    "task": "Working out in the gym",
+    "duration": "60 minutes",
+    "category": "physical"
+  },
     "gym-workout-4": {
-      "task": "Working out in the gym",
-      "duration": "90 minutes",
-      "category": "physical"
-    },
+    "task": "Working out in the gym",
+    "duration": "90 minutes",
+    "category": "physical"
+  },
     "gym-workout-5": {
-      "task": "Working out in the gym",
-      "duration": "120 minutes",
-      "category": "physical"
-    },
+    "task": "Working out in the gym",
+    "duration": "120 minutes",
+    "category": "physical"
+  },
     "running-1": {
-      "task": "Running",
-      "duration": "1.5 km",
-      "category": "physical"
-    },
+    "task": "Running",
+    "duration": "1.5 km",
+    "category": "physical"
+  },
     "running-2": {
-      "task": "Running",
-      "duration": "3 km",
-      "category": "physical"
-    },
+    "task": "Running",
+    "duration": "3 km",
+    "category": "physical"
+  },
     "running-3": {
-      "task": "Running",
-      "duration": "5 km",
-      "category": "physical"
-    },
+    "task": "Running",
+    "duration": "5 km",
+    "category": "physical"
+  },
     "running-4": {
-      "task": "Running",
-      "duration": "7 km",
-      "category": "physical"
-    },
+    "task": "Running",
+    "duration": "7 km",
+    "category": "physical"
+  },
     "running-5": {
-      "task": "Running",
-      "duration": "10 km",
-      "category": "physical"
-    },
+    "task": "Running",
+    "duration": "10 km",
+    "category": "physical"
+  },
     "stretching-1": {
       "task": "Flexibility and Recovery (Stretching)",
-      "duration": "5 minutes",
-      "category": "physical"
-    },
+    "duration": "5 minutes",
+    "category": "physical"
+  },
     "stretching-2": {
       "task": "Flexibility and Recovery (Stretching)",
-      "duration": "8 minutes",
-      "category": "physical"
-    },
+    "duration": "8 minutes",
+    "category": "physical"
+  },
     "stretching-3": {
       "task": "Flexibility and Recovery (Stretching)",
-      "duration": "10 minutes",
-      "category": "physical"
-    },
+    "duration": "10 minutes",
+    "category": "physical"
+  },
     "stretching-4": {
       "task": "Flexibility and Recovery (Stretching)",
-      "duration": "15 minutes",
-      "category": "physical"
-    },
+    "duration": "15 minutes",
+    "category": "physical"
+  },
     "stretching-5": {
       "task": "Flexibility and Recovery (Stretching)",
-      "duration": "20 minutes",
-      "category": "physical"
-    },
+    "duration": "20 minutes",
+    "category": "physical"
+  },
     "outdoor-cardio-1": {
       "task": "Outdoor cardio (Cycling, Hiking, Swimming)",
       "duration": "15 minutes",
-      "category": "physical"
-    },
+    "category": "physical"
+  },
     "outdoor-cardio-2": {
       "task": "Outdoor cardio (Cycling, Hiking, Swimming)",
       "duration": "30 minutes",
-      "category": "physical"
-    },
+    "category": "physical"
+  },
     "outdoor-cardio-3": {
       "task": "Outdoor cardio (Cycling, Hiking, Swimming)",
       "duration": "60 minutes",
-      "category": "physical"
-    },
+    "category": "physical"
+  },
     "outdoor-cardio-4": {
       "task": "Outdoor cardio (Cycling, Hiking, Swimming)",
       "duration": "90 minutes",
-      "category": "physical"
-    },
+    "category": "physical"
+  },
     "outdoor-cardio-5": {
       "task": "Outdoor cardio (Cycling, Hiking, Swimming)",
       "duration": "120 minutes",
-      "category": "physical"
-    },
+    "category": "physical"
+  },
     "bodyweight-1": {
-      "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-      "duration": "2 sets",
-      "category": "physical"
-    },
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "2 sets",
+    "category": "physical"
+  },
     "bodyweight-2": {
-      "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
       "duration": "3 sets",
-      "category": "physical"
-    },
+    "category": "physical"
+  },
     "bodyweight-3": {
-      "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
       "duration": "4 sets",
-      "category": "physical"
-    },
+    "category": "physical"
+  },
     "bodyweight-4": {
-      "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-      "duration": "5 sets",
-      "category": "physical"
-    },
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "5 sets",
+    "category": "physical"
+  },
     "bodyweight-5": {
-      "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
-      "duration": "10 sets",
-      "category": "physical"
-    },
+    "task": "Bodyweight exercises (push-ups & squats & sit-ups)",
+    "duration": "10 sets",
+    "category": "physical"
+  },
     "rhythmic-movement-1": {
       "task": "Rhythmic Movement (Dancing, Pilates)",
-      "duration": "15 minutes",
-      "category": "physical"
-    },
+    "duration": "15 minutes",
+    "category": "physical"
+  },
     "rhythmic-movement-2": {
       "task": "Rhythmic Movement (Dancing, Pilates)",
-      "duration": "22 minutes",
-      "category": "physical"
-    },
+    "duration": "22 minutes",
+    "category": "physical"
+  },
     "rhythmic-movement-3": {
       "task": "Rhythmic Movement (Dancing, Pilates)",
-      "duration": "30 minutes",
-      "category": "physical"
-    },
+    "duration": "30 minutes",
+    "category": "physical"
+  },
     "rhythmic-movement-4": {
       "task": "Rhythmic Movement (Dancing, Pilates)",
-      "duration": "45 minutes",
-      "category": "physical"
-    },
+    "duration": "45 minutes",
+    "category": "physical"
+  },
     "rhythmic-movement-5": {
       "task": "Rhythmic Movement (Dancing, Pilates)",
-      "duration": "60 minutes",
-      "category": "physical"
-    },
+    "duration": "60 minutes",
+    "category": "physical"
+  },
     "yoga-1": {
-      "task": "Yoga session",
-      "duration": "15 minutes",
-      "category": "physical"
-    },
+    "task": "Yoga session",
+    "duration": "15 minutes",
+    "category": "physical"
+  },
     "yoga-2": {
-      "task": "Yoga session",
-      "duration": "22 minutes",
-      "category": "physical"
-    },
+    "task": "Yoga session",
+    "duration": "22 minutes",
+    "category": "physical"
+  },
     "yoga-3": {
-      "task": "Yoga session",
-      "duration": "30 minutes",
-      "category": "physical"
-    },
+    "task": "Yoga session",
+    "duration": "30 minutes",
+    "category": "physical"
+  },
     "yoga-4": {
-      "task": "Yoga session",
-      "duration": "45 minutes",
-      "category": "physical"
-    },
+    "task": "Yoga session",
+    "duration": "45 minutes",
+    "category": "physical"
+  },
     "yoga-5": {
-      "task": "Yoga session",
-      "duration": "60 minutes",
-      "category": "physical"
-    },
+    "task": "Yoga session",
+    "duration": "60 minutes",
+    "category": "physical"
+  },
     "walking-1": {
-      "task": "Walking",
-      "duration": "1.5 km",
-      "category": "physical"
-    },
+    "task": "Walking",
+    "duration": "1.5 km",
+    "category": "physical"
+  },
     "walking-2": {
-      "task": "Walking",
-      "duration": "3 km",
-      "category": "physical"
-    },
+    "task": "Walking",
+    "duration": "3 km",
+    "category": "physical"
+  },
     "walking-3": {
-      "task": "Walking",
+    "task": "Walking",
       "duration": "4 km",
-      "category": "physical"
-    },
+    "category": "physical"
+  },
     "walking-4": {
-      "task": "Walking",
-      "duration": "5 km",
-      "category": "physical"
-    },
+    "task": "Walking",
+    "duration": "5 km",
+    "category": "physical"
+  },
     "walking-5": {
-      "task": "Walking",
-      "duration": "7 km",
-      "category": "physical"
-    },
+    "task": "Walking",
+    "duration": "7 km",
+    "category": "physical"
+  },
     "jogging-1": {
       "task": "Jogging",
-      "duration": "10 minutes",
-      "category": "physical"
-    },
+    "duration": "10 minutes",
+    "category": "physical"
+  },
     "jogging-2": {
       "task": "Jogging",
-      "duration": "15 minutes",
-      "category": "physical"
-    },
+    "duration": "15 minutes",
+    "category": "physical"
+  },
     "jogging-3": {
       "task": "Jogging",
-      "duration": "20 minutes",
-      "category": "physical"
-    },
+    "duration": "20 minutes",
+    "category": "physical"
+  },
     "jogging-4": {
       "task": "Jogging",
-      "duration": "30 minutes",
-      "category": "physical"
-    },
+    "duration": "30 minutes",
+    "category": "physical"
+  },
     "jogging-5": {
       "task": "Jogging",
-      "duration": "40 minutes",
-      "category": "physical"
-    },
+    "duration": "40 minutes",
+    "category": "physical"
+  },
     "good-sleep-1": {
       "task": "Quality sleeping",
-      "duration": "at least 6 hours",
-      "category": "physical"
-    },
+    "duration": "at least 6 hours",
+    "category": "physical"
+  },
     "good-sleep-2": {
       "task": "Quality sleeping",
-      "duration": "at least 7 hours",
-      "category": "physical"
-    },
+    "duration": "at least 7 hours",
+    "category": "physical"
+  },
     "good-sleep-3": {
       "task": "Quality sleeping",
-      "duration": "at least 8 hours",
-      "category": "physical"
-    },
+    "duration": "at least 8 hours",
+    "category": "physical"
+  },
     "recovery-1": {
       "task": "Rest & Recovery (light stretching, relaxation)",
       "duration": "15 minutes",
-      "category": "physical"
-    },
+    "category": "physical"
+  },
     "recovery-2": {
       "task": "Rest & Recovery (light stretching, relaxation)",
       "duration": "20 minutes",
-      "category": "physical"
-    },
+    "category": "physical"
+  },
     "recovery-3": {
       "task": "Rest & Recovery (light stretching, relaxation)",
       "duration": "30 minutes",

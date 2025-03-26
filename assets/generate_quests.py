@@ -266,7 +266,7 @@ def generate_quest_json(num_variations=1):
     
     print(f"Successfully generated Quest.json with {len(quests['progressiveChallenges'])} challenges")
     print(f"File saved to: {quest_json_path}")
-    
+
     return quests
 
 def read_quests():
@@ -274,10 +274,10 @@ def read_quests():
     quest_json_path = os.path.join(os.path.dirname(__file__), 'Quest.json')
     if (os.path.exists(quest_json_path)):
         try:
-            with open(quest_json_path, 'r', encoding='utf8') as f:
-                quests = json.load(f)
+        with open(quest_json_path, 'r', encoding='utf8') as f:
+            quests = json.load(f)
             print(f"Loaded existing Quest.json with {len(quests['progressiveChallenges'])} challenges")
-            return quests
+        return quests
         except (json.JSONDecodeError, KeyError) as e:
             print(f"Error reading Quest.json: {e}")
             print("Generating new quests...")
@@ -356,7 +356,7 @@ def edit_quest(quests):
                 print(f"Verified: New Quest.json file created with size {file_size} bytes.")
             else:
                 print("Warning: Failed to create new Quest.json file.")
-                
+            
         elif action == 'V':
             try:
                 num_variations = int(input("Enter number of variations for each path-intensity combination: ").strip())
@@ -443,16 +443,16 @@ def edit_quest(quests):
             
             print("\nOptions:")
             print("Enter a number to see more details about that quest")
-            print("B: Back to path selection")
-            print("E: Exit program")
+                print("B: Back to path selection")
+                print("E: Exit program")
             
             option = input("Your choice: ").strip()
-            
+                
             if option.upper() == 'E':
                 print("\nExiting program.")
-                return
+                    return
             if option.upper() == 'B':
-                continue
+                    continue
                 
             try:
                 idx = int(option)
@@ -472,7 +472,7 @@ def edit_quest(quests):
                                     if task_id in quests['taskLibrary']:
                                         task_info = quests['taskLibrary'][task_id]
                                         task_details.append(f"{task_info['task']} ({task_info['duration']})")
-                                    else:
+                    else:
                                         task_details.append(task_id)
                                 
                                 tasks_str = ", ".join(task_details)
@@ -505,5 +505,5 @@ if __name__ == "__main__":
         edit_quest(quests)
     else:
         # By default, run in interactive mode
-        quests = read_quests()
-        edit_quest(quests)
+    quests = read_quests()
+    edit_quest(quests)

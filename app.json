@@ -32,10 +32,12 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-dev-client"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "sdkVersion": "52.0.0"
   }
 }

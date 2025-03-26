@@ -272,56 +272,19 @@ export default function useHomepageData() {
       const formattedTasks = taskIds.map(taskId => {
         // Ensure taskId is a string and exists in the library
         if (!taskId || typeof taskId !== 'string' || !taskLibrary[taskId]) {
+          console.warn(`Task not found in library: ${taskId}`);
           return `Unknown task: ${taskId}`;
         }
         
         const taskInfo = taskLibrary[taskId];
         if (!taskInfo) return `Unknown task: ${taskId}`;
         
-        // Get the challenge intensity or default to 3
-        const targetIntensity = selectedChallenge?.intensity?.toString() || "3";
+        // Get the duration directly from the task - no intensity levels to check
+        const duration = taskInfo.duration;
         
-        // Get task intensities
-        const intensities = taskInfo.intensities || {};
-        
-        // Try to get duration at the target intensity
-        let duration;
-        
-        // First try exact intensity level
-        if (intensities[targetIntensity]?.duration) {
-          duration = intensities[targetIntensity].duration;
-        }
-        // If not found, try to find any available intensity
-        else {
-          // Get available intensity levels
-          const availableLevels = Object.keys(intensities);
-          
-          if (availableLevels.length > 0) {
-            // Sort intensity levels numerically (1, 2, 3...)
-            availableLevels.sort((a, b) => parseInt(a) - parseInt(b));
-            
-            // Get the closest available intensity level
-            let closestLevel = availableLevels[0];
-            let minDiff = Math.abs(parseInt(targetIntensity) - parseInt(availableLevels[0]));
-            
-            for (const level of availableLevels) {
-              const diff = Math.abs(parseInt(targetIntensity) - parseInt(level));
-              if (diff < minDiff) {
-                minDiff = diff;
-                closestLevel = level;
-              }
-            }
-            
-            // Use the closest intensity level's duration
-            if (intensities[closestLevel]?.duration) {
-              duration = intensities[closestLevel].duration;
-            }
-          }
-        }
-        
-        // If still no duration, use a default
         if (!duration) {
-          duration = "standard duration";
+          console.warn(`No duration found for task ${taskId}`);
+          return `${taskInfo.task} (Duration not found)`;
         }
         
         return `${taskInfo.task} (${duration})`;
