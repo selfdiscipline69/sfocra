@@ -21,13 +21,6 @@ export const formatTimeOfDay = (date: Date): string => {
 };
 
 /**
- * Get a formatted time string in 24-hour format (e.g., "15:45")
- */
-export const format24HourTime = (date: Date): string => {
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-};
-
-/**
  * Calculate duration between two dates and format it
  */
 export const calculateDuration = (startDate: Date, endDate: Date): string => {

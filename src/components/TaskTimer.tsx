@@ -10,7 +10,7 @@ import {
 import * as Notifications from 'expo-notifications';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
-import { formatTime, format24HourTime } from '../utils/timeUtils';
+import { formatTime } from '../utils/timeUtils';
 
 // Interface for props
 interface TaskTimerProps {
@@ -27,7 +27,7 @@ const TaskTimer: React.FC<TaskTimerProps> = ({ taskName, isActive, onStop }) => 
 
   // Handle app state changes
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
+    const subscription = AppState.addEventListener('change', (nextAppState: string) => {
       if (appState.match(/inactive|background/) && nextAppState === 'active' && isActive) {
         // App came back to foreground - recalculate seconds based on startTime
         if (startTime) {
@@ -149,7 +149,7 @@ const TaskTimer: React.FC<TaskTimerProps> = ({ taskName, isActive, onStop }) => 
         
         {startTime && (
           <Text style={[styles.startTime, { color: theme.subtext }]}>
-            Started: {format24HourTime(startTime)}
+            Started: {startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
           </Text>
         )}
         

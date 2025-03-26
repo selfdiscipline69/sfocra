@@ -344,8 +344,7 @@ const HomepageScreen = () => {
     startTime: Date | null;
   } | null>(null);
   
-  // Timer-related logic starts here
-  // Handle starting a timer when a task is long-pressed
+  // Fix the implementation to use the component's own state
   const handleTaskLongPress = (index: number, taskText: string) => {
     // Check if this is a timer task
     if (!taskText || !taskText.includes('(') || !taskText.includes(')')) {
@@ -835,6 +834,9 @@ const styles = StyleSheet.create({
   },
   dailyTasksContainer: {
     width: '100%',
+    minHeight: 220, // Fixed height container to prevent layout shifts
+  },
+  weeklyGraphContainer: {
     minHeight: 220, // Fixed height container to prevent layout shifts
   },
 });

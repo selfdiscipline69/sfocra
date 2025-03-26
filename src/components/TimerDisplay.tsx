@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { formatTime, format24HourTime } from '../utils/timeUtils';
+import { formatTime } from '../utils/timeUtils';
 import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -51,7 +51,7 @@ const TimerDisplay = ({ isRunning, taskName, startTime, onStop }: TimerDisplayPr
         <Text style={[styles.time, { color: theme.accent }]}>{formatTime(elapsedTime)}</Text>
         {startTime && (
           <Text style={[styles.startTime, { color: theme.subtext }]}>
-            Started: {format24HourTime(startTime)}
+            Started: {startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
           </Text>
         )}
       </View>
