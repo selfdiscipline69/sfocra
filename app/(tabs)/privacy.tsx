@@ -104,7 +104,7 @@ export default function PrivacyScreen() {
           onPress={() => router.push('/(tabs)/settings')}
           style={styles.navButton}
         >
-          <Ionicons name="settings-outline" size={24} color={theme.text} />
+          <Ionicons name="settings" size={24} color={theme.text} />
         </TouchableOpacity>
       </View>
     </View>

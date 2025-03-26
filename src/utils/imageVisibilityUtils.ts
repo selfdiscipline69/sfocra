@@ -1,42 +1,63 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TaskItem, WeeklyTrialItem } from '../types/TaskTypes';
 
 /**
- * Toggles the visibility of an image for a specific task
- * 
- * @param type The type of task ('weekly', 'daily', or 'additional')
- * @param index The optional index of the task (required for daily and additional tasks)
- * @param state Object containing the current state values and setter functions
+ * Toggle image visibility for a specific task in additional tasks array
  */
-export const toggleImageVisibility = (
-  type: string, 
-  index?: number,
-  state: {
-    weeklyTrial: WeeklyTrialItem,
-    setWeeklyTrial: React.Dispatch<React.SetStateAction<WeeklyTrialItem>>,
-    tasks: TaskItem[],
-    setTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>,
-    additionalTasks: TaskItem[],
-    setAdditionalTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>,
+export const toggleImageVisibility = async (
+  userToken: string,
+  index: number,
+  tasks: TaskItem[],
+  setState: (tasks: TaskItem[]) => void
+): Promise<void> => {
+  try {
+    // Create new array with toggled showImage property
+    const updatedTasks = [...tasks];
+    if (updatedTasks[index] && typeof updatedTasks[index].showImage !== 'undefined') {
+      updatedTasks[index] = {
+        ...updatedTasks[index],
+        showImage: !updatedTasks[index].showImage
+      };
+      
+      // Update state
+      setState(updatedTasks);
+      
+      // Save to AsyncStorage
+      if (userToken) {
+        await AsyncStorage.setItem(`additionalTasks_${userToken}`, JSON.stringify(updatedTasks));
+      }
+    }
+  } catch (error) {
+    console.error('Error toggling image visibility:', error);
   }
-): void => {
-  if (type === 'weekly') {
-    state.setWeeklyTrial(prev => ({
-      ...prev,
-      showImage: !prev.showImage
-    }));
-  } else if (type === 'daily' && typeof index === 'number') {
-    const updatedTasks = [...state.tasks];
-    updatedTasks[index] = {
-      ...updatedTasks[index],
-      showImage: !updatedTasks[index].showImage
-    };
-    state.setTasks(updatedTasks);
-  } else if (type === 'additional' && typeof index === 'number') {
-    const updated = [...state.additionalTasks];
-    updated[index] = {
-      ...updated[index],
-      showImage: !updated[index].showImage
-    };
-    state.setAdditionalTasks(updated);
+};
+
+/**
+ * Toggle weekly trial task image visibility 
+ */
+export const toggleWeeklyTaskImageVisibility = async (
+  userToken: string,
+  tasks: WeeklyTrialItem[],
+  setState: (tasks: WeeklyTrialItem[]) => void
+): Promise<void> => {
+  try {
+    // There's only one weekly trial task
+    if (tasks.length > 0 && typeof tasks[0].showImage !== 'undefined') {
+      const updatedTasks = [...tasks];
+      updatedTasks[0] = {
+        ...updatedTasks[0],
+        showImage: !updatedTasks[0].showImage
+      };
+      
+      // Update state
+      setState(updatedTasks);
+      
+      // Save to AsyncStorage
+      if (userToken) {
+        await AsyncStorage.setItem(`weeklyTrialTasks_${userToken}`, JSON.stringify(updatedTasks));
+      }
+    }
+  } catch (error) {
+    console.error('Error toggling weekly task image visibility:', error);
   }
 };

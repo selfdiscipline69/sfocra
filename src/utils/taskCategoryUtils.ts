@@ -2,7 +2,7 @@
  * Utility to determine the category of a task based on Quest.json categories
  */
 
-export type TaskCategory = 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity' | 'physical';
+export type TaskCategory = 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity';
 
 /**
  * Maps tasks to their categories based on Quest.json data
@@ -38,6 +38,7 @@ const taskToCategory: Record<string, TaskCategory> = {
   "walking": "fitness",
   "jogging to the nearest park for a reflection": "fitness",
   "quality sleeping": "fitness",
+  "physical": "fitness", // Map "physical" to "fitness" for compatibility
   
   // Social category tasks
   "talk to a friend about your day": "social",
@@ -63,6 +64,9 @@ export const getTaskCategory = (taskText: string): TaskCategory | undefined => {
   if (!taskText) return undefined;
   
   const taskName = extractTaskName(taskText);
+  
+  // Map "physical" to "fitness" for compatibility
+  if (taskName === "physical") return "fitness";
   
   // Try to find an exact match first
   if (taskToCategory[taskName]) {

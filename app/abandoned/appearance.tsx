@@ -314,7 +314,7 @@ export default function AppearanceScreen() {
             onPress={() => router.push({ pathname: '/(tabs)/settings' })}
             style={[styles.navButton, styles.activeNavButton]}
           >
-            <Ionicons name="settings-outline" size={24} color={theme.text} />
+            <Ionicons name="settings" size={24} color={theme.text} />
           </TouchableOpacity>
         </View>
       </View>

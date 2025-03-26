@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, StyleSheet, View, Text, Animated } from 'react-native';
+import { TextInput, StyleSheet, View, Text, Animated, TouchableWithoutFeedback } from 'react-native';
 import WeeklyTrialBox, { useBoxTextColor } from './WeeklyTrialBox';
 import { useTheme } from '../context/ThemeContext';
 import { Swipeable } from 'react-native-gesture-handler';
@@ -11,30 +11,39 @@ interface DailyTaskInputProps {
   categories?: Array<'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity' | undefined>;
   onTaskComplete?: (index: number) => void;
   onTaskCancel?: (index: number) => void;
+  onTaskLongPress?: (index: number, taskText: string) => void;
 }
 
-const TaskInput = ({ task, onChangeTask, index, theme }: { 
+const TaskInput = ({ task, onChangeTask, index, theme, onLongPress }: { 
   task: string; 
   onChangeTask: (index: number, text: string) => void; 
   index: number;
   theme: any;
+  onLongPress?: () => void;
 }) => {
   // Use the box text color from context
   const textColor = useBoxTextColor();
   
   return (
-    <TextInput
-      style={[
-        styles.taskInput, 
-        { color: textColor }
-      ]}
-      value={task}
-      onChangeText={(text) => onChangeTask(index, text)}
-      multiline={true}
-      textAlign="left"
-      placeholder="Enter a task"
-      placeholderTextColor="rgba(255, 255, 255, 0.6)"
-    />
+    <TouchableWithoutFeedback onLongPress={onLongPress}>
+      <View style={{ width: '100%' }}>
+        <TextInput
+          style={[
+            styles.taskInput, 
+            { color: textColor }
+          ]}
+          value={task}
+          onChangeText={(text) => onChangeTask(index, text)}
+          multiline={true}
+          textAlign="left"
+          placeholder="Enter a task"
+          placeholderTextColor="rgba(255, 255, 255, 0.6)"
+        />
+        <Text style={[styles.longPressHint, { color: textColor, opacity: 0.6 }]}>
+          Long press to start timer
+        </Text>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -89,6 +98,7 @@ const DailyTaskInput = ({
   categories = [],
   onTaskComplete = () => {},
   onTaskCancel = () => {},
+  onTaskLongPress = () => {},
 }: DailyTaskInputProps) => {
   return (
     <>
@@ -112,6 +122,7 @@ const DailyTaskInput = ({
                 onChangeTask={onChangeTask} 
                 index={index} 
                 theme={theme}
+                onLongPress={() => onTaskLongPress(index, task)}
               />
             </WeeklyTrialBox>
           </Swipeable>
@@ -128,6 +139,12 @@ const styles = StyleSheet.create({
     width: '100%',
     lineHeight: 18,
     backgroundColor: 'transparent'
+  },
+  longPressHint: {
+    fontSize: 10,
+    marginTop: 4,
+    textAlign: 'right',
+    fontStyle: 'italic',
   },
   leftAction: {
     flex: 1,
