@@ -242,3 +242,25 @@ export const shouldRefreshWeekly = async (userToken: string) => {
   
   return dayDiff >= 7;
 };
+
+// Save completed tasks
+export const saveCompletedTasks = async (userToken: string, tasks: any[]) => {
+  try {
+    await AsyncStorage.setItem(`@completed_tasks_${userToken}`, JSON.stringify(tasks));
+    return true;
+  } catch (error) {
+    console.error('Error saving completed tasks:', error);
+    return false;
+  }
+};
+
+// Get completed tasks
+export const getCompletedTasks = async (userToken: string) => {
+  try {
+    const tasksData = await AsyncStorage.getItem(`@completed_tasks_${userToken}`);
+    return tasksData ? JSON.parse(tasksData) : [];
+  } catch (error) {
+    console.error('Error getting completed tasks:', error);
+    return [];
+  }
+};

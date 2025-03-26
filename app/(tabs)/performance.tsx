@@ -7,8 +7,9 @@ import {
   RefreshControl,
   TouchableOpacity
 } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
+import { useRouter, Stack, useFocusEffect } from 'expo-router';
 import { useTheme } from '../../src/context/ThemeContext';
+import * as storageService from '../../src/utils/StorageUtils';
 
 // Import components
 import XPLevelTracker from '../../components/performance/XPLevelTracker';
@@ -18,7 +19,7 @@ import ProgressSummary from '../../components/performance/ProgressSummary';
 import LoadingErrorStates from '../../components/performance/LoadingErrorStates';
 import BottomNavigation from '../../components/BottomNavigation';
 
-// Define the dashboard data type
+// Updated interface to include task tracking
 interface DashboardData {
   xpData: {
     currentXP: number;
@@ -38,11 +39,98 @@ interface DashboardData {
   }[];
 }
 
-// Mock data function directly in this file
+// Utility function to process completed tasks data
+const processCompletedTasksData = (completedTasks: any[]): {
+  category: string;
+  minutes: number;
+  color: string;
+}[] => {
+  if (!completedTasks || !Array.isArray(completedTasks) || completedTasks.length === 0) {
+    // Return default empty state
+    return [{
+      category: 'No data',
+      minutes: 100,
+      color: '#E0E0E0'
+    }];
+  }
+  
+  // Group by category and sum minutes
+  const categoryMap: Record<string, number> = {};
+  
+  completedTasks.forEach(task => {
+    const category = task.category || 'general';
+    const minutes = task.minutes || 30;
+    
+    if (categoryMap[category]) {
+      categoryMap[category] += minutes;
+    } else {
+      categoryMap[category] = minutes;
+    }
+  });
+  
+  // Convert to array format expected by chart
+  return Object.entries(categoryMap).map(([category, minutes]) => {
+    // Assign color based on category
+    let color;
+    switch(category.toLowerCase()) {
+      case 'fitness': color = '#FF5252'; break;
+      case 'learning': color = '#4CAF50'; break;
+      case 'knowledge': color = '#4CAF50'; break; // Same as learning
+      case 'mindfulness': color = '#2196F3'; break;
+      case 'social': color = '#FFC107'; break;
+      case 'creativity': color = '#9C27B0'; break;
+      default: color = '#607D8B'; break; // Default gray
+    }
+    
+    return {
+      category: category.charAt(0).toUpperCase() + category.slice(1), // Capitalize first letter
+      minutes,
+      color
+    };
+  });
+};
+
+// Updated fetchDashboardData to load real completed tasks
 const fetchDashboardData = async (): Promise<DashboardData> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 500));
   
+  // Get the user token
+  const userData = await storageService.getUserData();
+  const userToken = userData.userToken;
+  
+  // If no user token, return mock data
+  if (!userToken) {
+    return getMockDashboardData();
+  }
+  
+  // Load completed tasks
+  const completedTasks = await storageService.getCompletedTasks(userToken);
+  const categoryData = processCompletedTasksData(completedTasks);
+  
+  // Return combination of mock data and real category data
+  return {
+    xpData: {
+      currentXP: 750,
+      level: 5,
+      nextLevelXP: 1000,
+      previousLevelXP: 500
+    },
+    habitData: [
+      { day: 'Mon', completed: 3, total: 5 },
+      { day: 'Tue', completed: 5, total: 5 },
+      { day: 'Wed', completed: 4, total: 5 },
+      { day: 'Thu', completed: 2, total: 5 },
+      { day: 'Fri', completed: 5, total: 5 },
+      { day: 'Sat', completed: 3, total: 5 },
+      { day: 'Sun', completed: 4, total: 5 },
+    ],
+    categoryData: categoryData
+  };
+};
+
+// For fallback, provide mock data
+const getMockDashboardData = (): DashboardData => {
   return {
     xpData: {
       currentXP: 750,
@@ -81,6 +169,17 @@ export default function PerformanceScreen() {
   useEffect(() => {
     loadDashboardData();
   }, []);
+  
+  // Use useFocusEffect to reload data when the screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      // Reload data when the screen comes into focus
+      loadDashboardData();
+      return () => {
+        // Cleanup if needed
+      };
+    }, [])
+  );
   
   // Function to load dashboard data
   const loadDashboardData = async () => {

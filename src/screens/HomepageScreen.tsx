@@ -258,9 +258,24 @@ const HomepageScreen = () => {
   const handleTaskComplete = (index: number) => {
     // Create a completed task message
     const completedTask = content.dailyTasks[index];
-    // You could store completed tasks in a different array or mark them with a status
     
-    // For now, let's just show a toast or alert
+    // Extract the category from our task categories array
+    const category = dailyTaskCategories[index] || 'general';
+    
+    // Add debug log to verify category
+    console.log(`Completing task with category: ${category}`);
+    
+    // Extract duration from task text if possible
+    let duration = 30; // Default duration
+    const durationMatch = completedTask.match(/\((\d+)\)/);
+    if (durationMatch && durationMatch[1]) {
+      duration = parseInt(durationMatch[1], 10);
+    }
+    
+    // Track the completed task in our storage with explicit duration
+    actions.addCompletedTask(completedTask, category, duration);
+    
+    // Show a toast or alert
     Alert.alert("Task Completed", `You've completed: ${completedTask}`);
     
     // Clear the task using the existing handleTaskChange function
@@ -295,10 +310,14 @@ const HomepageScreen = () => {
   // Handle additional task completion when swiped left
   const handleAdditionalTaskComplete = (index: number) => {
     // Create a completed task message
-    const completedTask = content.additionalTasks[index].text;
+    const completedTask = content.additionalTasks[index];
+    
+    // Extract the category and track the completed task
+    const category = completedTask.category || 'general';
+    actions.addCompletedTask(completedTask.text, category, 0);
     
     // Show a toast or alert
-    Alert.alert("Task Completed", `You've completed: ${completedTask}`);
+    Alert.alert("Task Completed", `You've completed: ${completedTask.text}`);
     
     // Remove the task from additionalTasks
     const updatedTasks = [...content.additionalTasks];

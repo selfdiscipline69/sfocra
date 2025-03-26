@@ -55,6 +55,34 @@ const getTaskCategory = (taskId: string, taskLibrary: Record<string, TaskLibrary
   return task ? task.category : 'general';
 };
 
+// Define a new interface for completed task tracking
+interface CompletedTaskData {
+  category: string;
+  minutes: number;
+  timestamp: number;
+}
+
+// Add this function to normalize category names
+const normalizeCategory = (category: string): string => {
+  const lowerCategory = (category || '').toLowerCase();
+  
+  // Map variations to standard categories
+  if (lowerCategory.includes('knowledge')) return 'learning';
+  if (lowerCategory.includes('physical')) return 'fitness';
+  
+  // Return standard categories directly
+  switch (lowerCategory) {
+    case 'fitness':
+    case 'learning':
+    case 'mindfulness':
+    case 'social':
+    case 'creativity':
+      return lowerCategory;
+    default:
+      return 'general';
+  }
+};
+
 export default function useHomepageData() {
   // User data states
   const [email, setEmail] = useState<string>('');
@@ -80,6 +108,9 @@ export default function useHomepageData() {
   const [currentWeek, setCurrentWeek] = useState<number>(1);
   const [currentDay, setCurrentDay] = useState<number>(1);
 
+  // Add new state for completed tasks
+  const [completedTasks, setCompletedTasks] = useState<CompletedTaskData[]>([]);
+
   // Load user data from storage - use useCallback to ensure stable function reference
   const loadUserData = useCallback(async () => {
     const userData = await storageService.getUserData();
@@ -102,6 +133,12 @@ export default function useHomepageData() {
       if (savedProgress) {
         setCurrentWeek(savedProgress.week);
         setCurrentDay(savedProgress.day);
+      }
+
+      // Load completed tasks data
+      const savedCompletedTasks = await storageService.getCompletedTasks(userData.userToken);
+      if (savedCompletedTasks) {
+        setCompletedTasks(savedCompletedTasks);
       }
     }
   }, []);
@@ -433,6 +470,40 @@ export default function useHomepageData() {
     loadQuestsAndQuotes();
   }, [loadUserData, loadQuestsAndQuotes]);
 
+  // Add a function to add a completed task
+  const addCompletedTask = useCallback(async (task: string, category: string, duration: number) => {
+    try {
+      // Normalize the category
+      const taskCategory = normalizeCategory(category);
+      
+      // Extract duration from task string if not provided (format: "Task name (30)")
+      let taskDuration = duration;
+      if (!taskDuration) {
+        const durationMatch = task.match(/\((\d+)\)/);
+        taskDuration = durationMatch ? parseInt(durationMatch[1], 10) : 30; // Default to 30 min
+      }
+      
+      const newCompletedTask: CompletedTaskData = {
+        category: taskCategory.toLowerCase(),
+        minutes: taskDuration,
+        timestamp: new Date().getTime()
+      };
+      
+      const updatedTasks = [...completedTasks, newCompletedTask];
+      setCompletedTasks(updatedTasks);
+      
+      // Save to storage
+      if (userToken) {
+        await storageService.saveCompletedTasks(userToken, updatedTasks);
+      }
+      
+      return newCompletedTask;
+    } catch (error) {
+      console.error('Error adding completed task:', error);
+      return null;
+    }
+  }, [completedTasks, userToken]);
+
   // Return stable object references
   const userData = {
     email,
@@ -453,6 +524,7 @@ export default function useHomepageData() {
     currentChallenge,
     currentWeek,
     currentDay,
+    completedTasks,
   };
 
   const actions = {
@@ -464,6 +536,8 @@ export default function useHomepageData() {
     setAdditionalTasks: updateAdditionalTasks,
     refreshData,
     getTaskCategories,
+    addCompletedTask,
+    setCompletedTasks,
   };
 
   return { userData, content, actions };
