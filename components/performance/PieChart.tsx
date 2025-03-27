@@ -62,7 +62,7 @@ const PieChart = ({ data, size = 200 }: PieChartProps) => {
     );
   };
   
-  // Render empty circle if no data
+  // Render full circle if no data
   if (total === 0 || data.length === 0) {
     return (
       <View style={{ width: size, height: size }}>
@@ -71,13 +71,7 @@ const PieChart = ({ data, size = 200 }: PieChartProps) => {
             cx={centerX}
             cy={centerY}
             r={radius}
-            fill="#E0E0E0"
-          />
-          <Circle
-            cx={centerX}
-            cy={centerY}
-            r={innerRadius}
-            fill={theme.boxBackground}
+            fill="#FFFFFF" // Light grey color
           />
         </Svg>
       </View>
