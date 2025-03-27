@@ -13,7 +13,8 @@ import {
   Modal,
   TextInput,
   Alert,
-  RefreshControl
+  RefreshControl,
+  DeviceEventEmitter
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -37,6 +38,8 @@ import TimerDisplay from '../components/TimerDisplay';
 import { addCustomTask } from '../utils/taskAdditionUtils';
 import questsData from '../../assets/Quest.json';
 import { themes } from '../context/ThemeContext';
+import { Task } from '../components/DailyTaskInput';
+import { storageService } from '../utils/StorageUtils';
 
 const { width } = Dimensions.get('window');
 
@@ -101,17 +104,31 @@ const HomepageScreen = () => {
   
   useFocusEffect(
     React.useCallback(() => {
+      // When screen gets focus, reload task status from storage
+      const loadTaskStatus = async () => {
+        if (userData.userToken) {
+          const tasks = await storageService.loadUserTaskStatus(userData.userToken);
+          if (tasks && tasks.length > 0) {
+            actions.setDailyTasks(tasks);
+          }
+        }
+      };
+      
       // Only reload data if we haven't already or if returning to the screen
       if (!dataLoadedRef.current) {
-        console.log("Homepage focused - reloading data");
+        //console.log("Homepage focused - reloading data");
         actions.refreshData();
         dataLoadedRef.current = true;
+      } else {
+        // When returning to the screen, just load task status
+        loadTaskStatus();
       }
+      
       return () => {
         // When screen loses focus, allow data to be reloaded next time
         dataLoadedRef.current = false;
       };
-    }, [actions.refreshData]) // Only include the stable refreshData function
+    }, [actions.refreshData, actions.setDailyTasks, userData.userToken])
   );
 
   // Generate a random task for the modal
@@ -259,41 +276,47 @@ const HomepageScreen = () => {
 
   // Handle task completion when swiped left
   const handleTaskComplete = (index: number) => {
-    // Create a completed task message
-    const completedTask = content.dailyTasks[index];
+    // Get the current task item (string or object)
+    const taskItem = content.dailyTasks[index];
+    
+    // Get the task text regardless of format
+    const taskText = typeof taskItem === 'string' ? taskItem : taskItem.text;
     
     // Extract the category from our task categories array
     const category = dailyTaskCategories[index] || 'general';
     
-    // Add debug log to verify category
-    console.log(`Completing task with category: ${category}`);
-    
     // Extract duration from task text if possible
     let duration = 30; // Default duration
-    const durationMatch = completedTask.match(/\((\d+)\)/);
+    const durationMatch = taskText.match(/\((\d+)\)/);
     if (durationMatch && durationMatch[1]) {
       duration = parseInt(durationMatch[1], 10);
     }
     
-    // Track the completed task in our storage with explicit duration
-    actions.addCompletedTask(completedTask, category, duration);
+    // Track the completed task in our storage with explicit duration and task type
+    actions.addCompletedTask(taskText, category, duration, true); // true for daily tasks
+    
+    // Emit an event to refresh performance components
+    DeviceEventEmitter.emit('taskCompleted');
     
     // Show a toast or alert
-    Alert.alert("Task Completed", `You've completed: ${completedTask}`);
+    Alert.alert("Task Completed", `You've completed: ${taskText}`);
     
-    // Clear the task using the existing handleTaskChange function
-    actions.handleTaskChange(index, "");
+    // Use the updateTaskStatus function
+    actions.updateTaskStatus(index, 'completed');
   };
 
   // Handle task cancellation when swiped right
   const handleTaskCancel = (index: number) => {
-    // Create a canceled task message
-    const canceledTask = content.dailyTasks[index];
+    // Get the current task item (string or object)
+    const taskItem = content.dailyTasks[index];
+    
+    // Get the task text regardless of format
+    const taskText = typeof taskItem === 'string' ? taskItem : taskItem.text;
     
     // Confirm before canceling
     Alert.alert(
       "Cancel Task",
-      `Are you sure you want to cancel: ${canceledTask}?`,
+      `Are you sure you want to cancel: ${taskText}?`,
       [
         {
           text: "No",
@@ -302,8 +325,8 @@ const HomepageScreen = () => {
         {
           text: "Yes",
           onPress: () => {
-            // Clear the task using the existing handleTaskChange function
-            actions.handleTaskChange(index, "");
+            // Use the updateTaskStatus function
+            actions.updateTaskStatus(index, 'canceled');
           }
         }
       ]
@@ -317,7 +340,10 @@ const HomepageScreen = () => {
     
     // Extract the category and track the completed task
     const category = completedTask.category || 'general';
-    actions.addCompletedTask(completedTask.text, category, 0);
+    actions.addCompletedTask(completedTask.text, category, 0, false); // false for additional tasks
+    
+    // Emit an event to refresh performance components
+    DeviceEventEmitter.emit('taskCompleted');
     
     // Show a toast or alert
     Alert.alert("Task Completed", `You've completed: ${completedTask.text}`);

@@ -1,26 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../../src/context/ThemeContext';
+import { getCompletionColor } from '../../src/components/performance/CategoryColorUtils';
 
 interface BarChartProps {
   data: { 
     day: string; 
     completed: number; 
-    total: number 
+    total: number;
+    isCurrentDay?: boolean;
   }[];
 }
 
 const BarChart = ({ data }: BarChartProps) => {
   const { theme } = useTheme();
-  const maxValue = Math.max(...data.map(item => item.total), 5); // Use at least 5 as max for scale
-  
-  // Get bar color based on completion percentage
-  const getBarColor = (completed: number, total: number) => {
-    const percentage = (completed / total) * 100;
-    if (percentage >= 80) return '#4CAF50'; // Green for 80%+
-    if (percentage >= 50) return '#FFC107'; // Yellow for 50-80%
-    return '#FF5252'; // Red for under 50%
-  };
+  const maxValue = Math.max(...data.map(item => item.total), 2); // only consider 2 daily tasks
   
   return (
     <View style={styles.barChartContainer}>
@@ -36,7 +30,28 @@ const BarChart = ({ data }: BarChartProps) => {
         {data.map((item, index) => {
           // Calculate height percentage based on value and max
           const heightPercentage = (item.completed / maxValue) * 100;
-          const barColor = getBarColor(item.completed, item.total);
+          
+          // Determine if this is the current day
+          const isCurrentDay = item.isCurrentDay === true;
+          
+          // Special color logic for current day
+          let barColor;
+          if (isCurrentDay) {
+            // Red if 0 tasks completed
+            if (item.completed === 0) {
+              barColor = '#FF4444';  // Bright red
+            } 
+            // Bright green if 1-2 tasks completed
+            else {
+              barColor = '#44DD44';  // Bright green
+            }
+          } else {
+            // Use regular completion color for other days
+            barColor = getCompletionColor(item.completed, item.total);
+          }
+          
+          // Apply different opacity for current day vs other days
+          const opacity = isCurrentDay ? 1 : theme.mode === 'dark' ? 0.5 : 0.7;
           
           return (
             <View key={index} style={styles.barGroup}>
@@ -44,7 +59,8 @@ const BarChart = ({ data }: BarChartProps) => {
                 {/* Background bar showing total */}
                 <View style={[styles.barBackground, { 
                   backgroundColor: theme.mode === 'dark' ? '#444' : '#e0e0e0', 
-                  height: `${(item.total / maxValue) * 100}%` 
+                  height: `${(item.total / maxValue) * 100}%`,
+                  opacity: opacity
                 }]} />
                 
                 {/* Foreground bar showing completed */}
@@ -53,12 +69,23 @@ const BarChart = ({ data }: BarChartProps) => {
                     styles.bar, 
                     { 
                       height: `${heightPercentage}%`, 
-                      backgroundColor: barColor 
+                      backgroundColor: barColor,
+                      opacity: opacity,
+                      // Highlight the current day with a border if any tasks were completed
+                      borderWidth: isCurrentDay && item.completed > 0 ? 2 : 0,
+                      borderColor: isCurrentDay && item.completed > 0 ? '#FFFFFF' : 'transparent'
                     }
                   ]}
                 />
+                
               </View>
-              <Text style={[styles.barLabel, { color: theme.subtext }]}>{item.day}</Text>
+              <Text style={[
+                styles.barLabel, 
+                { 
+                  color: isCurrentDay ? theme.text : theme.subtext,
+                  fontWeight: isCurrentDay ? 'bold' : 'normal'
+                }
+              ]}>{item.day}</Text>
             </View>
           );
         })}
@@ -119,6 +146,13 @@ const styles = StyleSheet.create({
   barLabel: {
     fontSize: 12,
     marginTop: 5,
+  },
+  completionLine: {
+    position: 'absolute',
+    width: '100%',
+    height: 2,
+    backgroundColor: '#FFFFFF', // White line
+    zIndex: 10, // Ensure it's above the bar
   },
 });
 

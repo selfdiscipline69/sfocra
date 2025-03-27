@@ -3,6 +3,7 @@ import { UserChoices, AdditionalTask } from '../types/UserTypes';
 import * as storageService from '../utils/StorageUtils';
 import quotesData from '../../assets/Quote.json';
 import questsData from '../../assets/Quest.json';
+import { Task } from '../components/DailyTaskInput';
 
 // Define interfaces for the new quest structure
 interface DayTask {
@@ -100,7 +101,7 @@ export default function useHomepageData() {
   
   // Content states - updated weeklyTrial to object type
   const [dailyQuote, setDailyQuote] = useState<string>('');
-  const [dailyTasks, setDailyTasks] = useState<string[]>(['', '']);
+  const [dailyTasks, setDailyTasks] = useState<Task[]>(['', '']);
   const [dailyTaskIds, setDailyTaskIds] = useState<string[]>(['', '']);
   const [weeklyTrial, setWeeklyTrial] = useState<WeeklyTrialData | null>(null);
   const [additionalTasks, setAdditionalTasks] = useState<AdditionalTask[]>([]);
@@ -125,8 +126,14 @@ export default function useHomepageData() {
       const choices = await storageService.getUserChoices(userData.userToken);
       setUserChoices(choices);
       
-      const tasks = await storageService.getAdditionalTasks(userData.userToken);
-      setAdditionalTasks(tasks);
+      const additionalTasks = await storageService.getAdditionalTasks(userData.userToken);
+      setAdditionalTasks(additionalTasks);
+      
+      // Load tasks with status
+      const tasksWithStatus = await storageService.getDailyTasksWithStatus(userData.userToken);
+      if (tasksWithStatus && tasksWithStatus.length > 0) {
+        setDailyTasks(tasksWithStatus);
+      }
       
       // Load saved progress
       const savedProgress = await storageService.getChallengeProgress(userData.userToken);
@@ -150,8 +157,25 @@ export default function useHomepageData() {
       const shouldRefreshDailyTasks = forceRefresh || await storageService.shouldRefreshDaily(userToken);
       const shouldRefreshWeeklyTrial = forceRefresh || await storageService.shouldRefreshWeekly(userToken);
       
+      // First, load the existing tasks with status from storage
+      const existingTasksWithStatus = await storageService.getDailyTasksWithStatus(userToken);
+      const tasksMap = new Map();
+      
+      // Create a map of existing tasks by text for quick lookup when preserving status
+      if (existingTasksWithStatus && existingTasksWithStatus.length > 0) {
+        existingTasksWithStatus.forEach(task => {
+          if (typeof task === 'object' && task.text) {
+            tasksMap.set(task.text, task.status);
+          }
+        });
+      }
+      
       if (!shouldRefreshDailyTasks && !shouldRefreshWeeklyTrial) {
         console.log("No refresh needed based on timestamps");
+        // If no refresh needed, make sure we still load the existing tasks with status
+        if (existingTasksWithStatus && existingTasksWithStatus.length > 0) {
+          setDailyTasks(existingTasksWithStatus);
+        }
         return;
       }
       
@@ -327,9 +351,30 @@ export default function useHomepageData() {
         return `${taskInfo.task} (${duration})`;
       });
       
-      setDailyTasks(formattedTasks);
+      // Transform formatted tasks to Task objects (string or {text, status})
+      const tasksWithPreservedStatus = formattedTasks.map(taskText => {
+        // Check if this task text exists in our loaded tasks and has a non-default status
+        const existingStatus = tasksMap.get(taskText);
+        
+        if (existingStatus && ['completed', 'canceled'].includes(existingStatus)) {
+          // Preserve the existing status
+          return { text: taskText, status: existingStatus };
+        }
+        
+        // Otherwise use the task as a plain string (default status)
+        return taskText;
+      });
+      
+      setDailyTasks(tasksWithPreservedStatus);
       setDailyTaskIds(taskIds);
-      await storageService.saveDailyTasks(formattedTasks, userToken);
+      
+      // Save tasks with preserved status
+      await storageService.saveDailyTasksWithStatus(userToken, tasksWithPreservedStatus.map(task => {
+        if (typeof task === 'string') {
+          return { text: task, status: 'default' };
+        }
+        return task;
+      }));
       
       // Handle daily quote
       if (quotesData && Array.isArray(quotesData) && quotesData.length > 0) {
@@ -423,10 +468,23 @@ export default function useHomepageData() {
   const handleTaskChange = useCallback((index: number, newTask: string) => {
     setDailyTasks(prevTasks => {
       const updatedTasks = [...prevTasks];
-      updatedTasks[index] = newTask;
+      
+      // If the current task is an object with status, update only the text
+      if (typeof updatedTasks[index] === 'object') {
+        (updatedTasks[index] as any).text = newTask;
+      } else {
+        // Otherwise, replace the string
+        updatedTasks[index] = newTask;
+      }
+      
+      // Use StorageUtils instead of direct AsyncStorage
+      if (userToken) {
+        storageService.saveDailyTasksWithStatus(userToken, updatedTasks);
+      }
+      
       return updatedTasks;
     });
-  }, []);
+  }, [userToken]);
 
   const handleQuoteChange = useCallback((newQuote: string) => {
     setDailyQuote(newQuote);
@@ -470,8 +528,13 @@ export default function useHomepageData() {
     loadQuestsAndQuotes();
   }, [loadUserData, loadQuestsAndQuotes]);
 
-  // Add a function to add a completed task
-  const addCompletedTask = useCallback(async (task: string, category: string, duration: number) => {
+  // Update the addCompletedTask function
+  const addCompletedTask = useCallback(async (
+    task: string, 
+    category: string, 
+    duration: number, 
+    isDaily: boolean
+  ) => {
     try {
       // Normalize the category
       const taskCategory = normalizeCategory(category);
@@ -483,26 +546,93 @@ export default function useHomepageData() {
         taskDuration = durationMatch ? parseInt(durationMatch[1], 10) : 30; // Default to 30 min
       }
       
+      // Get account age
+      const accountAge = await storageService.getAccountAge(userToken);
+      
+      // Create task completion record
+      const record = {
+        day: accountAge,
+        task_name: task.split('(')[0].trim(), // Extract just the task name without duration
+        category: taskCategory.toLowerCase(),
+        duration: taskDuration,
+        is_daily: isDaily ? 1 : 0,
+        completed_at: Date.now()
+      };
+      
+      // Save the record
+      const savedRecord = await storageService.saveTaskCompletionRecord(userToken, record);
+      
+      // Also maintain the existing completedTasks for backward compatibility
       const newCompletedTask: CompletedTaskData = {
         category: taskCategory.toLowerCase(),
         minutes: taskDuration,
-        timestamp: new Date().getTime()
+        timestamp: Date.now()
       };
       
       const updatedTasks = [...completedTasks, newCompletedTask];
       setCompletedTasks(updatedTasks);
       
-      // Save to storage
+      // Save to storage using the old format too
       if (userToken) {
         await storageService.saveCompletedTasks(userToken, updatedTasks);
       }
       
-      return newCompletedTask;
+      return savedRecord;
     } catch (error) {
       console.error('Error adding completed task:', error);
       return null;
     }
   }, [completedTasks, userToken]);
+
+  // Add a function to explicitly set daily tasks with status
+  const setDailyTasksWithStatus = useCallback((tasks: Task[]) => {
+    setDailyTasks(tasks);
+    
+    // Save tasks including their status to storage
+    if (userToken) {
+      // We need to store both text and status
+      const tasksForStorage = tasks.map(task => {
+        if (typeof task === 'string') {
+          return { text: task, status: 'default' };
+        }
+        return task;
+      });
+      
+      // Store the tasks with status
+      storageService.saveDailyTasksWithStatus(userToken, tasksForStorage);
+    }
+  }, [userToken]);
+
+  // Add a function to update task status
+  const updateTaskStatus = useCallback((index: number, status: 'completed' | 'canceled') => {
+    setDailyTasks(prevTasks => {
+      const updatedTasks = [...prevTasks];
+      
+      // Get the task text, regardless of current format
+      const taskText = typeof updatedTasks[index] === 'string'
+        ? updatedTasks[index] as string
+        : (updatedTasks[index] as any).text;
+      
+      // Update to new format with status
+      updatedTasks[index] = {
+        text: taskText,
+        status: status
+      };
+      
+      // Save the updated tasks with status
+      if (userToken) {
+        const tasksForStorage = updatedTasks.map(task => {
+          if (typeof task === 'string') {
+            return { text: task, status: 'default' };
+          }
+          return task;
+        });
+        storageService.saveDailyTasksWithStatus(userToken, tasksForStorage);
+      }
+      
+      return updatedTasks;
+    });
+  }, [userToken]);
 
   // Return stable object references
   const userData = {
@@ -538,6 +668,8 @@ export default function useHomepageData() {
     getTaskCategories,
     addCompletedTask,
     setCompletedTasks,
+    setDailyTasks: setDailyTasksWithStatus,
+    updateTaskStatus,
   };
 
   return { userData, content, actions };

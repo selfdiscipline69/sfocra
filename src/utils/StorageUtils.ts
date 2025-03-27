@@ -264,3 +264,118 @@ export const getCompletedTasks = async (userToken: string) => {
     return [];
   }
 };
+
+// Function to save daily tasks with status
+export const saveDailyTasksWithStatus = async (userToken: string, tasks: any[]) => {
+  try {
+    const tasksJSON = JSON.stringify(tasks);
+    await AsyncStorage.setItem(`@dailyTasksWithStatus_${userToken}`, tasksJSON);
+    return true;
+  } catch (error) {
+    console.error('Error saving daily tasks with status:', error);
+    return false;
+  }
+};
+
+// Function to get daily tasks with status
+export const getDailyTasksWithStatus = async (userToken: string) => {
+  try {
+    const tasksJSON = await AsyncStorage.getItem(`@dailyTasksWithStatus_${userToken}`);
+    if (tasksJSON) {
+      return JSON.parse(tasksJSON);
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting daily tasks with status:', error);
+    return null;
+  }
+};
+
+// Define the task completion record interface
+export interface TaskCompletionRecord {
+  id: number;         // Sequential ID
+  day: number;        // Account age / day number
+  task_name: string;  // Task name
+  category: string;   // Category
+  duration: number;   // Duration in minutes
+  is_daily: number;   // 1 for daily task, 0 for additional task
+  completed_at: number; // Timestamp when completed
+}
+
+// Function to save a task completion record
+export const saveTaskCompletionRecord = async (
+  userToken: string, 
+  record: Omit<TaskCompletionRecord, 'id'> // Omit ID as we'll generate it
+): Promise<TaskCompletionRecord | null> => {
+  try {
+    // Get existing records
+    const existingRecords = await getTaskCompletionRecords(userToken);
+    
+    // Generate new ID (increment from the last record or start at 1)
+    const newId = existingRecords.length > 0 
+      ? Math.max(...existingRecords.map(r => r.id)) + 1 
+      : 1;
+    
+    // Create complete record with ID
+    const completeRecord: TaskCompletionRecord = {
+      id: newId,
+      ...record
+    };
+    
+    // Add to existing records
+    const updatedRecords = [...existingRecords, completeRecord];
+    
+    // Save to AsyncStorage
+    await AsyncStorage.setItem(
+      `@task_completion_records_${userToken}`, 
+      JSON.stringify(updatedRecords)
+    );
+    
+    return completeRecord;
+  } catch (error) {
+    console.error('Error saving task completion record:', error);
+    return null;
+  }
+};
+
+// Function to get all task completion records
+export const getTaskCompletionRecords = async (
+  userToken: string
+): Promise<TaskCompletionRecord[]> => {
+  try {
+    const records = await AsyncStorage.getItem(`@task_completion_records_${userToken}`);
+    return records ? JSON.parse(records) : [];
+  } catch (error) {
+    console.error('Error getting task completion records:', error);
+    return [];
+  }
+};
+
+// Function to calculate account age in days
+export const getAccountAge = async (userToken: string): Promise<number> => {
+  try {
+    // Try to get account creation date
+    const creationDateStr = await AsyncStorage.getItem(`@account_creation_date_${userToken}`);
+    
+    if (creationDateStr) {
+      const creationDate = new Date(parseInt(creationDateStr, 10));
+      const today = new Date();
+      
+      // Calculate days difference
+      const diffTime = Math.abs(today.getTime() - creationDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      return diffDays;
+    } else {
+      // If creation date not found, set it now and return 1
+      await AsyncStorage.setItem(
+        `@account_creation_date_${userToken}`, 
+        Date.now().toString()
+      );
+      return 1;
+    }
+  } catch (error) {
+    console.error('Error calculating account age:', error);
+    return 1;
+  }
+};

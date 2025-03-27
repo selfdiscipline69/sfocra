@@ -1,11 +1,14 @@
 import React from 'react';
-import { TextInput, StyleSheet, View, Text, Animated, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, View, Text, Animated, TouchableWithoutFeedback } from 'react-native';
 import WeeklyTrialBox, { useBoxTextColor } from './WeeklyTrialBox';
 import { useTheme } from '../context/ThemeContext';
 import { Swipeable } from 'react-native-gesture-handler';
 
+// Define task type that can be either a string or an object with status
+export type Task = string | { text: string; status: 'default' | 'completed' | 'canceled' };
+
 interface DailyTaskInputProps {
-  tasks: string[];
+  tasks: Task[];
   onChangeTask: (index: number, text: string) => void;
   theme: any; // Replace with proper theme type if available
   categories?: Array<'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity' | undefined>;
@@ -14,9 +17,15 @@ interface DailyTaskInputProps {
   onTaskLongPress?: (index: number, taskText: string) => void;
 }
 
-const TaskInput = ({ task, onChangeTask, index, theme, onLongPress }: { 
+const TaskDisplay = ({ 
+  task, 
+  status = 'default', 
+  index, 
+  theme, 
+  onLongPress 
+}: { 
   task: string; 
-  onChangeTask: (index: number, text: string) => void; 
+  status?: 'default' | 'completed' | 'canceled';
   index: number;
   theme: any;
   onLongPress?: () => void;
@@ -27,18 +36,14 @@ const TaskInput = ({ task, onChangeTask, index, theme, onLongPress }: {
   return (
     <TouchableWithoutFeedback onLongPress={onLongPress}>
       <View style={{ width: '100%' }}>
-        <TextInput
+        <Text
           style={[
-            styles.taskInput, 
+            styles.taskText, 
             { color: textColor }
           ]}
-          value={task}
-          onChangeText={(text) => onChangeTask(index, text)}
-          multiline={true}
-          textAlign="left"
-          placeholder="Enter a task"
-          placeholderTextColor="rgba(255, 255, 255, 0.6)"
-        />
+        >
+          {task}
+        </Text>
         <Text style={[styles.longPressHint, { color: textColor, opacity: 0.6 }]}>
           Long press to start timer
         </Text>
@@ -100,39 +105,61 @@ const DailyTaskInput = ({
   onTaskCancel = () => {},
   onTaskLongPress = () => {},
 }: DailyTaskInputProps) => {
+  // Process and filter tasks
+  const processedTasks = tasks
+    .map((taskItem, index) => {
+      // Handle both string and object task formats
+      const taskObj = typeof taskItem === 'string' 
+        ? { text: taskItem, status: 'default' as const } 
+        : taskItem;
+      
+      const taskText = typeof taskItem === 'string' ? taskItem : taskItem.text;
+      const status = typeof taskItem === 'string' ? 'default' : taskItem.status;
+      
+      return {
+        text: taskText,
+        status,
+        index,
+        category: categories[index]
+      };
+    })
+    .filter(item => 
+      // Only include tasks that are not empty AND have status 'default'
+      item.text && 
+      item.text.trim() !== '' && 
+      item.status === 'default'
+    );
+
   return (
     <>
-      {tasks
-        .map((task, index) => ({ task, index, category: categories[index] }))
-        .filter(item => item.task && item.task.trim() !== '') // Only render non-empty tasks
-        .map(({ task, index, category }) => (
-          <Swipeable
-            key={`task-${index}`}
-            renderRightActions={(progress: Animated.AnimatedInterpolation<number>) => DeleteAction(progress, theme)}
-            renderLeftActions={(progress: Animated.AnimatedInterpolation<number>) => CompleteAction(progress, theme)}
-            onSwipeableRightOpen={() => onTaskCancel(index)}
-            onSwipeableLeftOpen={() => onTaskComplete(index)}
+      {processedTasks.map(({ text, status, index, category }) => (
+        <Swipeable
+          key={`task-${index}`}
+          renderRightActions={(progress: Animated.AnimatedInterpolation<number>) => DeleteAction(progress, theme)}
+          renderLeftActions={(progress: Animated.AnimatedInterpolation<number>) => CompleteAction(progress, theme)}
+          onSwipeableRightOpen={() => onTaskCancel(index)}
+          onSwipeableLeftOpen={() => onTaskComplete(index)}
+        >
+          <WeeklyTrialBox 
+            title={`Daily Task ${index + 1}`}
+            category={category}
           >
-            <WeeklyTrialBox 
-              title={`Daily Task ${index + 1}`}
-              category={category}
-            >
-              <TaskInput 
-                task={task} 
-                onChangeTask={onChangeTask} 
-                index={index} 
-                theme={theme}
-                onLongPress={() => onTaskLongPress(index, task)}
-              />
-            </WeeklyTrialBox>
-          </Swipeable>
-        ))}
+            <TaskDisplay 
+              task={text} 
+              status={status}
+              index={index} 
+              theme={theme}
+              onLongPress={() => onTaskLongPress(index, text)}
+            />
+          </WeeklyTrialBox>
+        </Swipeable>
+      ))}
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  taskInput: {
+  taskText: {
     fontSize: 14,
     paddingVertical: 0,
     textAlign: 'left',
@@ -145,6 +172,12 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'right',
     fontStyle: 'italic',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginTop: 5,
+    textAlign: 'right',
   },
   leftAction: {
     flex: 1,
