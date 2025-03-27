@@ -461,7 +461,7 @@ export default function useHomepageData() {
   // Create a stable refreshData function
   const refreshData = useCallback(() => {
     loadUserData();
-    loadQuestsAndQuotes(false);
+    loadQuestsAndQuotes(true); // Force refresh regardless of timestamps
   }, [loadUserData, loadQuestsAndQuotes]);
 
   // Load data on initial mount

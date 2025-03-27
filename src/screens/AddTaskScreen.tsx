@@ -14,6 +14,23 @@ import { addCustomTask as addCustomTaskUtil } from '../utils/taskAdditionUtils';
 import { TaskItem } from '../types/TaskTypes';
 import { themes } from '../context/ThemeContext';
 
+// Define interfaces for Quest.json
+interface QuestTask {
+  task: string;
+  duration: string;
+  category: string;
+}
+
+interface QuestData {
+  progressiveChallenges: any[];
+  taskLibrary: {
+    [key: string]: QuestTask;
+  };
+}
+
+// Type assertion for Quest.json
+const typedQuestsData = questsData as QuestData;
+
 const { width } = Dimensions.get('window');
 
 // Function to get category color - same as in taskAdditionUtils.ts
@@ -84,32 +101,48 @@ const AddTaskScreen = () => {
 
   // Generate a random task for the modal
   const generateRandomTask = () => {
-    if (questsData.length > 0) {
-      const randomIndex = Math.floor(Math.random() * questsData.length);
-      const randomQuest = questsData[randomIndex];
+    try {
+      // Check if questsData has taskLibrary - this is where individual tasks are stored
+      if (typedQuestsData && typedQuestsData.taskLibrary) {
+        // Get all task keys
+        const taskKeys = Object.keys(typedQuestsData.taskLibrary);
+        if (taskKeys.length > 0) {
+          // Select a random task key
+          const randomKey = taskKeys[Math.floor(Math.random() * taskKeys.length)];
+          const randomQuest = typedQuestsData.taskLibrary[randomKey];
+          
+          // Map category from the data format to our app's format
+          let category = randomQuest.category || 'General';
+          if (category.toLowerCase() === 'physical') {
+            category = 'Fitness';
+          }
+          
+          setRandomTask(randomQuest.task || "Task");
+          setRandomTaskDuration(randomQuest.duration || '30');
+          setRandomTaskCategory(category);
+          
+          return {
+            task: randomQuest.task || "Task",
+            duration: randomQuest.duration || '30',
+            category: category
+          };
+        }
+      }
       
-      // Extract category from the key if it exists, or use a default
-      const category = randomQuest.key ? 
-        (randomQuest.key.startsWith('1-') ? 'Mindfulness' :
-         randomQuest.key.startsWith('2-') ? 'Fitness' :
-         randomQuest.key.startsWith('3-') ? 'General' : 'General') : 
-        'General';
-      
-      setRandomTask(randomQuest.task || "Task");
-      setRandomTaskDuration(randomQuest.duration || '30');
-      setRandomTaskCategory(category);
-      
+      // Fallback if no tasks found in questsData
       return {
-        task: randomQuest.task || "Task",
-        duration: randomQuest.duration || '30',
-        category: category
+        task: "New task",
+        duration: '30',
+        category: "General"
+      };
+    } catch (error) {
+      console.error('Error generating random task:', error);
+      return {
+        task: "New task",
+        duration: '30',
+        category: "General"
       };
     }
-    return {
-      task: "New task",
-      duration: '30',
-      category: "General"
-    };
   };
 
   // Show the modal to add new task

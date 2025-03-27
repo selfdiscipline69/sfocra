@@ -2,30 +2,26 @@ import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getTaskCategory } from './taskCategoryUtils';
 import { themes } from '../context/ThemeContext';
+import { TaskItem } from '../types/TaskTypes';
+import { AdditionalTask } from '../types/UserTypes';
 
-// Define the task interface
-interface TaskItem {
-  text: string;
-  image: string | null;
-  completed: boolean;
-  showImage: boolean;
-  category?: 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity';
-  color?: string;
-}
-
-/**
- * Get color for a category
- */
-const getCategoryColor = (category?: 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity'): string => {
-  // Use the same colors as defined in ThemeContext
-  // We'll use light theme colors for consistency
-  switch(category) {
-    case 'fitness': return themes.light.categoryColors.fitness;
-    case 'learning': return themes.light.categoryColors.learning;
-    case 'mindfulness': return themes.light.categoryColors.mindfulness;
-    case 'social': return themes.light.categoryColors.social;
-    case 'creativity': return themes.light.categoryColors.creativity;
-    default: return '#607D8B';  // Blue Grey (General)
+// Function to get category color
+const getCategoryColor = (category: string): string => {
+  switch(category.toLowerCase()) {
+    case 'fitness': 
+    case 'physical': 
+      return themes.light.categoryColors.fitness;
+    case 'learning':
+    case 'knowledge':
+      return themes.light.categoryColors.learning;
+    case 'mindfulness': 
+      return themes.light.categoryColors.mindfulness;
+    case 'social': 
+      return themes.light.categoryColors.social;
+    case 'creativity': 
+      return themes.light.categoryColors.creativity;
+    default: 
+      return '#607D8B';  // Blue Grey (General)
   }
 };
 
@@ -46,8 +42,8 @@ export const addCustomTask = async ({
   customTaskTime: string;
   customTaskDuration: string;
   customTaskCategory: string;
-  additionalTasks: TaskItem[];
-  setAdditionalTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>;
+  additionalTasks: TaskItem[] | AdditionalTask[];
+  setAdditionalTasks: (tasks: TaskItem[] | AdditionalTask[]) => void;
   userToken: string;
   setModalVisible: (visible: boolean) => void;
 }) => {
@@ -77,48 +73,57 @@ export const addCustomTask = async ({
     
     // Map user-provided category to our system categories
     const lowerCaseCategory = customTaskCategory.toLowerCase();
-    if (lowerCaseCategory.includes('fitness') || lowerCaseCategory.includes('exercise') || 
-        lowerCaseCategory.includes('workout') || lowerCaseCategory.includes('physical')) {
-      category = 'fitness';
-    } else if (lowerCaseCategory.includes('learn') || lowerCaseCategory.includes('study') || 
-               lowerCaseCategory.includes('education') || lowerCaseCategory.includes('reading')) {
-      category = 'learning';
-    } else if (lowerCaseCategory.includes('mind') || lowerCaseCategory.includes('mental') || 
-               lowerCaseCategory.includes('meditation') || lowerCaseCategory.includes('relaxation')) {
-      category = 'mindfulness';
-    } else if (lowerCaseCategory.includes('social') || lowerCaseCategory.includes('friend') || 
-               lowerCaseCategory.includes('community') || lowerCaseCategory.includes('talk')) {
-      category = 'social';
-    } else if (lowerCaseCategory.includes('creat') || lowerCaseCategory.includes('art') || 
-               lowerCaseCategory.includes('music') || lowerCaseCategory.includes('writing')) {
-      category = 'creativity';
-    } else {
-      // If no match, try to determine from task text
-      category = getTaskCategory(taskText);
+    
+    switch(lowerCaseCategory) {
+      case 'fitness':
+      case 'physical':
+        category = 'fitness';
+        break;
+      case 'knowledge':
+      case 'learning':
+        category = 'learning';
+        break;
+      case 'mindfulness':
+        category = 'mindfulness';
+        break;
+      case 'social':
+        category = 'social';
+        break;
+      case 'creativity':
+        category = 'creativity';
+        break;
+      default:
+        // If no known category, try to determine from task text
+        category = getTaskCategory(taskText);
     }
     
-    // Get color for the task based on category
-    const color = getCategoryColor(category);
-    
-    const newTask = {
+    // Create new task object
+    const newTask: TaskItem = {
       text: taskText,
       image: null,
       completed: false,
       showImage: false,
       category,
-      color
+      color: getCategoryColor(category || 'general')
     };
     
+    // Create updated tasks array
     const updatedTasks = [...additionalTasks, newTask];
+    
+    // Update state
     setAdditionalTasks(updatedTasks);
     
-    // Save to AsyncStorage if we have a userToken
+    // Save to AsyncStorage if we have a user token
     if (userToken) {
       await AsyncStorage.setItem(`additionalTasks_${userToken}`, JSON.stringify(updatedTasks));
     }
     
+    // Close the modal
     setModalVisible(false);
+    
+    Alert.alert('Success', 'Task added successfully!', [{ text: 'OK' }]);
   } catch (error) {
     console.error('Error adding custom task:', error);
+    Alert.alert('Error', 'Failed to add task. Please try again.');
   }
 };

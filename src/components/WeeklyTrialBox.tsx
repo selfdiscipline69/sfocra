@@ -18,8 +18,8 @@ const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children, catego
   
   // Get background color based on category or custom color
   const getBackgroundColor = () => {
-    // Special case for Weekly Trial - always white in dark mode and light gray in light mode
-    if (title === "Weekly Trial") {
+    // Special case for Weekly Trial/Challenge - always white in dark mode and light gray in light mode
+    if (title === "Weekly Trial" || title === "Weekly Challenge") {
       return theme.mode === 'dark' ? '#FFFFFF' : '#F2F2F7';
     }
     
@@ -38,8 +38,8 @@ const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children, catego
   
   // Determine text color based on background brightness
   const getTextColor = () => {
-    // Special case for Weekly Trial - always black text
-    if (title === "Weekly Trial") {
+    // Special case for Weekly Trial/Challenge - always black text
+    if (title === "Weekly Trial" || title === "Weekly Challenge") {
       return '#000000';
     }
     
@@ -62,8 +62,8 @@ const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children, catego
           styles.boxContainer,
           { 
             backgroundColor,
-            // Use a darker border for Weekly Trial in dark mode
-            borderColor: title === "Weekly Trial" && theme.mode === 'dark' 
+            // Use a darker border for Weekly Trial/Challenge in dark mode
+            borderColor: (title === "Weekly Trial" || title === "Weekly Challenge") && theme.mode === 'dark' 
               ? 'rgba(0, 0, 0, 0.2)' 
               : 'rgba(0, 0, 0, 0.1)'
           }

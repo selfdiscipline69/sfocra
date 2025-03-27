@@ -8,18 +8,35 @@ interface CategoryBreakdownChartProps {
   data: CategoryData[];
 }
 
+// Add type for VictoryPie innerRadius param
+interface LabelRadiusProps {
+  innerRadius: number;
+}
+
 const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({ data }) => {
   const { theme } = useTheme();
   const screenWidth = Dimensions.get('window').width;
   
-  // Transform data for Victory
-  const pieData = data.map(item => ({
-    x: item.category,
-    y: item.minutes,
-    color: item.color
+  // Map data to format expected by VictoryPie
+  const chartData = data.map(item => ({
+    x: item.category || item.x,
+    y: item.minutes || item.y,
+    fill: item.color
   }));
   
-  const totalMinutes = data.reduce((sum, item) => sum + item.minutes, 0);
+  // Calculate total minutes for percentage display
+  const totalMinutes = data.reduce((sum, item) => sum + (item.minutes || item.y), 0);
+
+  // Skip rendering if no data or all zeros
+  if (data.length === 0 || totalMinutes === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={[styles.emptyText, { color: theme.subtext }]}>
+          No task data available
+        </Text>
+      </View>
+    );
+  }
   
   return (
     <View style={[styles.container, { backgroundColor: theme.boxBackground }]}>
@@ -29,10 +46,10 @@ const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({ data })
         <VictoryPie
           width={screenWidth - 40}
           height={220}
-          data={pieData}
-          colorScale={data.map(item => item.color)}
+          data={chartData}
+          colorScale={data.map(item => item.color || '#ccc')}
           innerRadius={40}
-          labelRadius={({ innerRadius }) => (innerRadius + 40) as number}
+          labelRadius={({ innerRadius }: LabelRadiusProps) => (innerRadius + 40) as number}
           style={{
             labels: {
               fill: theme.text,
@@ -41,6 +58,7 @@ const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({ data })
             }
           }}
           animate={{ duration: 1000 }}
+          labelComponent={<></>} // Hide labels on pie
         />
       </View>
       
@@ -48,10 +66,10 @@ const CategoryBreakdownChart: React.FC<CategoryBreakdownChartProps> = ({ data })
         {data.map((item, index) => (
           <View key={index} style={styles.legendItem}>
             <View 
-              style={[styles.legendColor, { backgroundColor: item.color }]} 
+              style={[styles.legendColor, { backgroundColor: item.color || '#ccc' }]} 
             />
             <Text style={[styles.legendText, { color: theme.subtext }]}>
-              {item.category}: {Math.round((item.minutes / totalMinutes) * 100)}%
+              {item.category || item.x}: {Math.round(((item.minutes || item.y) / totalMinutes) * 100)}%
             </Text>
           </View>
         ))}
@@ -101,6 +119,14 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'right',
   },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 30,
+  },
+  emptyText: {
+    fontSize: 16,
+  }
 });
 
 export default CategoryBreakdownChart;

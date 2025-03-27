@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   ScrollView, 
@@ -12,9 +12,11 @@ import {
   Keyboard,
   Modal,
   TextInput,
-  Alert
+  Alert,
+  RefreshControl
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Custom hooks
 import useHomepageData from '../hooks/useHomepageData';
@@ -28,10 +30,11 @@ import WeeklyTrialSection from '../components/WeeklyTrialSection';
 import DailyTaskInput from '../components/DailyTaskInput';
 import AdditionalTaskDisplay from '../components/AdditionalTaskDisplay';
 import BottomNavigation from '../components/BottomNavigation';
+import TaskTimer from '../components/TaskTimer';
+import TimerDisplay from '../components/TimerDisplay';
 
 // Task Addition Utilities
 import { addCustomTask } from '../utils/taskAdditionUtils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import questsData from '../../assets/Quest.json';
 import { themes } from '../context/ThemeContext';
 
@@ -345,7 +348,82 @@ const HomepageScreen = () => {
             // Remove the task from additionalTasks
             const updatedTasks = [...content.additionalTasks];
             updatedTasks.splice(index, 1);
-            actions.setAdditionalTasks(updatedTasks);
+            actions.setAdditionalTasks(updatedTasks as any); // Cast to any to fix type error
+          }
+        }
+      ]
+    );
+  };
+
+  // New state for timer
+  const [activeTimer, setActiveTimer] = useState<{
+    taskIndex: number;
+    taskName: string;
+    isActive: boolean;
+    startTime: Date | null;
+  } | null>(null);
+  
+  // Fix the implementation to use the component's own state
+  const handleTaskLongPress = (index: number, taskText: string) => {
+    // Check if this is a timer task
+    if (!taskText || !taskText.includes('(') || !taskText.includes(')')) {
+      return; // Not a valid task format for timer
+    }
+
+    // Extract task name (everything before the duration in parentheses)
+    const taskName = taskText.split('(')[0].trim();
+    
+    // Check if we're already timing something
+    if (activeTimer && activeTimer.isActive) {
+      Alert.alert(
+        "Active Timer",
+        "You already have an active timer. Stop it first before starting a new one.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+    
+    // Confirm timer start
+    Alert.alert(
+      "Start Timer",
+      `Start tracking time for "${taskName}"?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Start", 
+          onPress: () => {
+            const now = new Date();
+            // Set active timer with start time
+            setActiveTimer({
+              taskIndex: index,
+              taskName,
+              isActive: true,
+              startTime: now
+            });
+          }
+        }
+      ]
+    );
+  };
+  
+  // Handle stopping the timer
+  const handleStopTimer = () => {
+    if (!activeTimer) return;
+    
+    Alert.alert(
+      "Stop Timer",
+      "Stop tracking time for this task?",
+      [
+        { text: "Continue", style: "cancel" },
+        { 
+          text: "Stop", 
+          style: "destructive",
+          onPress: () => {
+            setActiveTimer(prev => prev ? { ...prev, isActive: false } : null);
+            // After a short delay, clear the timer completely
+            setTimeout(() => {
+              setActiveTimer(null);
+            }, 5000);
           }
         }
       ]
@@ -359,12 +437,35 @@ const HomepageScreen = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 20}
     >
       <View style={styles.innerContainer}>
-        {/* Remove fixed header section and put everything in the ScrollView */}
+        {/* Active Timer - Displayed at the top */}
+        {activeTimer && (
+          <>
+            <TimerDisplay 
+              isRunning={activeTimer.isActive}
+              taskName={activeTimer.taskName}
+              startTime={activeTimer.startTime || undefined}
+              onStop={handleStopTimer}
+            />
+          </>
+        )}
+        
+        {/* ScrollView with content */}
         <ScrollView 
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={true} 
           scrollEnabled={true}
           style={styles.scrollView}
+          refreshControl={
+            <RefreshControl
+              refreshing={false}
+              onRefresh={() => {
+                console.log("Manual refresh triggered");
+                actions.refreshData();
+              }}
+              colors={[theme.accent]}
+              tintColor={theme.accent}
+            />
+          }
         >
           {/* Header with Profile and Quote */}
           <View style={styles.header}>
@@ -381,25 +482,29 @@ const HomepageScreen = () => {
           
           <View style={styles.spacerView} />
           
-          {/* Weekly Trial Section - Update to pass the new data structure */}
-          <View style={styles.sectionContainer}>
-            <WeeklyTrialSection 
-              weeklyTrial={content.weeklyTrial} 
-              theme={theme}
-              category={weeklyTrialCategory as any}
-            />
-          </View>
+          {/* Content Container */}
+          <View style={styles.contentContainer}>
+            {/* Weekly Trial Section */}
+            <View style={styles.weeklyTrialContainer}>
+              <WeeklyTrialSection 
+                weeklyTrial={content.weeklyTrial} 
+                theme={theme}
+                category={weeklyTrialCategory as any}
+              />
+            </View>
 
-          {/* Daily Tasks - Using categories from task library */}
-          <View style={styles.tasksSectionContainer}>
-            <DailyTaskInput 
-              tasks={content.dailyTasks} 
-              onChangeTask={actions.handleTaskChange}
-              theme={theme}
-              categories={dailyTaskCategories}
-              onTaskComplete={handleTaskComplete}
-              onTaskCancel={handleTaskCancel}
-            />
+            {/* Daily Tasks section with long press support */}
+            <View style={styles.dailyTasksContainer}>
+              <DailyTaskInput 
+                tasks={content.dailyTasks} 
+                onChangeTask={actions.handleTaskChange}
+                theme={theme}
+                categories={dailyTaskCategories as any}
+                onTaskComplete={handleTaskComplete}
+                onTaskCancel={handleTaskCancel}
+                onTaskLongPress={handleTaskLongPress}
+              />
+            </View>
           </View>
           
           {/* Additional Tasks */}
@@ -409,9 +514,9 @@ const HomepageScreen = () => {
               theme={theme}
               onTaskComplete={handleAdditionalTaskComplete}
               onTaskCancel={handleAdditionalTaskCancel}
+              onTaskLongPress={handleTaskLongPress}
             />
           </View>
-          
           
           {/* Extra space at bottom for keyboard */}
           <View style={styles.keyboardSpace} />
@@ -739,6 +844,19 @@ const styles = StyleSheet.create({
   },
   tasksSectionContainer: {
     minHeight: 100,
+  },
+  contentContainer: {
+    marginBottom: 15,
+  },
+  weeklyTrialContainer: {
+    marginBottom: 15, // Reduced gap between weekly trial and daily tasks
+  },
+  dailyTasksContainer: {
+    width: '100%',
+    minHeight: 220, // Fixed height container to prevent layout shifts
+  },
+  weeklyGraphContainer: {
+    minHeight: 220, // Fixed height container to prevent layout shifts
   },
 });
 

@@ -14,6 +14,7 @@ interface AdditionalTaskDisplayProps {
   onToggleImageVisibility?: (index: number) => void;
   onTaskComplete?: (index: number) => void;
   onTaskCancel?: (index: number) => void;
+  onTaskLongPress?: (index: number, text: string) => void;
 }
 
 // Component for the content of the additional task box
@@ -81,7 +82,8 @@ const AdditionalTaskDisplay = ({
   onPickImage,
   onToggleImageVisibility,
   onTaskComplete = () => {},
-  onTaskCancel = () => {}
+  onTaskCancel = () => {},
+  onTaskLongPress
 }: AdditionalTaskDisplayProps) => {
   if (tasks.length === 0) return null;
   
@@ -91,6 +93,11 @@ const AdditionalTaskDisplay = ({
         <Text style={[styles.sectionHeaderText, { color: theme.subtext }]}>
           Additional Tasks
         </Text>
+        {onTaskLongPress && (
+          <Text style={[styles.timerHintText, { color: theme.subtext }]}>
+            Long press a task to start a timer
+          </Text>
+        )}
       </View>
       
       {tasks
@@ -170,7 +177,7 @@ const AdditionalTaskDisplay = ({
               </View>
             </View>
           ) : (
-            // Normal version for Homepage with swipe functionality
+            // Normal version for Homepage with swipe functionality and long press for timer
             <Swipeable
               key={`additional-${index}`}
               renderRightActions={(progress: Animated.AnimatedInterpolation<number>) => DeleteAction(progress, theme)}
@@ -178,13 +185,19 @@ const AdditionalTaskDisplay = ({
               onSwipeableRightOpen={() => onTaskCancel(index)}
               onSwipeableLeftOpen={() => onTaskComplete(index)}
             >
-              <WeeklyTrialBox 
-                title={`Additional Task ${index + 1}`}
-                category={task.category}
-                backgroundColor={task.color}
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onLongPress={() => onTaskLongPress && onTaskLongPress(index, task.text)}
+                delayLongPress={500}
               >
-                <AdditionalTaskContent text={task.text} />
-              </WeeklyTrialBox>
+                <WeeklyTrialBox 
+                  title={`Additional Task ${index + 1}`}
+                  category={task.category}
+                  backgroundColor={task.color}
+                >
+                  <AdditionalTaskContent text={task.text} />
+                </WeeklyTrialBox>
+              </TouchableOpacity>
             </Swipeable>
           )
         ))
@@ -202,6 +215,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 5,
+  },
+  timerHintText: {
+    fontSize: 12,
+    marginLeft: 5,
+    fontStyle: 'italic',
+    marginTop: 2,
   },
   taskText: {
     fontSize: 14,
@@ -286,24 +305,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   leftAction: {
-    flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 15,
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
+    marginVertical: 5,
+    borderRadius: 10,
+    width: 80,
+    height: '91%',
   },
   rightAction: {
-    flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'flex-end',
-    marginBottom: 15,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
+    marginVertical: 5,
+    borderRadius: 10,
+    width: 80,
+    height: '91%',
   },
   actionText: {
     color: 'white',
-    fontWeight: '600',
-    padding: 20,
+    fontWeight: 'bold',
+    fontSize: 16,
   }
 });
 

@@ -43,7 +43,7 @@ const BottomNavigation = ({ theme, activeScreen }: BottomNavigationProps) => {
           activeScreen === 'settings' && styles.activeNavButton
         ]}
       >
-        <Ionicons name="settings-outline" size={24} color={theme.text} />
+        <Ionicons name="settings" size={24} color={theme.text} />
       </TouchableOpacity>
     </View>
   );

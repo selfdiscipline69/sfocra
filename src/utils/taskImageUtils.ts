@@ -1,55 +1,71 @@
 import { TaskItem, WeeklyTrialItem } from '../types/TaskTypes';
 
 /**
- * Updates task state with a selected image based on task type
- * 
- * @param type The type of task ('weekly', 'daily', or 'additional')
- * @param selectedImage The URI of the selected image
- * @param index The index of the task (for daily or additional tasks)
- * @param state The current state objects and setters
- * @param saveTasksFn Function to save tasks after updating
+ * Updates a weekly trial task with a selected image
  */
-export const updateTaskWithImage = (
-  type: string,
+export const updateWeeklyTrialWithImage = (
   selectedImage: string,
-  index?: number,
-  state: {
-    weeklyTrial: WeeklyTrialItem,
-    setWeeklyTrial: React.Dispatch<React.SetStateAction<WeeklyTrialItem>>,
-    tasks: TaskItem[],
-    setTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>,
-    additionalTasks: TaskItem[],
-    setAdditionalTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>,
-  },
+  weeklyTrial: WeeklyTrialItem,
+  setWeeklyTrial: React.Dispatch<React.SetStateAction<WeeklyTrialItem>>,
   saveTasksFn: () => Promise<void>
 ): void => {
-  if (type === 'weekly') {
-    state.setWeeklyTrial(prev => ({ 
-      ...prev, 
-      image: selectedImage,
-      completed: true,
-      showImage: false // Default to hidden
-    }));
-  } else if (type === 'daily' && typeof index === 'number') {
-    const updatedTasks = [...state.tasks];
+  setWeeklyTrial(prev => ({ 
+    ...prev, 
+    image: selectedImage,
+    completed: true,
+    showImage: false // Default to hidden
+  }));
+  
+  // Save tasks after updating
+  saveTasksFn();
+};
+
+/**
+ * Updates a daily task with a selected image
+ */
+export const updateDailyTaskWithImage = (
+  selectedImage: string,
+  index: number,
+  tasks: TaskItem[],
+  setTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>,
+  saveTasksFn: () => Promise<void>
+): void => {
+  const updatedTasks = [...tasks];
+  if (updatedTasks[index]) {
     updatedTasks[index] = { 
       ...updatedTasks[index], 
       image: selectedImage,
       completed: true,
       showImage: false // Default to hidden
     };
-    state.setTasks(updatedTasks);
-  } else if (type === 'additional' && typeof index === 'number') {
-    const updated = [...state.additionalTasks];
+    setTasks(updatedTasks);
+    
+    // Save tasks after updating
+    saveTasksFn();
+  }
+};
+
+/**
+ * Updates an additional task with a selected image
+ */
+export const updateAdditionalTaskWithImage = (
+  selectedImage: string,
+  index: number,
+  additionalTasks: TaskItem[],
+  setAdditionalTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>,
+  saveTasksFn: () => Promise<void>
+): void => {
+  const updated = [...additionalTasks];
+  if (updated[index]) {
     updated[index] = { 
       ...updated[index], 
       image: selectedImage,
       completed: true,
       showImage: false // Default to hidden
     };
-    state.setAdditionalTasks(updated);
+    setAdditionalTasks(updated);
+    
+    // Save tasks after updating
+    saveTasksFn();
   }
-  
-  // Save all tasks after updating
-  saveTasksFn();
 };
