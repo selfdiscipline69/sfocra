@@ -14,7 +14,8 @@ export default function User_Classification() {
     className: '',
     description: '',
     quest_format: '',
-    consequence_description: ''
+    consequence_description: '',
+    model: ''
   });
 
   // Load user data when component mounts
@@ -41,11 +42,19 @@ export default function User_Classification() {
           consequence = await AsyncStorage.getItem('question4Code');
         }
         
-        // Construct the key in P-D-T-C format
-        const classKey = `${path}-${difficulty}-${tracking}-${consequence}`;
+        // Map to simplified attributes
+        // Path: Keep as is (1, 2, 3)
+        // Difficulty: Map 1-3 to "beginner", 4-5 to "epic"
+        const simplifiedDifficulty = parseInt(difficulty || '1') <= 3 ? "beginner" : "epic";
         
-        // Find the class data in classes.json using the key
-        const classEntry = classesData.classes.find(c => c.key === classKey);
+        // For backward compatibility, store the old format key as well
+        const oldFormatKey = `${path}-${difficulty}-${tracking}-${consequence}`;
+        
+        // Create a combined path+difficulty for new format
+        const newFormatKey = `${path}-${simplifiedDifficulty}-${consequence === '1' ? 'consequence' : 'noconsequence'}`;
+        
+        // Find the class data in classes.json using the new format key
+        const classEntry = classesData.classes.find(c => c.key === newFormatKey);
         
         if (classEntry) {
           // Store the class information for display
@@ -53,19 +62,26 @@ export default function User_Classification() {
             className: classEntry.class,
             description: classEntry.description,
             quest_format: classEntry.quest_format,
-            consequence_description: classEntry.consequence_description
+            consequence_description: classEntry.consequence_description,
+            model: classEntry.model || ''
           });
           
           // Save the class information to AsyncStorage for later use
           await AsyncStorage.setItem('userClass', classEntry.class);
-          await AsyncStorage.setItem('userClassKey', classKey);
+          
+          // Store both key formats for backward compatibility
+          await AsyncStorage.setItem('userClassKey', newFormatKey);
+          await AsyncStorage.setItem('userClassKeyOld', oldFormatKey);
+          
           await AsyncStorage.setItem('userClassDescription', classEntry.description);
           await AsyncStorage.setItem('userQuestFormat', classEntry.quest_format);
           await AsyncStorage.setItem('userConsequenceDescription', classEntry.consequence_description);
+          await AsyncStorage.setItem('userClassModel', classEntry.model || '');
           
           if (token) {
             await AsyncStorage.setItem(`userClass_${token}`, classEntry.class);
-            await AsyncStorage.setItem(`userClassKey_${token}`, classKey);
+            await AsyncStorage.setItem(`userClassKey_${token}`, newFormatKey);
+            await AsyncStorage.setItem(`userClassKeyOld_${token}`, oldFormatKey);
             
             // Clear any existing tasks to ensure fresh data
             await AsyncStorage.removeItem(`dailyTasks_${token}`);
@@ -82,12 +98,13 @@ export default function User_Classification() {
           
           // Initial quests will be generated when homepage loads
         } else {
-          console.error('Class not found for key:', classKey);
+          console.error('Class not found for key:', newFormatKey);
           setClassInfo({
             className: 'Class Not Found',
             description: 'There was an error determining your hero class.',
             quest_format: 'Please try the classification process again.',
-            consequence_description: ''
+            consequence_description: '',
+            model: ''
           });
         }
         
@@ -133,6 +150,10 @@ export default function User_Classification() {
         <Text style={styles.headerText}>Your Hero Class</Text>
         
         <Text style={styles.classTitle}>{classInfo.className}</Text>
+        
+        {classInfo.model && (
+          <Text style={styles.modelText}>Models: {classInfo.model}</Text>
+        )}
         
         <View style={styles.infoBox}>
           <Text style={styles.sectionTitle}>Description</Text>
@@ -234,5 +255,12 @@ const styles = StyleSheet.create({
     color: 'white',
     marginTop: 20,
     fontSize: 16,
+  },
+  modelText: {
+    fontSize: 16,
+    fontStyle: 'italic',
+    color: '#aaa',
+    marginBottom: 20,
+    textAlign: 'center',
   },
 });

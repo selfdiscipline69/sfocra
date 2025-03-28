@@ -445,7 +445,7 @@ const HomepageScreen = () => {
           text: "Stop", 
           style: "destructive",
           onPress: () => {
-            setActiveTimer(prev => prev ? { ...prev, isActive: false } : null);
+            setActiveTimer((prev: typeof activeTimer) => prev ? { ...prev, isActive: false } : null);
             // After a short delay, clear the timer completely
             setTimeout(() => {
               setActiveTimer(null);

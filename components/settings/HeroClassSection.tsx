@@ -7,6 +7,7 @@ interface HeroClassProps {
     description: string;
     questFormat: string;
     consequenceDescription: string;
+    model?: string;
   };
   theme: any;
 }
@@ -22,6 +23,11 @@ const HeroClassSection = ({ heroClass, theme }: HeroClassProps) => {
       }]}>
         <Text style={[styles.heroClassPrefix, { color: theme.subtext }]}>⚔️ YOUR HERO CLASS</Text>
         <Text style={[styles.heroClassName, { color: theme.accent }]}>{heroClass.className}</Text>
+        {heroClass.model && (
+          <Text style={[styles.heroClassModel, { color: theme.subtext }]}>
+            Models: {heroClass.model}
+          </Text>
+        )}
       </View>
       
       <View style={[styles.heroClassContentBox, { backgroundColor: theme.boxBackground }]}>
@@ -90,6 +96,12 @@ const styles = StyleSheet.create({
   heroClassDivider: {
     height: 1,
     marginVertical: 12,
+  },
+  heroClassModel: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    marginTop: 4,
+    textAlign: 'center',
   },
 });
 

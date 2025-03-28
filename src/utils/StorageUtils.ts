@@ -106,8 +106,18 @@ export const saveAdditionalTasks = async (userToken: string, tasks: AdditionalTa
 
 export const getUserClassKey = async (userToken: string): Promise<string | null> => {
   try {
-    return await AsyncStorage.getItem('userClassKey') || 
-           await AsyncStorage.getItem(`userClassKey_${userToken}`);
+    // First try to get the new format key
+    const newFormatKey = await AsyncStorage.getItem('userClassKey') || 
+                         await AsyncStorage.getItem(`userClassKey_${userToken}`);
+                         
+    // If found, return it
+    if (newFormatKey) return newFormatKey;
+    
+    // Otherwise try to get the old format key
+    const oldFormatKey = await AsyncStorage.getItem('userClassKeyOld') || 
+                         await AsyncStorage.getItem(`userClassKeyOld_${userToken}`);
+                         
+    return oldFormatKey;
   } catch (error) {
     console.error('Error getting user class key:', error);
     return null;
@@ -377,5 +387,40 @@ export const getAccountAge = async (userToken: string): Promise<number> => {
   } catch (error) {
     console.error('Error calculating account age:', error);
     return 1;
+  }
+};
+
+// Create and export a storageService object with all the functions
+export const storageService = {
+  getUserData,
+  getUserChoices,
+  getAdditionalTasks,
+  saveAdditionalTasks,
+  getUserClassKey,
+  saveDailyTasks,
+  saveWeeklyTrial,
+  saveChallengeProgress,
+  getChallengeProgress,
+  saveLastRefreshTimestamps,
+  getLastRefreshTimestamps,
+  shouldRefreshDaily,
+  shouldRefreshWeekly,
+  saveCompletedTasks,
+  getCompletedTasks,
+  saveDailyTasksWithStatus,
+  getDailyTasksWithStatus,
+  saveTaskCompletionRecord,
+  getTaskCompletionRecords,
+  getAccountAge,
+  
+  // Add this new function to load user task status
+  loadUserTaskStatus: async (userToken: string) => {
+    try {
+      const taskData = await getDailyTasksWithStatus(userToken);
+      return taskData || [];
+    } catch (error) {
+      console.error('Error loading user task status:', error);
+      return [];
+    }
   }
 };

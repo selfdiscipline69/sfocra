@@ -222,22 +222,29 @@ export default function useHomepageData() {
         return;
       }
       
-      // Parse the class key to get path code and intensity
-      // Format should be like: "1-3" (path code 1, intensity 3)
-      const parts = classKey.split('-');
-      if (parts.length < 2) {
-        console.error('Invalid class key format:', classKey);
-        handleLoadError(true);
-        return;
-      }
-      
-      const [pathCode, intensityStr] = parts;
-      const intensity = parseInt(intensityStr, 10);
-      
-      if (isNaN(intensity)) {
-        console.error('Invalid intensity in class key:', classKey);
-        handleLoadError(true);
-        return;
+      // Handle both old and new format class keys
+      let pathCode: string;
+      let intensity: number;
+
+      if (classKey.includes('-epic-') || classKey.includes('-beginner-')) {
+        // New format: "path-difficulty-consequence" (e.g. "1-epic-consequence")
+        const parts = classKey.split('-');
+        pathCode = parts[0];
+        
+        // Map difficulty to numeric intensity
+        const difficulty = parts[1];
+        intensity = difficulty === 'epic' ? 4 : 2; // Map 'epic' to 4, 'beginner' to 2
+      } else {
+        // Old format: "path-intensity-tracking-consequence" (e.g. "1-3-2-1")
+        const parts = classKey.split('-');
+        pathCode = parts[0];
+        intensity = parseInt(parts[1], 10);
+        
+        if (isNaN(intensity)) {
+          console.error('Invalid intensity in class key:', classKey);
+          handleLoadError(true);
+          return;
+        }
       }
       
       // Get all challenges matching this path code and intensity

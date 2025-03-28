@@ -38,7 +38,8 @@ export default function SettingsScreen() {
     className: '',
     description: '',
     questFormat: '',
-    consequenceDescription: ''
+    consequenceDescription: '',
+    model: ''
   });
 
   useEffect(() => {
@@ -67,12 +68,14 @@ export default function SettingsScreen() {
       const userClassDescription = await AsyncStorage.getItem('userClassDescription');
       const userQuestFormat = await AsyncStorage.getItem('userQuestFormat');
       const userConsequenceDescription = await AsyncStorage.getItem('userConsequenceDescription');
+      const userClassModel = await AsyncStorage.getItem('userClassModel');
       
       setHeroClass({
         className: userClass || 'Unknown',
         description: userClassDescription || 'No description available.',
         questFormat: userQuestFormat || 'No quest format available.',
-        consequenceDescription: userConsequenceDescription || 'No consequence description available.'
+        consequenceDescription: userConsequenceDescription || 'No consequence description available.',
+        model: userClassModel || ''
       });
     } catch (err) {
       console.error('Error loading user data:', err);
