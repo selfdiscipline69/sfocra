@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, Animated, TouchableWithoutFeedback } from 'react-native';
 import { AdditionalTask } from '../types/UserTypes';
 import WeeklyTrialBox, { useBoxTextColor } from './WeeklyTrialBox';
 import { Swipeable } from 'react-native-gesture-handler';
@@ -18,14 +18,27 @@ interface AdditionalTaskDisplayProps {
 }
 
 // Component for the content of the additional task box
-const AdditionalTaskContent = ({ text }: { text: string }) => {
+const AdditionalTaskContent = ({ 
+  text,
+  onLongPress
+}: { 
+  text: string;
+  onLongPress?: () => void;
+}) => {
   // Use the box text color from context
   const textColor = useBoxTextColor();
   
   return (
-    <Text style={[styles.taskText, { color: textColor }]}>
-      {text}
-    </Text>
+    <TouchableWithoutFeedback onLongPress={onLongPress}>
+      <View style={{ width: '100%' }}>
+        <Text style={[styles.taskText, { color: textColor }]}>
+          {text}
+        </Text>
+        <Text style={[styles.longPressHint, { color: textColor, opacity: 0.6 }]}>
+          Long press to start timer
+        </Text>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -93,11 +106,6 @@ const AdditionalTaskDisplay = ({
         <Text style={[styles.sectionHeaderText, { color: theme.subtext }]}>
           Additional Tasks
         </Text>
-        {onTaskLongPress && (
-          <Text style={[styles.timerHintText, { color: theme.subtext }]}>
-            Long press a task to start a timer
-          </Text>
-        )}
       </View>
       
       {tasks
@@ -149,7 +157,7 @@ const AdditionalTaskDisplay = ({
                 <TextInput
                   style={[styles.taskInput, { color: theme.text }]}
                   value={task.text}
-                  onChangeText={(text) => onChangeTask && onChangeTask(index, text)}
+                  onChangeText={(text: string) => onChangeTask && onChangeTask(index, text)}
                   multiline={true}
                   textAlign="center"
                   editable={false}
@@ -185,19 +193,15 @@ const AdditionalTaskDisplay = ({
               onSwipeableRightOpen={() => onTaskCancel(index)}
               onSwipeableLeftOpen={() => onTaskComplete(index)}
             >
-              <TouchableOpacity
-                activeOpacity={0.9}
-                onLongPress={() => onTaskLongPress && onTaskLongPress(index, task.text)}
-                delayLongPress={500}
+              <WeeklyTrialBox 
+                title={`Additional Task ${index + 1}`}
+                category={task.category}
               >
-                <WeeklyTrialBox 
-                  title={`Additional Task ${index + 1}`}
-                  category={task.category}
-                  backgroundColor={task.color}
-                >
-                  <AdditionalTaskContent text={task.text} />
-                </WeeklyTrialBox>
-              </TouchableOpacity>
+                <AdditionalTaskContent 
+                  text={task.text} 
+                  onLongPress={() => onTaskLongPress && onTaskLongPress(index, task.text)}
+                />
+              </WeeklyTrialBox>
             </Swipeable>
           )
         ))
@@ -224,10 +228,17 @@ const styles = StyleSheet.create({
   },
   taskText: {
     fontSize: 14,
-    paddingVertical: 5,
+    paddingVertical: 0,
     textAlign: 'left',
     width: '100%',
     lineHeight: 18,
+    backgroundColor: 'transparent'
+  },
+  longPressHint: {
+    fontSize: 10,
+    marginTop: 4,
+    textAlign: 'right',
+    fontStyle: 'italic',
   },
   // Styles for addTaskScreen
   taskContainer: {
@@ -305,25 +316,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   leftAction: {
-    alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
-    marginVertical: 5,
-    borderRadius: 10,
-    width: 80,
-    height: '91%',
+    marginBottom: 15,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
   },
   rightAction: {
-    alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
-    marginVertical: 5,
-    borderRadius: 10,
-    width: 80,
-    height: '91%',
+    alignItems: 'flex-end',
+    marginBottom: 15,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
   },
   actionText: {
     color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontWeight: '600',
+    padding: 20,
   }
 });
 
