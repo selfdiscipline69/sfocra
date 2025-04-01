@@ -1,6 +1,12 @@
-import React, { createContext, useContext } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { createContext, useContext, useEffect, useRef } from "react";
+import { View, Text, StyleSheet, Animated, Pressable } from "react-native";
 import { useTheme } from "../context/ThemeContext";
+import PixelArtIcon from "./PixelArtIcon";
+import AnimatedSpriteIcon from "./AnimatedSpriteIcon";
+import AnimatedLearningIcon from "./AnimatedLearningIcon";
+import AnimatedMindfulnessIcon from "./AnimatedMindfulnessIcon";
+import AnimatedSocialIcon from "./AnimatedSocialIcon";
+import AnimatedCreativityIcon from "./AnimatedCreativityIcon";
 
 // Create a context to pass the text color down to children
 export const BoxTextColorContext = createContext('#FFFFFF');
@@ -10,12 +16,33 @@ interface WeeklyTrialBoxProps {
   title: string;
   category?: 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity';
   backgroundColor?: string;
+  onPress?: () => void;
 }
 
-const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children, category, backgroundColor: customBgColor }) => {
+const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ 
+  title, 
+  children, 
+  category, 
+  backgroundColor: customBgColor,
+  onPress 
+}) => {
   // Use the theme context to get the current theme
   const { theme } = useTheme();
   
+  // Animation values
+  const scaleAnim = useRef(new Animated.Value(0.95)).current;
+  const hoverAnim = useRef(new Animated.Value(1)).current;
+  
+  // Initial scale animation
+  useEffect(() => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 7,
+    }).start();
+  }, []);
+
   // Get background color based on category or custom color
   const getBackgroundColor = () => {
     // Special case for Weekly Trial/Challenge - always white in dark mode and light gray in light mode
@@ -55,33 +82,99 @@ const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children, catego
   const backgroundColor = getBackgroundColor();
   const textColor = getTextColor();
   
+  // Handle press animations
+  const handlePressIn = () => {
+    Animated.spring(hoverAnim, {
+      toValue: 0.98,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 7,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(hoverAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 7,
+    }).start();
+  };
+  
   return (
     <BoxTextColorContext.Provider value={textColor}>
-      <View
-        style={[
-          styles.boxContainer,
-          { 
-            backgroundColor,
-            // Use a darker border for Weekly Trial/Challenge in dark mode
-            borderColor: (title === "Weekly Trial" || title === "Weekly Challenge") && theme.mode === 'dark' 
-              ? 'rgba(0, 0, 0, 0.2)' 
-              : 'rgba(0, 0, 0, 0.1)'
-          }
+      <Pressable
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        onPress={onPress}
+        style={({ pressed }: { pressed: boolean }) => [
+          styles.pressableContainer,
+          pressed && styles.pressedContainer
         ]}
       >
-        {/* Single unified content area with title at the top */}
-        <View style={styles.unifiedContainer}>
-          {/* Title */}
-          <Text style={[styles.title, { color: textColor }]}>{title}</Text>
-          
-          {/* Content directly below title with consistent spacing */}
-          <View style={styles.childrenContainer}>
-            {/* Pass the text color down to child components through context or props */}
-            {/* We'll just use the original children for now to avoid TypeScript errors */}
-            {children}
+        <Animated.View
+          style={[
+            styles.boxContainer,
+            { 
+              backgroundColor,
+              // Use a darker border for Weekly Trial/Challenge in dark mode
+              borderColor: (title === "Weekly Trial" || title === "Weekly Challenge") && theme.mode === 'dark' 
+                ? 'rgba(0, 0, 0, 0.2)' 
+                : 'rgba(0, 0, 0, 0.1)',
+              transform: [
+                { scale: Animated.multiply(scaleAnim, hoverAnim) }
+              ]
+            }
+          ]}
+        >
+          {/* Single unified content area with title at the top */}
+          <View style={styles.unifiedContainer}>
+            {/* Title with sprite for fitness, learning, mindfulness, social, or creativity */}
+            <View style={styles.titleContainer}>
+              <View style={styles.leftContainer}>
+                {category && !['fitness', 'learning', 'mindfulness', 'social', 'creativity'].includes(category) && title !== "Weekly Challenge" && (
+                  <PixelArtIcon 
+                    category={category} 
+                    size={24} 
+                    color={textColor}
+                  />
+                )}
+                <Text style={[styles.title, { color: textColor, marginLeft: category && !['fitness', 'learning', 'mindfulness', 'social', 'creativity'].includes(category) && title !== "Weekly Challenge" ? 8 : 0 }]}>{title}</Text>
+              </View>
+              {category === 'fitness' && title !== "Weekly Challenge" && (
+                <View style={styles.spriteContainer}>
+                  <AnimatedSpriteIcon size={80} />
+                </View>
+              )}
+              {category === 'learning' && title !== "Weekly Challenge" && (
+                <View style={styles.spriteContainer}>
+                  <AnimatedLearningIcon size={75} />
+                </View>
+              )}
+              {category === 'mindfulness' && title !== "Weekly Challenge" && (
+                <View style={styles.spriteContainer}>
+                  <AnimatedMindfulnessIcon size={80} />
+                </View>
+              )}
+              {category === 'social' && title !== "Weekly Challenge" && (
+                <View style={styles.spriteContainer}>
+                  <AnimatedSocialIcon size={75} />
+                </View>
+              )}
+              {category === 'creativity' && title !== "Weekly Challenge" && (
+                <View style={styles.spriteContainer}>
+                  <AnimatedCreativityIcon size={75} />
+                </View>
+              )}
+            </View>
+            
+            {/* Content */}
+            <View style={styles.childrenContainer}>
+              {children}
+            </View>
           </View>
-        </View>
-      </View>
+        </Animated.View>
+      </Pressable>
     </BoxTextColorContext.Provider>
   );
 };
@@ -90,6 +183,12 @@ const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({ title, children, catego
 export const useBoxTextColor = () => useContext(BoxTextColorContext);
 
 const styles = StyleSheet.create({
+  pressableContainer: {
+    width: '100%',
+  },
+  pressedContainer: {
+    opacity: 0.9,
+  },
   boxContainer: {
     width: "100%",
     borderRadius: 10,
@@ -98,16 +197,33 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   unifiedContainer: {
-    padding: 15,
+    padding: 10,
+    paddingRight: 8,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 5,
+    justifyContent: 'space-between',
+    minHeight: 65,
+  },
+  leftContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  spriteContainer: {
+    marginLeft: 'auto',
+    justifyContent: 'center',
+    marginRight: 8,
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "left",
-    marginBottom: 12,
+    marginTop: -2,
   },
   childrenContainer: {
-    marginTop: 5,
+    width: '100%',
     alignItems: 'flex-start',
   },
 });

@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Animated, TouchableWithoutFeedback } from 'reac
 import WeeklyTrialBox, { useBoxTextColor } from './WeeklyTrialBox';
 import { useTheme } from '../context/ThemeContext';
 import { Swipeable } from 'react-native-gesture-handler';
+import AnimatedSpriteIcon from './AnimatedSpriteIcon';
 
 // Define task type that can be either a string or an object with status
 export type Task = string | { text: string; status: 'default' | 'completed' | 'canceled' };
@@ -22,13 +23,15 @@ const TaskDisplay = ({
   status = 'default', 
   index, 
   theme, 
-  onLongPress 
+  onLongPress,
+  category
 }: { 
   task: string; 
   status?: 'default' | 'completed' | 'canceled';
   index: number;
   theme: any;
   onLongPress?: () => void;
+  category?: string;
 }) => {
   // Use the box text color from context
   const textColor = useBoxTextColor();
@@ -150,6 +153,7 @@ const DailyTaskInput = ({
               index={index} 
               theme={theme}
               onLongPress={() => onTaskLongPress(index, text)}
+              category={category}
             />
           </WeeklyTrialBox>
         </Swipeable>
@@ -198,7 +202,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     padding: 20,
-  }
+  },
+  spriteContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginVertical: 12,
+  },
 });
 
 export default DailyTaskInput;

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, Animated, T
 import { AdditionalTask } from '../types/UserTypes';
 import WeeklyTrialBox, { useBoxTextColor } from './WeeklyTrialBox';
 import { Swipeable } from 'react-native-gesture-handler';
+import AnimatedSpriteIcon from './AnimatedSpriteIcon';
 
 interface AdditionalTaskDisplayProps {
   tasks: AdditionalTask[];
@@ -20,10 +21,12 @@ interface AdditionalTaskDisplayProps {
 // Component for the content of the additional task box
 const AdditionalTaskContent = ({ 
   text,
-  onLongPress
+  onLongPress,
+  category
 }: { 
   text: string;
   onLongPress?: () => void;
+  category?: string;
 }) => {
   // Use the box text color from context
   const textColor = useBoxTextColor();
@@ -200,6 +203,7 @@ const AdditionalTaskDisplay = ({
                 <AdditionalTaskContent 
                   text={task.text} 
                   onLongPress={() => onTaskLongPress && onTaskLongPress(index, task.text)}
+                  category={task.category}
                 />
               </WeeklyTrialBox>
             </Swipeable>
@@ -334,7 +338,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     padding: 20,
-  }
+  },
+  spriteContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginVertical: 12,
+  },
 });
 
 export default AdditionalTaskDisplay;
