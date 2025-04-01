@@ -40,6 +40,7 @@ import questsData from '../../assets/Quest.json';
 import { themes } from '../context/ThemeContext';
 import { Task } from '../components/DailyTaskInput';
 import { storageService } from '../utils/StorageUtils';
+import { AdditionalTask } from '../types/UserTypes';
 
 const { width } = Dimensions.get('window');
 
@@ -70,11 +71,11 @@ const HomepageScreen = () => {
   const [randomTaskDuration, setRandomTaskDuration] = useState<string>('30');
   const [customTaskDuration, setCustomTaskDuration] = useState<string>('30');
   const [randomTaskCategory, setRandomTaskCategory] = useState<string>('General');
-  const [customTaskCategory, setCustomTaskCategory] = useState<string>('General');
+  const [customTaskCategory, setCustomTaskCategory] = useState<string>('Select');
   const [customTaskTime, setCustomTaskTime] = useState<string>('');
   
   // Define available categories
-  const taskCategories = ["General", "Fitness", "Knowledge", "Mindfulness", "Social", "Creativity"];
+  const taskCategories = ["Fitness", "Knowledge", "Mindfulness", "Social", "Creativity"];
   
   // Update weekly trial category determination to use challenge ID instead of title
   const weeklyTrialCategory = React.useMemo(() => {
@@ -210,7 +211,7 @@ const HomepageScreen = () => {
       setRandomTaskCategory(randomTaskInfo.category);
       setCustomTask('');
       setCustomTaskDuration('30');
-      setCustomTaskCategory('General');
+      setCustomTaskCategory('Select');
       setCustomTaskTime('');
       setModalType('task');
     } catch (error) {
@@ -223,24 +224,27 @@ const HomepageScreen = () => {
     try {
       const formattedQuest = `${randomTask} (${randomTaskDuration}) - ${randomTaskCategory}`;
       
-      // Map to a category format our system recognizes
       let categoryKey = randomTaskCategory.toLowerCase();
       if (categoryKey === 'knowledge') categoryKey = 'learning';
+      if (categoryKey === 'general') categoryKey = undefined; // Map General to undefined category
       
-      const newTask = {
+      const newTask: AdditionalTask = {
+        // Use a more robust unique ID combining timestamp and random string
+        id: `random-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, 
         text: formattedQuest,
         image: null,
         completed: false,
         showImage: false,
-        category: categoryKey as any, // Type conversion for compatibility
-        color: getCategoryColor(categoryKey)
+        category: categoryKey as any, 
+        color: getCategoryColor(categoryKey || 'general') // Fallback color if category is undefined
       };
       
-      // Create updated tasks array
-      const updatedTasks = [...content.additionalTasks, newTask];
+      // Ensure additionalTasks is always treated as AdditionalTask[]
+      const currentTasks: AdditionalTask[] = content.additionalTasks as AdditionalTask[];
+      const updatedTasks = [...currentTasks, newTask];
       
-      // Use the new function from our hook
-      actions.setAdditionalTasks(updatedTasks);
+      // Pass the correctly typed array to the action
+      actions.setAdditionalTasks(updatedTasks); 
       
       setModalType('none');
     } catch (error) {
@@ -250,15 +254,31 @@ const HomepageScreen = () => {
 
   // Function to add the custom task
   const handleAddCustomTask = async () => {
-    await addCustomTask({
-      customTask,
-      customTaskTime,
-      customTaskDuration,
-      customTaskCategory,
-      additionalTasks: content.additionalTasks,
-      setAdditionalTasks: actions.setAdditionalTasks,
-      userToken: userData.userToken,
-      setModalVisible: () => setModalType('none')
+    // Edit 2: Add validation for category selection
+    if (customTaskCategory === "Select") {
+      Alert.alert('Category Required', 'Please select a category for your task.');
+      return; // Prevent adding task if category is not selected
+    }
+    if (!customTask.trim()) {
+        Alert.alert('Task Required', 'Please enter a description for your task.');
+        return; // Prevent adding empty task
+    }
+
+    // Ensure the setAdditionalTasks function passed matches the expected signature
+    const setAdditionalTasksForUtil = (tasks: AdditionalTask[]) => {
+        actions.setAdditionalTasks(tasks);
+    };
+
+    // Call addCustomTask with a single object argument
+    await addCustomTask({ 
+        customTask,
+        customTaskTime,
+        customTaskDuration,
+        customTaskCategory,
+        additionalTasks: content.additionalTasks as AdditionalTask[], // Ensure type
+        setAdditionalTasks: setAdditionalTasksForUtil, 
+        userToken: userData.userToken,
+        setModalVisible: () => setModalType('none') 
     });
   };
 
@@ -268,7 +288,7 @@ const HomepageScreen = () => {
   // Function to select a category and close modal
   const selectCategory = (category: string) => {
     setCustomTaskCategory(category);
-    setModalType('task');
+    setModalType('task'); // Return to the task modal after selection
   };
   
   // Close all modals
@@ -335,46 +355,45 @@ const HomepageScreen = () => {
 
   // Handle additional task completion when swiped left
   const handleAdditionalTaskComplete = (index: number) => {
-    // Create a completed task message
-    const completedTask = content.additionalTasks[index];
+    const currentTasks: AdditionalTask[] = content.additionalTasks as AdditionalTask[];
+    const completedTask = currentTasks[index];
     
-    // Extract the category and track the completed task
+    if (!completedTask) return; // Guard against index out of bounds
+
     const category = completedTask.category || 'general';
-    actions.addCompletedTask(completedTask.text, category, 0, false); // false for additional tasks
+    // Extract duration - Check for "minutes"
+    let duration = 0; // Default duration for additional tasks if not specified
+    const durationMatch = completedTask.text.match(/\((\d+)\s*minutes?\)/);
+    if (durationMatch && durationMatch[1]) {
+        duration = parseInt(durationMatch[1], 10);
+    }
+
+    actions.addCompletedTask(completedTask.text, category, duration, false); // false for additional tasks
     
-    // Emit an event to refresh performance components
     DeviceEventEmitter.emit('taskCompleted');
-    
-    // Show a toast or alert
     Alert.alert("Task Completed", `You've completed: ${completedTask.text}`);
     
-    // Remove the task from additionalTasks
-    const updatedTasks = [...content.additionalTasks];
-    updatedTasks.splice(index, 1);
+    const updatedTasks = currentTasks.filter((_, i) => i !== index); // Use filter for immutability
     actions.setAdditionalTasks(updatedTasks);
   };
 
   // Handle additional task cancellation when swiped right
   const handleAdditionalTaskCancel = (index: number) => {
-    // Create a canceled task message
-    const canceledTask = content.additionalTasks[index].text;
-    
-    // Confirm before canceling
+    const currentTasks: AdditionalTask[] = content.additionalTasks as AdditionalTask[];
+    const canceledTask = currentTasks[index];
+
+    if (!canceledTask) return; // Guard clause
+
     Alert.alert(
       "Cancel Task",
-      `Are you sure you want to cancel: ${canceledTask}?`,
+      `Are you sure you want to cancel: ${canceledTask.text}?`,
       [
-        {
-          text: "No",
-          style: "cancel"
-        },
+        { text: "No", style: "cancel" },
         {
           text: "Yes",
           onPress: () => {
-            // Remove the task from additionalTasks
-            const updatedTasks = [...content.additionalTasks];
-            updatedTasks.splice(index, 1);
-            actions.setAdditionalTasks(updatedTasks as any); // Cast to any to fix type error
+            const updatedTasks = currentTasks.filter((_, i) => i !== index); // Use filter
+            actions.setAdditionalTasks(updatedTasks);
           }
         }
       ]
@@ -445,11 +464,11 @@ const HomepageScreen = () => {
           text: "Stop", 
           style: "destructive",
           onPress: () => {
-            setActiveTimer((prev: typeof activeTimer) => prev ? { ...prev, isActive: false } : null);
-            // After a short delay, clear the timer completely
+            // Fix: Ensure the update function correctly handles null
+            setActiveTimer((prev) => (prev ? { ...prev, isActive: false } : null));
             setTimeout(() => {
               setActiveTimer(null);
-            }, 5000);
+            }, 5000); // Keep delay or adjust as needed
           }
         }
       ]
@@ -633,11 +652,18 @@ const HomepageScreen = () => {
                                 borderWidth: 1,
                                 justifyContent: 'center',
                                 alignItems: 'flex-start',
-                                paddingHorizontal: 12
+                                paddingHorizontal: 12,
+                                height: 40 // Match duration input height
                               }
                             ]}
                           >
-                            <Text style={{ color: theme.text }}>{customTaskCategory}</Text>
+                            <Text style={{ 
+                                color: customTaskCategory === "Select" 
+                                    ? (theme.mode === 'dark' ? '#aaa' : '#888') 
+                                    : theme.text 
+                            }}>
+                                {customTaskCategory}
+                            </Text>
                           </TouchableOpacity>
                         </View>
                       </View>
@@ -664,7 +690,7 @@ const HomepageScreen = () => {
                       </View>
                       
                       <TouchableOpacity 
-                        style={[styles.taskOptionButton, { backgroundColor: theme.accent, marginTop: 50 }]}
+                        style={[styles.taskOptionButton, { backgroundColor: theme.accent, marginTop: 10 }]} // Reduced margin slightly
                         onPress={handleAddCustomTask}
                       >
                         <Text style={styles.taskOptionButtonText}>Add Custom Task</Text>
@@ -704,9 +730,9 @@ const HomepageScreen = () => {
                 
                 <TouchableOpacity 
                   style={styles.cancelButton}
-                  onPress={closeAllModals}
+                  onPress={() => setModalType('task')}
                 >
-                  <Text style={[styles.cancelButtonText, { color: theme.text }]}>Cancel</Text>
+                  <Text style={[styles.cancelButtonText, { color: theme.text }]}>Back</Text>
                 </TouchableOpacity>
               </View>
             </View>

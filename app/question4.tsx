@@ -6,25 +6,25 @@ import optionDescriptions from '../assets/Option_Description.json';
 
 export default function Question4() {
   const router = useRouter();
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState<string | null>(null);
   const [userToken, setUserToken] = useState(null);
   const [expandedOption, setExpandedOption] = useState(null);
 
-  // Consequence mapping to align with classes.json format (C value)
+  // Consequence mapping - Simplified
   const consequenceToCode = {
     'Yes, Bring It On': 1,
-    'Choose My Own Punishments': 2,
-    'Without Consequence': 3
+    'Without Consequence': 3 // Keep original code for consistency
   };
 
   // Load user token and saved selection when component mounts
   useEffect(() => {
     const loadData = async () => {
       const { loadSessionData } = require('../src/utils/loadSessionData');
-      await loadSessionData(4, router, setUserToken, setSelected, setExpandedOption);
+      // Pass the consequenceToCode map to correctly load the saved selection text
+      await loadSessionData(4, router, setUserToken, setSelected, setExpandedOption, consequenceToCode);
     };
     loadData();
-  }, [router]);
+  }, []); // Removed router dependency
 
   // Function to handle option selection and expansion
   const handleSelection = async (option: string) => {
@@ -62,9 +62,9 @@ export default function Question4() {
     );
   };
 
-  // Back to previous page
+  // Back to previous page (now question 2)
   const handleBack = () => {
-    router.push('/question3');
+    router.push('/question2');
   };
 
   return (
@@ -93,8 +93,8 @@ export default function Question4() {
         </Text>
         <Text style={styles.subtext}>Do you accept consequences?</Text>
 
-        {/* Options with expandable descriptions */}
-        {['Yes, Bring It On', 'Choose My Own Punishments', 'Without Consequence'].map((option) => (
+        {/* Options with expandable descriptions - Simplified */}
+        {['Yes, Bring It On', 'Without Consequence'].map((option) => (
           <View key={option} style={styles.optionContainer}>
             <TouchableOpacity
               style={[

@@ -9,13 +9,13 @@ import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 // Import components
 import ProfileSection from '../../components/settings/ProfileSection';
 import HeroClassSection from '../../components/settings/HeroClassSection';
-import SettingItem from '../../components/settings/SettingItem';
+import SettingItemComponent from '../../components/settings/SettingItem';
 import BottomNavigation from '../../components/BottomNavigation';
 
 const { width } = Dimensions.get('window');
 
 // Define SettingItem interface with enhanced functionality
-interface SettingItem {
+interface SettingConfig {
   id: string;
   title: string;
   screen: string;
@@ -123,7 +123,7 @@ export default function SettingsScreen() {
   };
 
   // Handler for settings item press
-  const handleSettingPress = (item: SettingItem) => {
+  const handleSettingPress = (item: SettingConfig) => {
     if (item.isToggle && item.toggleHandler) {
       item.toggleHandler();
     } else if (item.title === 'Logout') {
@@ -147,7 +147,7 @@ export default function SettingsScreen() {
   };
 
   // Combined settings data for FlatList
-  const settingsData: SettingItem[] = [
+  const settingsData: SettingConfig[] = [
     { 
       id: '1', 
       title: 'Theme', 
@@ -184,7 +184,7 @@ export default function SettingsScreen() {
   ];
 
   // Enhanced setting item renderer to handle toggles
-  const renderSettingItem = ({ item }: { item: SettingItem }) => {
+  const renderSettingItem = ({ item }: { item: SettingConfig }) => {
     return (
       <TouchableOpacity 
         style={[
@@ -247,7 +247,7 @@ export default function SettingsScreen() {
         <FlatList
           data={settingsData}
           renderItem={renderSettingItem}
-          keyExtractor={item => item.id}
+          keyExtractor={(item: SettingConfig) => item.id}
           style={[styles.settingsList, { backgroundColor: theme.background }]}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={ListHeaderComponent}

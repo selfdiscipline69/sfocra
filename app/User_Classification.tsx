@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -119,10 +119,10 @@ export default function User_Classification() {
     loadUserClassification();
   }, []);
 
-  // Handler for continuing to user_info page instead of homepage
+  // Handler for continuing to the loading screen before the homepage
   const handleContinue = () => {
-    console.log("Continuing to user_info page");
-    router.replace('/(tabs)/homepage');
+    console.log("Continuing to Loading Screen");
+    router.replace('/LoadingScreen'); // Navigate to Loading Screen
   };
 
   // Handler for going back to question4
@@ -204,11 +204,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   classTitle: {
-    fontSize: 32,
+    fontSize: 36,
     fontWeight: 'bold',
     color: 'red',
     marginBottom: 30,
     textAlign: 'center',
+    fontFamily: Platform.OS === 'ios' ? 'Olondon_' : 'Olondon_',
   },
   infoBox: {
     width: '100%',
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#FF6666',
     marginBottom: 10,
   },
   infoText: {

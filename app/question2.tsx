@@ -6,24 +6,24 @@ import optionDescriptions from '../assets/Option_Description.json';
 
 export default function Question2() {
   const router = useRouter();
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState<string | null>(null);
   const [userToken, setUserToken] = useState(null);
   const [expandedOption, setExpandedOption] = useState(null);
 
   // Difficulty mapping to align with classes.json format (D value)
   const difficultyToCode = {
-    'Daily Trials': 1,
-    'Epic Missions': 2,
-    'Relentless Campaign': 3,
-    'Seasonal Conquests': 4,
-    'Spartan Trials': 5
+    'Lv1: Daily Trials': 1,
+    'Lv2: Epic Missions': 2,
+    'Lv3: Relentless Campaign': 3,
+    'Lv4: Seasonal Conquests': 4,
+    'Lv5: Spartan Trials': 5
   };
 
   // Load user token and saved selection when component mounts
   useEffect(() => {
     const loadData = async () => {
       const { loadSessionData } = require('../src/utils/loadSessionData');
-      await loadSessionData(2, router, setUserToken, setSelected, setExpandedOption);
+      await loadSessionData(2, router, setUserToken, setSelected, setExpandedOption, difficultyToCode);
     };
     loadData();
   }, []);
@@ -58,7 +58,7 @@ export default function Question2() {
       selected,
       difficultyToCode,
       router,
-      '/question3',
+      '/question4',
       true // store non-token version (matches behavior in question2)
     );
   };
@@ -97,7 +97,7 @@ export default function Question2() {
         <Text style={styles.subtext}>Choose your difficulty.</Text>
 
         {/* Options with expandable descriptions */}
-        {['Daily Trials', 'Epic Missions', 'Relentless Campaign', 'Seasonal Conquests', 'Spartan Trials'].map((option) => (
+        {['Lv1: Daily Trials', 'Lv2: Epic Missions', 'Lv3: Relentless Campaign', 'Lv4: Seasonal Conquests', 'Lv5: Spartan Trials'].map((option) => (
           <View key={option} style={styles.optionContainer}>
             <TouchableOpacity
               style={[

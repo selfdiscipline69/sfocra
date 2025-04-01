@@ -2,7 +2,6 @@ import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getTaskCategory } from './taskCategoryUtils';
 import { themes } from '../context/ThemeContext';
-import { TaskItem } from '../types/TaskTypes';
 import { AdditionalTask } from '../types/UserTypes';
 
 // Function to get category color
@@ -42,8 +41,8 @@ export const addCustomTask = async ({
   customTaskTime: string;
   customTaskDuration: string;
   customTaskCategory: string;
-  additionalTasks: TaskItem[] | AdditionalTask[];
-  setAdditionalTasks: (tasks: TaskItem[] | AdditionalTask[]) => void;
+  additionalTasks: AdditionalTask[];
+  setAdditionalTasks: (tasks: AdditionalTask[]) => void;
   userToken: string;
   setModalVisible: (visible: boolean) => void;
 }) => {
@@ -57,7 +56,7 @@ export const addCustomTask = async ({
     let taskText = customTask;
     
     if (customTaskDuration) {
-      taskText += ` (${customTaskDuration})`;
+      taskText += ` (${customTaskDuration} minutes)`;
     }
     
     // Add category to the task text
@@ -97,8 +96,9 @@ export const addCustomTask = async ({
         category = getTaskCategory(taskText);
     }
     
-    // Create new task object
-    const newTask: TaskItem = {
+    // Create new task object as AdditionalTask with a unique ID
+    const newTask: AdditionalTask = {
+      id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       text: taskText,
       image: null,
       completed: false,

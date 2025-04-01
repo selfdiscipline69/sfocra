@@ -1,92 +1,180 @@
 [
     {
-      "quote": "The unexamined life is not worth living - Socrates (Apology)"
+      "quoteText": "The unexamined life is not worth living",
+      "author": "Socrates",
+      "origin": "Apology",
+      "authorImageKey": "socrates"
     },
     {
-      "quote": "I know that I know nothing - Socrates (Apology)"
+      "quoteText": "I know that I know nothing",
+      "author": "Socrates",
+      "origin": "Apology",
+      "authorImageKey": "socrates"
     },
     {
-      "quote": "He who is not a good servant will not be a good master - Plato (The Republic)"
+      "quoteText": "He who is not a good servant will not be a good master",
+      "author": "Plato",
+      "origin": "The Republic",
+      "authorImageKey": "plato"
     },
     {
-      "quote": "We are what we repeatedly do. Excellence, then, is not an act, but a habit - Aristotle"
+      "quoteText": "We are what we repeatedly do. Excellence, then, is not an act, but a habit",
+      "author": "Aristotle",
+      "origin": null,
+      "authorImageKey": "aristotle"
     },
     {
-      "quote": "You have power over your mind - not outside events. Realize this, and you will find strength - Marcus Aurelius (Meditations)"
+      "quoteText": "You have power over your mind - not outside events. Realize this, and you will find strength",
+      "author": "Marcus Aurelius",
+      "origin": "Meditations",
+      "authorImageKey": "marcus-aurelius"
     },
     {
-      "quote": "What need is there to weep over parts of life? The whole of it calls for tears - Seneca (Moral Letters)"
+      "quoteText": "What need is there to weep over parts of life? The whole of it calls for tears",
+      "author": "Seneca",
+      "origin": "Moral Letters",
+      "authorImageKey": "seneca"
     },
     {
-      "quote": "There is only one way to happiness and that is to cease worrying about things which are beyond the power of our will - Epictetus (Enchiridion)"
+      "quoteText": "There is only one way to happiness and that is to cease worrying about things which are beyond the power of our will",
+      "author": "Epictetus",
+      "origin": "Enchiridion",
+      "authorImageKey": "epictetus"
     },
     {
-      "quote": "Act only according to that maxim whereby you can at the same time will that it should become a universal law - Immanuel Kant (Groundwork of the Metaphysics of Morals)"
+      "quoteText": "Act only according to that maxim whereby you can at the same time will that it should become a universal law",
+      "author": "Immanuel Kant",
+      "origin": "Groundwork of the Metaphysics of Morals",
+      "authorImageKey": "immanuel-kant"
     },
     {
-      "quote": "Two things awe me most, the starry sky above me and the moral law within me - Immanuel Kant (Critique of Practical Reason)"
+      "quoteText": "Two things awe me most, the starry sky above me and the moral law within me",
+      "author": "Immanuel Kant",
+      "origin": "Critique of Practical Reason",
+      "authorImageKey": "immanuel-kant"
     },
     {
-      "quote": "He who has a why to live can bear almost any how - Friedrich Nietzsche (Thus Spoke Zarathustra)"
+      "quoteText": "He who has a why to live can bear almost any how",
+      "author": "Friedrich Nietzsche",
+      "origin": "Thus Spoke Zarathustra",
+      "authorImageKey": "friedrich-nietzsche"
     },
     {
-      "quote": "What does not kill me makes me stronger - Friedrich Nietzsche (Twilight of the Idols)"
+      "quoteText": "What does not kill me makes me stronger",
+      "author": "Friedrich Nietzsche",
+      "origin": "Twilight of the Idols",
+      "authorImageKey": "friedrich-nietzsche"
     },
     {
-      "quote": "The only true wisdom is in knowing you know nothing - Socrates (Apology)"
+      "quoteText": "The only true wisdom is in knowing you know nothing",
+      "author": "Socrates",
+      "origin": "Apology",
+      "authorImageKey": "socrates"
     },
     {
-      "quote": "The soul becomes dyed with the color of its thoughts - Marcus Aurelius (Meditations)"
+      "quoteText": "The soul becomes dyed with the color of its thoughts",
+      "author": "Marcus Aurelius",
+      "origin": "Meditations",
+      "authorImageKey": "marcus-aurelius"
     },
     {
-      "quote": "Wealth consists not in having great possessions, but in having few wants - Epictetus (Fragments)"
+      "quoteText": "Wealth consists not in having great possessions, but in having few wants",
+      "author": "Epictetus",
+      "origin": "Fragments",
+      "authorImageKey": "epictetus"
     },
     {
-      "quote": "The life of man is of a short duration; let us not make it shorter by our own fault - Seneca (On the Shortness of Life)"
+      "quoteText": "The life of man is of a short duration; let us not make it shorter by our own fault",
+      "author": "Seneca",
+      "origin": "On the Shortness of Life",
+      "authorImageKey": "seneca"
     },
     {
-      "quote": "The greatest way to live with honor in this world is to be what we pretend to be - Socrates (Crito)"
+      "quoteText": "The greatest way to live with honor in this world is to be what we pretend to be",
+      "author": "Socrates",
+      "origin": "Crito",
+      "authorImageKey": "socrates"
     },
     {
-      "quote": "The state is not an end but a means to the good life - Plato (The Republic)"
+      "quoteText": "The state is not an end but a means to the good life",
+      "author": "Plato",
+      "origin": "The Republic",
+      "authorImageKey": "plato"
     },
     {
-      "quote": "God is dead. God remains dead. And we have killed him - Friedrich Nietzsche (The Gay Science)"
+      "quoteText": "God is dead. God remains dead. And we have killed him",
+      "author": "Friedrich Nietzsche",
+      "origin": "The Gay Science",
+      "authorImageKey": "friedrich-nietzsche"
     },
     {
-      "quote": "Morality is not the doctrine of how we may make ourselves happy, but how we may make ourselves worthy of happiness - Immanuel Kant (Critique of Practical Reason)"
+      "quoteText": "Morality is not the doctrine of how we may make ourselves happy, but how we may make ourselves worthy of happiness",
+      "author": "Immanuel Kant",
+      "origin": "Critique of Practical Reason",
+      "authorImageKey": "immanuel-kant"
     },
     {
-      "quote": "If it is not right, do not do it; if it is not true, do not say it - Marcus Aurelius (Meditations)"
+      "quoteText": "If it is not right, do not do it; if it is not true, do not say it",
+      "author": "Marcus Aurelius",
+      "origin": "Meditations",
+      "authorImageKey": "marcus-aurelius"
     },
     {
-      "quote": "To be evenminded is the greatest virtue - Epictetus (Discourses)"
+      "quoteText": "To be evenminded is the greatest virtue",
+      "author": "Epictetus",
+      "origin": "Discourses",
+      "authorImageKey": "epictetus"
     },
     {
-      "quote": "There is no easy way from the earth to the stars - Seneca (Hercules Furens)"
+      "quoteText": "There is no easy way from the earth to the stars",
+      "author": "Seneca",
+      "origin": "Hercules Furens",
+      "authorImageKey": "seneca"
     },
     {
-      "quote": "One must still have chaos in oneself to be able to give birth to a dancing star - Friedrich Nietzsche (Thus Spoke Zarathustra)"
+      "quoteText": "One must still have chaos in oneself to be able to give birth to a dancing star",
+      "author": "Friedrich Nietzsche",
+      "origin": "Thus Spoke Zarathustra",
+      "authorImageKey": "friedrich-nietzsche"
     },
     {
-      "quote": "We must be willing to let go of the life we planned so as to have the life that is waiting for us - Socrates"
+      "quoteText": "We must be willing to let go of the life we planned so as to have the life that is waiting for us",
+      "author": "Socrates",
+      "authorImageKey": "socrates"
     },
     {
-      "quote": "The object of life is not to be on the side of the majority, but to escape finding oneself in the ranks of the insane - Marcus Aurelius (Meditations)"
+      "quoteText": "The object of life is not to be on the side of the majority, but to escape finding oneself in the ranks of the insane",
+      "author": "Marcus Aurelius",
+      "origin": "Meditations",
+      "authorImageKey": "marcus-aurelius"
     },
     {
-      "quote": "Knowledge which is acquired under compulsion obtains no hold on the mind - Plato (The Republic)"
+      "quoteText": "Knowledge which is acquired under compulsion obtains no hold on the mind",
+      "author": "Plato",
+      "origin": "The Republic",
+      "authorImageKey": "plato"
     },
     {
-      "quote": "Dare to know! Have the courage to use your own reason - Immanuel Kant (What is Enlightenment?)"
+      "quoteText": "Dare to know! Have the courage to use your own reason",
+      "author": "Immanuel Kant",
+      "origin": "What is Enlightenment?",
+      "authorImageKey": "immanuel-kant"
     },
     {
-      "quote": "To live is to suffer, to survive is to find some meaning in the suffering - Friedrich Nietzsche"
+      "quoteText": "To live is to suffer, to survive is to find some meaning in the suffering",
+      "author": "Friedrich Nietzsche",
+      "authorImageKey": "friedrich-nietzsche"
     },
     {
-      "quote": "No man has the right to be an amateur in the matter of physical training. It is a shame for a man to grow old without seeing the beauty and strength of which his body is capable - Socrates (Memorabilia)"
+      "quoteText": "No man has the right to be an amateur in the matter of physical training. It is a shame for a man to grow old without seeing the beauty and strength of which his body is capable",
+      "author": "Socrates",
+      "origin": "Memorabilia",
+      "authorImageKey": "socrates"
     },
     {
-      "quote": "The mind is not a vessel to be filled, but a fire to be kindled - Plato"
+      "quoteText": "The mind is not a vessel to be filled, but a fire to be kindled",
+      "author": "Plato",
+      "origin": null,
+      "authorImageKey": "plato"
     }
   ]

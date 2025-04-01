@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import optionDescriptions from '../assets/Option_Description.json';
+//import optionDescriptions from '../../assets/Option_Description.json';
 
 export default function Question3() {
   const router = useRouter();
@@ -20,15 +20,15 @@ export default function Question3() {
   // Load user token and saved selection when component mounts
   useEffect(() => {
     const loadData = async () => {
-      const { loadSessionData } = require('../src/utils/loadSessionData');
-      await loadSessionData(3, router, setUserToken, setSelected, setExpandedOption);
+      //const { loadSessionData } = require('../src/utils/loadSessionData');
+      //await loadSessionData(3, router, setUserToken, setSelected, setExpandedOption);
     };
     loadData();
   }, [router]);
 
   // Function to handle option selection and expansion
   const handleSelection = async (option: string) => {
-    const { handleSelection: handleSelectionUtil } = require('../src/utils/handleSelectionUtil');
+    //const { handleSelection: handleSelectionUtil } = require('../src/utils/handleSelectionUtil');
     await handleSelectionUtil(
       3, // question number
       option,
@@ -49,7 +49,7 @@ export default function Question3() {
 
   // Handle navigation with save
   const handleNext = async () => {
-    const { handleNext: handleNextNavigation } = require('../src/utils/handleNextNavigation');
+    //const { handleNext: handleNextNavigation } = require('../src/utils/handleNextNavigation');
     await handleNextNavigation(
       3, // question number
       userToken,

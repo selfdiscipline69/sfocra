@@ -1,20 +1,15 @@
 {
-    "1-0-0-0": "Focus on mental challenges and intellectual growth. Your journey will explore mindfulness, self-reflection, and intellectual pursuits like meditation, journaling, and learning new skills.", //Description for Mind path option: 
-    "2-0-0-0": "Build physical strength and vitality. Your quests will challenge your strength, agility, and physical discipline.", //Description for Body path option: 
-    "3-0-0-0": "Seek harmony between mind and body. Your journey will provide a mix of physical and mental challenges.", //Description for Balanced path option:
+    "1-0-0-0": "Focus on mental challenges and intellectual growth. Your journey will explore mindfulness, self-reflection, and intellectual pursuits like meditation, journaling, and learning new skills.",
+    "2-0-0-0": "Build physical strength and vitality. Your quests will challenge your strength, agility, and physical discipline.",
+    "3-0-0-0": "Seek harmony between mind and body. Your journey will provide a mix of physical and mental challenges.",
     
-    "0-1-0-0": "Basic, smaller challenges to build consistent habits. Best for beginners or those with limited time.", //Description for Daily Trials difficulty:
-    "0-2-0-0": "Regular, more complex challenges with greater rewards. Designed for those seeking moderate challenge.", //Description for Epic Missions difficulty:
-    "0-3-0-0": "Moderate, commit to ongoing growth with layered tasks.. For dedicated heroes committed to steady growth.", //Description for Relentless Campaign difficulty:
-    "0-4-0-0": "Lock-in, advanced achievement periods with themed challenges. Perfect for those who enjoy fresh starts and varied goals.", //Description for Seasonal Conquests difficulty: 
-    "0-5-0-0": "Spartan, the ultimate test of will and discipline. Only for the most determined heroes seeking maximum challenge.", //Description for Spartan Trials difficulty:
+    "0-1-0-0": "Basic, smaller challenges to build consistent habits. Best for beginners or those with limited time.",
+    "0-2-0-0": "Regular, more complex challenges with greater rewards. Designed for those seeking moderate challenge.",
+    "0-3-0-0": "Moderate, commit to ongoing growth with layered tasks.. For dedicated heroes committed to steady growth.",
+    "0-4-0-0": "Lock-in, advanced achievement periods with themed challenges. Perfect for those who enjoy fresh starts and varied goals.", 
+    "0-5-0-0": "Spartan, the ultimate test of will and discipline. Only for the most determined heroes seeking maximum challenge.",
     
-    "0-0-1-0": "Monitor your growth through experience points and level progression. Focus on long-term advancement.", //Description for Leveling System tracking: 
-    "0-0-2-0": "Build consistency through daily habit formation and streak maintenance. Emphasize regular practice.", //Description for Streaks & Habits tracking: 
-    "0-0-3-0": "Combine the benefits of leveling and streaks for a comprehensive approach to monitoring your heroic journey.", //Description for Both tracking: 
-    
-    "0-0-0-1": "Embrace true challenge with automatic consequences for missed quests. For heroes who thrive under pressure.", //Description for Yes, Bring It On consequence: 
-    "0-0-0-2": "Maintain accountability while selecting appropriate consequences for your circumstances.", //Description for Choose My Own Punishments consequence: 
-    "0-0-0-3": "Focus on positive reinforcement only. Best for those beginning their heroic journey or with high external pressure." //Description for Without Consequence consequence: 
-  }
+    "0-0-0-1": "Embrace true challenge with automatic consequences for missed quests. For heroes who thrive under pressure.",
+    "0-0-0-3": "Focus on positive reinforcement only. Best for those beginning their heroic journey or with high external pressure."
+}
   

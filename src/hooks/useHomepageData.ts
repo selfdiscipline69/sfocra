@@ -84,6 +84,14 @@ const normalizeCategory = (category: string): string => {
   }
 };
 
+// Add type for the structured quote
+interface QuoteData {
+  quoteText: string;
+  author: string;
+  origin: string | null;
+  authorImageKey: string;
+}
+
 export default function useHomepageData() {
   // User data states
   const [email, setEmail] = useState<string>('');
@@ -95,7 +103,6 @@ export default function useHomepageData() {
   const [userChoices, setUserChoices] = useState<UserChoices>({
     question1: null,
     question2: null,
-    question3: null,
     question4: null,
   });
   
@@ -130,7 +137,7 @@ export default function useHomepageData() {
       setAdditionalTasks(additionalTasks);
       
       // Load tasks with status
-      const tasksWithStatus = await storageService.getDailyTasksWithStatus(userData.userToken);
+      const tasksWithStatus: Task[] | null = await storageService.getDailyTasksWithStatus(userData.userToken);
       if (tasksWithStatus && tasksWithStatus.length > 0) {
         setDailyTasks(tasksWithStatus);
       }
@@ -158,13 +165,12 @@ export default function useHomepageData() {
       const shouldRefreshWeeklyTrial = forceRefresh || await storageService.shouldRefreshWeekly(userToken);
       
       // First, load the existing tasks with status from storage
-      const existingTasksWithStatus = await storageService.getDailyTasksWithStatus(userToken);
-      const tasksMap = new Map();
+      const existingTasksWithStatus: Task[] | null = await storageService.getDailyTasksWithStatus(userToken);
+      const tasksMap = new Map<string, 'default' | 'completed' | 'canceled'>();
       
-      // Create a map of existing tasks by text for quick lookup when preserving status
       if (existingTasksWithStatus && existingTasksWithStatus.length > 0) {
-        existingTasksWithStatus.forEach(task => {
-          if (typeof task === 'object' && task.text) {
+        existingTasksWithStatus.forEach((task: Task) => {
+          if (typeof task === 'object' && task.text && task.status) {
             tasksMap.set(task.text, task.status);
           }
         });
@@ -383,18 +389,24 @@ export default function useHomepageData() {
         return task;
       }));
       
-      // Handle daily quote
+      // Handle daily quote using the new structure
       if (quotesData && Array.isArray(quotesData) && quotesData.length > 0) {
         const randomIndex = Math.floor(Math.random() * quotesData.length);
-        const randomQuote = quotesData[randomIndex];
+        // Cast the selected item to the new QuoteData interface
+        const randomQuote: QuoteData = quotesData[randomIndex] as QuoteData; 
         
-        if (randomQuote && randomQuote.quote) {
-          setDailyQuote(randomQuote.quote);
+        // Check if the selected quote has the expected structure
+        if (randomQuote && randomQuote.quoteText) {
+          // Set dailyQuote state with only the quote text
+          setDailyQuote(randomQuote.quoteText); 
         } else {
+          console.warn("Selected quote data is missing 'quoteText':", randomQuote);
           setDailyQuote("Quote not available");
         }
       } else {
-        setDailyQuote("The unexamined life is not worth living - Socrates");
+        console.warn("quotesData is not available or empty.");
+        // Provide a default quote text
+        setDailyQuote("The unexamined life is not worth living - Socrates"); 
       }
       
       // Update the timestamps after successful refresh

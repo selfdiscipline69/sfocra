@@ -35,27 +35,32 @@ export const getUserData = async () => {
 // User choices storage
 export const getUserChoices = async (userToken: string): Promise<UserChoices> => {
   try {
+    // Initialize with null values according to the updated UserChoices type
     const choices: UserChoices = {
       question1: null,
       question2: null,
-      question3: null,
       question4: null,
     };
     
-    for (let i = 1; i <= 4; i++) {
-      const questionKey = `question${i}` as keyof UserChoices;
+    // Define the keys based on the current questions
+    const questionKeys: (keyof UserChoices)[] = ['question1', 'question2', 'question4'];
+    const questionNumbers = [1, 2, 4]; // Corresponding question numbers
+
+    for (let i = 0; i < questionKeys.length; i++) {
+      const questionKey = questionKeys[i];
+      const questionNum = questionNumbers[i];
       
       // Try with token-specific key first
       if (userToken) {
-        const choiceWithToken = await AsyncStorage.getItem(`question${i}Choice_${userToken}`);
+        const choiceWithToken = await AsyncStorage.getItem(`question${questionNum}Choice_${userToken}`);
         if (choiceWithToken !== null) {
           choices[questionKey] = choiceWithToken;
-          continue;
+          continue; // Move to next question key
         }
       }
       
       // Fall back to non-token key
-      const choiceWithoutToken = await AsyncStorage.getItem(`question${i}Choice`);
+      const choiceWithoutToken = await AsyncStorage.getItem(`question${questionNum}Choice`);
       if (choiceWithoutToken !== null) {
         choices[questionKey] = choiceWithoutToken;
       }
@@ -64,10 +69,10 @@ export const getUserChoices = async (userToken: string): Promise<UserChoices> =>
     return choices;
   } catch (error) {
     console.error('Error getting user choices:', error);
+    // Return structure matching the updated UserChoices type
     return {
       question1: null,
       question2: null,
-      question3: null,
       question4: null,
     };
   }
@@ -104,20 +109,28 @@ export const saveAdditionalTasks = async (userToken: string, tasks: AdditionalTa
   }
 };
 
-export const getUserClassKey = async (userToken: string): Promise<string | null> => {
+export const getUserClassKey = async (userToken: string | null): Promise<string | null> => {
   try {
-    // First try to get the new format key
-    const newFormatKey = await AsyncStorage.getItem('userClassKey') || 
-                         await AsyncStorage.getItem(`userClassKey_${userToken}`);
-                         
-    // If found, return it
-    if (newFormatKey) return newFormatKey;
+    let newFormatKey: string | null = null;
+    let oldFormatKey: string | null = null;
+
+    if (userToken) {
+      // Prioritize token-specific keys
+      newFormatKey = await AsyncStorage.getItem(`userClassKey_${userToken}`);
+      oldFormatKey = await AsyncStorage.getItem(`userClassKeyOld_${userToken}`);
+    }
     
-    // Otherwise try to get the old format key
-    const oldFormatKey = await AsyncStorage.getItem('userClassKeyOld') || 
-                         await AsyncStorage.getItem(`userClassKeyOld_${userToken}`);
-                         
-    return oldFormatKey;
+    // Fallback to general keys if token-specific are not found or token is null
+    if (!newFormatKey) {
+      newFormatKey = await AsyncStorage.getItem('userClassKey');
+    }
+    if (!oldFormatKey) {
+      oldFormatKey = await AsyncStorage.getItem('userClassKeyOld');
+    }
+
+    // Return new format key if available, otherwise fall back to old format key
+    return newFormatKey || oldFormatKey; 
+
   } catch (error) {
     console.error('Error getting user class key:', error);
     return null;

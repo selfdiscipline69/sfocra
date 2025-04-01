@@ -30,12 +30,12 @@ export default function SignupScreen() {
   const emailShakeAnimation = useRef(new Animated.Value(0)).current;
   const passwordShakeAnimation = useRef(new Animated.Value(0)).current;
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const shakeElement = (animation) => {
+  const shakeElement = (animation: Animated.Value) => {
     Animated.sequence([
       Animated.timing(animation, { toValue: 10, duration: 100, useNativeDriver: true }),
       Animated.timing(animation, { toValue: -10, duration: 100, useNativeDriver: true }),
@@ -89,8 +89,8 @@ export default function SignupScreen() {
         await AsyncStorage.setItem('userToken', token);
         
         
-        // Navigate to homepage
-        router.replace('/(tabs)/homepage');
+        // Navigate to the new Loading Screen instead of homepage
+        router.replace('/LoadingScreen');
       } else {
         // Invalid credentials
         console.log('Login failed: Credentials do not match');
@@ -151,7 +151,7 @@ export default function SignupScreen() {
                   placeholder="Email Address"
                   placeholderTextColor="#aaa"
                   value={email}
-                  onChangeText={(text) => {
+                  onChangeText={(text: string) => {
                     setEmail(text);
                     setEmailError('');
                   }}
@@ -169,7 +169,7 @@ export default function SignupScreen() {
                   placeholder="Password"
                   placeholderTextColor="white"
                   value={password}
-                  onChangeText={(text) => {
+                  onChangeText={(text: string) => {
                     setPassword(text);
                     setPasswordError('');
                   }}
