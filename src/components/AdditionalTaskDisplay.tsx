@@ -190,7 +190,7 @@ const AdditionalTaskDisplay = ({
           ) : (
             // Normal version for Homepage with swipe functionality and long press for timer
             <Swipeable
-              key={task.id || `additional-${index}`}
+              key={task.id || `additional-${index}-${Date.now()}`}
               renderRightActions={(progress: Animated.AnimatedInterpolation<number>) => DeleteAction(progress, theme)}
               renderLeftActions={(progress: Animated.AnimatedInterpolation<number>) => CompleteAction(progress, theme)}
               onSwipeableRightOpen={() => onTaskCancel(index)}

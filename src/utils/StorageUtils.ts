@@ -1,6 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserChoices, AdditionalTask } from '../types/UserTypes';
 
+// Add the WeeklyTrialData interface
+interface WeeklyTrialData {
+  title: string;
+  description: string;
+  weeklyTrialSummary: string;
+}
+
 // User data related storage
 export const getUserData = async () => {
   try {
@@ -156,9 +163,14 @@ export const saveDailyTasks = async (tasks: string[], userToken?: string): Promi
   }
 };
 
-export const saveWeeklyTrial = async (trial: string): Promise<void> => {
+export const saveWeeklyTrial = async (userToken: string, trial: string): Promise<void> => {
   try {
-    await AsyncStorage.setItem('weeklyTrial', trial);
+    if (!userToken) {
+      console.warn('Cannot save weekly trial: No user token provided');
+      return;
+    }
+    
+    await AsyncStorage.setItem(`weeklyTrial_${userToken}`, trial);
   } catch (error) {
     console.error('Error saving weekly trial:', error);
   }
@@ -403,6 +415,53 @@ export const getAccountAge = async (userToken: string): Promise<number> => {
   }
 };
 
+// Fix the getWeeklyTrial function to use the added interface
+export const getWeeklyTrial = async (userToken: string): Promise<WeeklyTrialData | null> => {
+  try {
+    const trialData = await AsyncStorage.getItem(`weeklyTrial_${userToken}`);
+    if (trialData) {
+      return JSON.parse(trialData) as WeeklyTrialData;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting weekly trial:', error);
+    return null;
+  }
+};
+
+// Function to simulate advancing the last daily refresh timestamp for testing
+export const advanceLastDailyRefreshTimestamp = async (userToken: string): Promise<void> => {
+  try {
+    const key = `@refresh_timestamps_${userToken}`;
+    const currentData = await AsyncStorage.getItem(key);
+    let data: { daily?: number; weekly?: number } = {};
+
+    if (currentData) {
+      data = JSON.parse(currentData);
+    }
+
+    // Set the 'daily' timestamp to something definitely before today (e.g., 24 hours ago)
+    const yesterdayTimestamp = Date.now() - 24 * 60 * 60 * 1000;
+    data.daily = yesterdayTimestamp;
+
+    await AsyncStorage.setItem(key, JSON.stringify(data));
+    console.log("DEV: Advanced last daily refresh timestamp to:", new Date(yesterdayTimestamp).toISOString());
+  } catch (error) {
+    console.error('Error advancing last daily refresh timestamp:', error);
+  }
+};
+
+// Add this as a separate export
+export const loadUserTaskStatus = async (userToken: string) => {
+  try {
+    const taskData = await getDailyTasksWithStatus(userToken);
+    return taskData || [];
+  } catch (error) {
+    console.error('Error loading user task status:', error);
+    return [];
+  }
+};
+
 // Create and export a storageService object with all the functions
 export const storageService = {
   getUserData,
@@ -425,6 +484,9 @@ export const storageService = {
   saveTaskCompletionRecord,
   getTaskCompletionRecords,
   getAccountAge,
+  getWeeklyTrial,
+  advanceLastDailyRefreshTimestamp,
+  loadUserTaskStatus,
   
   // Add this new function to load user task status
   loadUserTaskStatus: async (userToken: string) => {

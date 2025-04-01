@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   View, 
   ScrollView, 
@@ -14,7 +14,8 @@ import {
   TextInput,
   Alert,
   RefreshControl,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  Pressable
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -224,19 +225,27 @@ const HomepageScreen = () => {
     try {
       const formattedQuest = `${randomTask} (${randomTaskDuration}) - ${randomTaskCategory}`;
       
-      let categoryKey = randomTaskCategory.toLowerCase();
-      if (categoryKey === 'knowledge') categoryKey = 'learning';
-      if (categoryKey === 'general') categoryKey = undefined; // Map General to undefined category
+      let categoryKey: 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity' | undefined;
+      const lowerCaseCategory = randomTaskCategory.toLowerCase();
+
+      switch (lowerCaseCategory) {
+          case 'fitness': categoryKey = 'fitness'; break;
+          case 'knowledge': categoryKey = 'learning'; break; // Map knowledge
+          case 'learning': categoryKey = 'learning'; break;
+          case 'mindfulness': categoryKey = 'mindfulness'; break;
+          case 'social': categoryKey = 'social'; break;
+          case 'creativity': categoryKey = 'creativity'; break;
+          default: categoryKey = undefined; // Explicitly undefined for "General" or unknown
+      }
       
       const newTask: AdditionalTask = {
-        // Use a more robust unique ID combining timestamp and random string
-        id: `random-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, 
+        id: `random-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
         text: formattedQuest,
         image: null,
         completed: false,
         showImage: false,
-        category: categoryKey as any, 
-        color: getCategoryColor(categoryKey || 'general') // Fallback color if category is undefined
+        category: categoryKey, // Assign the potentially undefined category key
+        color: getCategoryColor(categoryKey || 'general') // Fallback color
       };
       
       // Ensure additionalTasks is always treated as AdditionalTask[]
@@ -475,6 +484,49 @@ const HomepageScreen = () => {
     );
   };
 
+  const [isDateAdvanceModalVisible, setIsDateAdvanceModalVisible] = useState(false);
+  const [currentDateString, setCurrentDateString] = useState('');
+  const quoteLongPressTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // --- Secret Trigger Logic ---
+  const handleQuotePressIn = () => {
+    // Clear any existing timer
+    if (quoteLongPressTimer.current) {
+      clearTimeout(quoteLongPressTimer.current);
+    }
+    // Start a new timer
+    quoteLongPressTimer.current = setTimeout(() => {
+      console.log("Quote long press detected!");
+      const today = new Date();
+      setCurrentDateString(today.toLocaleDateString()); // Format date for display
+      setIsDateAdvanceModalVisible(true);
+      quoteLongPressTimer.current = null; // Clear ref after triggering
+    }, 5000); // 5 seconds
+  };
+
+  const handleQuotePressOut = () => {
+    // Clear timer if press is released before 5 seconds
+    if (quoteLongPressTimer.current) {
+      clearTimeout(quoteLongPressTimer.current);
+      quoteLongPressTimer.current = null;
+    }
+  };
+
+  const handleAdvanceDay = async () => {
+     if (userData.userToken) {
+       console.log("DEV: Advancing day...");
+       await storageService.advanceLastDailyRefreshTimestamp(userData.userToken);
+       // Trigger data refresh immediately
+       actions.loadQuestsAndQuotes(true); // Force refresh
+       setIsDateAdvanceModalVisible(false);
+       Alert.alert("Day Advanced", "Daily tasks should refresh on next load/focus.");
+     } else {
+        Alert.alert("Error", "User token not found.");
+        setIsDateAdvanceModalVisible(false);
+     }
+  };
+  // --- End Secret Trigger Logic ---
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -512,9 +564,15 @@ const HomepageScreen = () => {
             />
           }
         >
-          {/* Header with Profile and Quote */}
+          {/* Header with Profile and Quote - Add Pressable for secret trigger */}
           <View style={styles.header}>
-            <DailyQuote quote={content.dailyQuote} theme={theme} />
+            <Pressable
+              onPressIn={handleQuotePressIn}
+              onPressOut={handleQuotePressOut}
+              style={styles.quotePressable}
+            >
+              <DailyQuote quote={content.dailyQuote} theme={theme} />
+            </Pressable>
             
             <View style={styles.headerButtons}>
               <ProfileSection 
@@ -739,6 +797,41 @@ const HomepageScreen = () => {
           )}
         </Modal>
 
+        {/* --- Date Advance Modal --- */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={isDateAdvanceModalVisible}
+          onRequestClose={() => setIsDateAdvanceModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContent, { backgroundColor: theme.boxBackground }]}>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>Simulate Day Change (DEV)</Text>
+              <Text style={[styles.modalText, { color: theme.text, marginBottom: 20 }]}>
+                Current Date: {currentDateString}
+              </Text>
+              <Text style={[styles.modalText, { color: theme.text, marginBottom: 20, textAlign: 'center' }]}>
+                Do you want to advance the internal 'last refresh' date to simulate the next day? This will trigger a daily task refresh on the next app focus or manual refresh.
+              </Text>
+
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: theme.accent }]}
+                onPress={handleAdvanceDay}
+              >
+                <Text style={styles.modalButtonText}>Advance Day</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: theme.mode === 'dark' ? '#555' : '#ccc', marginTop: 10 }]}
+                onPress={() => setIsDateAdvanceModalVisible(false)}
+              >
+                <Text style={[styles.modalButtonText, { color: theme.mode === 'dark' ? '#fff' : '#000'}]}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        {/* --- End Date Advance Modal --- */}
+
         {/* Bottom Navigation - Pass the addNewTask function */}
         <BottomNavigation 
           theme={theme} 
@@ -909,6 +1002,26 @@ const styles = StyleSheet.create({
   },
   weeklyGraphContainer: {
     minHeight: 220, // Fixed height container to prevent layout shifts
+  },
+  quotePressable: {
+    flex: 1,
+    marginRight: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  modalButton: {
+    width: '80%',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 

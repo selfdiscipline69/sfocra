@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { UserChoices, AdditionalTask } from '../types/UserTypes';
 import * as storageService from '../utils/StorageUtils';
 import quotesData from '../../assets/Quote.json';
 import questsData from '../../assets/Quest.json';
 import { Task } from '../components/DailyTaskInput';
+import { useFocusEffect } from '@react-navigation/native';
+import { loadUserTaskStatus, getWeeklyTrial, saveWeeklyTrial } from '../utils/StorageUtils';
 
 // Define interfaces for the new quest structure
 interface DayTask {
@@ -219,7 +221,7 @@ export default function useHomepageData() {
             description: "Please complete the classification process",
             weeklyTrialSummary: ""
           });
-          await storageService.saveWeeklyTrial(JSON.stringify({
+          await storageService.saveWeeklyTrial(userToken, JSON.stringify({
             title: "No user class information",
             description: "Please complete the classification process",
             weeklyTrialSummary: ""
@@ -271,7 +273,7 @@ export default function useHomepageData() {
         setDailyTaskIds(['', '']);
         
         if (shouldRefreshWeeklyTrial) {
-          await storageService.saveWeeklyTrial(JSON.stringify({
+          await storageService.saveWeeklyTrial(userToken, JSON.stringify({
             title: "No challenge available",
             description: "No challenge matching your profile was found",
             weeklyTrialSummary: "Please try a different profile"
@@ -327,7 +329,7 @@ export default function useHomepageData() {
       };
       
       setWeeklyTrial(weeklyTrialData);
-      await storageService.saveWeeklyTrial(JSON.stringify(weeklyTrialData));
+      await storageService.saveWeeklyTrial(userToken, JSON.stringify(weeklyTrialData));
       
       // Set daily tasks from the selected day
       const tasks = selectedDay.tasks;
@@ -544,8 +546,38 @@ export default function useHomepageData() {
   // Load data on initial mount
   useEffect(() => {
     loadUserData();
-    loadQuestsAndQuotes();
-  }, [loadUserData, loadQuestsAndQuotes]);
+  }, [loadUserData]);
+
+  // Use useFocusEffect to handle loading quests/quotes on focus and refresh
+  const dataLoadedRef = useRef<boolean>(false);
+  useFocusEffect(
+    useCallback(() => {
+      const loadData = async () => {
+        // Check if refresh is needed or if data hasn't been loaded yet in this focus session
+        const needsRefresh = await storageService.shouldRefreshDaily(userToken) || await storageService.shouldRefreshWeekly(userToken);
+        
+        if (needsRefresh || !dataLoadedRef.current) {
+          console.log("Focus/Refresh: Loading Quests & Quotes...");
+          await loadQuestsAndQuotes(needsRefresh); // Pass true if refresh is needed by date
+          dataLoadedRef.current = true; // Mark data as loaded for this focus session
+        } else {
+          console.log("Focus: No date refresh needed, loading task status only.");
+          // Optionally reload just task status if needed without full quest refresh
+          const tasks = await loadUserTaskStatus(userToken);
+           if (tasks && tasks.length > 0) {
+             setDailyTasks(tasks);
+           }
+        }
+      };
+
+      loadData();
+
+      return () => {
+        // Reset ref when screen loses focus
+        dataLoadedRef.current = false; 
+      };
+    }, [loadQuestsAndQuotes, userToken, setDailyTasks]) // Add dependencies
+  );
 
   // Update the addCompletedTask function
   const addCompletedTask = useCallback(async (
@@ -652,6 +684,21 @@ export default function useHomepageData() {
       return updatedTasks;
     });
   }, [userToken]);
+
+  // Add a check before saving weekly trial data:
+  const saveWeeklyTrialData = async (token: string, data: WeeklyTrialData) => {
+    if (!token) {
+      console.warn('Cannot save weekly trial: No user token provided');
+      return;
+    }
+    
+    if (!data) {
+      console.warn('Cannot save weekly trial: No data provided');
+      return;
+    }
+    
+    await storageService.saveWeeklyTrial(token, JSON.stringify(data));
+  };
 
   // Return stable object references
   const userData = {

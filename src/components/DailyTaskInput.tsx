@@ -137,7 +137,7 @@ const DailyTaskInput = ({
     <>
       {processedTasks.map(({ text, status, index, category }) => (
         <Swipeable
-          key={`task-${index}`}
+          key={`task-${index}-${Date.now()}`}
           renderRightActions={(progress: Animated.AnimatedInterpolation<number>) => DeleteAction(progress, theme)}
           renderLeftActions={(progress: Animated.AnimatedInterpolation<number>) => CompleteAction(progress, theme)}
           onSwipeableRightOpen={() => onTaskCancel(index)}
