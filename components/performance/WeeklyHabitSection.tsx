@@ -6,134 +6,114 @@ import * as storageService from '../../src/utils/StorageUtils';
 interface WeeklyHabitSectionProps {
   theme: any;
   userToken: string;
-  refreshKey?: number; // Add a refresh key to trigger useEffect
+  refreshKey?: number;
 }
 
 const WeeklyHabitSection = ({ theme, userToken, refreshKey = 0 }: WeeklyHabitSectionProps) => {
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const [habitData, setHabitData] = useState<{
     day: string;
     completed: number;
     total: number;
+    isCurrentDay: boolean; // Keep track of the current day
   }[]>(
-    ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => ({
+    dayNames.map(day => ({
       day,
       completed: 0,
-      total: 2
+      total: 2, // Daily tasks target
+      isCurrentDay: false,
     }))
   );
-  
+
   const [totalCompleted_daily, setTotalCompletedDaily] = useState<number>(0);
-  
-  // Add refreshKey to dependencies to force a refresh
+
   useEffect(() => {
-    console.log('Refreshing habit data, key:', refreshKey);
+    console.log('WeeklyHabitSection: Refreshing habit data, key:', refreshKey);
     const fetchCompletionData = async () => {
       if (!userToken) return;
-      
+
       try {
-        // Get task completion records
         const records = await storageService.getTaskCompletionRecords(userToken);
-        
-        // Filter for daily tasks only (is_daily = 1)
         const dailyTasks = records.filter(record => record.is_daily === 1);
-        
-        // Get current date and calculate date for 7 days ago
-        const currentDate = new Date();
-        const last7Days = new Date(currentDate);
-        last7Days.setDate(last7Days.getDate() - 6); // 7 days including today
-        
-        // Map of day names
-        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        
-        // Initialize daily counts
-        const dailyCounts: Record<string, number> = {};
-        dayNames.forEach(day => {
-          dailyCounts[day] = 0;
-        });
-        
-        // Count daily task completions for the last 7 days
+
+        const today = new Date();
+        const todayDayIndex = today.getDay(); // 0 = Sun, 1 = Mon, ...
+
+        // Calculate the start of the 7-day window (Sunday of the current week)
+        // Adjust logic to go back to the most recent Sunday
+        const startOfWindow = new Date(today);
+        startOfWindow.setDate(today.getDate() - todayDayIndex); // Go back to Sunday
+        startOfWindow.setHours(0, 0, 0, 0); // Start of that Sunday
+
+        // End of window is end of today
+        const endOfWindow = new Date(today);
+        endOfWindow.setHours(23, 59, 59, 999);
+
+        console.log(`WeeklyHabitSection: Fetching data from ${startOfWindow.toISOString()} to ${endOfWindow.toISOString()}`);
+
+        // Initialize daily counts for the 7 days of the week
+        const weeklyCounts: { [key: number]: number } = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+        let totalCompletedInWindow = 0;
+
         dailyTasks.forEach(task => {
           const taskDate = new Date(task.completed_at);
-          
-          // Only count tasks from the last 7 days
-          if (taskDate >= last7Days && taskDate <= currentDate) {
-            const dayName = dayNames[taskDate.getDay()];
-            
-            // Group by day
-            if (!dailyCounts[dayName]) {
-              dailyCounts[dayName] = 0;
-            }
-            
-            dailyCounts[dayName]++;
+
+          // Check if the task was completed within the current week's window
+          if (taskDate >= startOfWindow && taskDate <= endOfWindow) {
+            const dayIndex = taskDate.getDay(); // 0 = Sun, 1 = Mon, ...
+            weeklyCounts[dayIndex]++;
+            totalCompletedInWindow++;
           }
         });
-        
+
+        console.log('WeeklyHabitSection: Daily task counts this week:', weeklyCounts);
+
         // Create habitData format expected by BarChart
-        const formattedData = dayNames.map(day => ({
+        const formattedData = dayNames.map((day, index) => ({
           day,
-          completed: dailyCounts[day] || 0,
-          total: 2 // Always 2 daily tasks per day
+          completed: weeklyCounts[index] || 0,
+          total: 2, // Daily task goal
+          isCurrentDay: index === todayDayIndex, // Mark the current day
         }));
-        
-        // Console log for debugging
-        console.log('Daily task counts by day:', dailyCounts);
-        
-        // Add safety check before reducing
-        if (dailyCounts && typeof dailyCounts === 'object') {
-          const totalCompleted = Object.values(dailyCounts).reduce(
-            (sum, count) => sum + count, 0
-          );
-          setTotalCompletedDaily(totalCompleted);
-          console.log('Total completed daily tasks:', totalCompleted);
-        } else {
-          // Set to 0 if dailyCounts is invalid
-          setTotalCompletedDaily(0);
-        }
-        
+
         setHabitData(formattedData);
+        setTotalCompletedDaily(totalCompletedInWindow);
+        console.log('WeeklyHabitSection: Total completed daily tasks this week:', totalCompletedInWindow);
+
       } catch (error) {
-        console.error('Error fetching task completion data:', error);
-        // Make sure to set default values on error
+        console.error('WeeklyHabitSection: Error fetching task completion data:', error);
+        // Reset on error
         setHabitData(
-          ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => ({
+          dayNames.map((day, index) => ({
             day,
             completed: 0,
-            total: 2
+            total: 2,
+            isCurrentDay: index === new Date().getDay(),
           }))
         );
         setTotalCompletedDaily(0);
       }
     };
-    
+
     fetchCompletionData();
-  }, [userToken, refreshKey]); // Add refreshKey to dependencies
-  
-  // Get current day of week (0-6, where 0 is Sunday)
-  const currentDayIndex = new Date().getDay();
-  // Map to our data format
-  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const currentDayName = dayNames[currentDayIndex];
-  
-  // Calculate total tasks - always 14 total tasks (2 per day, 7 days)
-  const totalTasks = 14; // Fixed at 14 tasks (2 tasks per day × 7 days)
-  
-  // Mark current day in the data
-  const dataWithCurrentDay = habitData.map(item => ({
-    ...item,
-    isCurrentDay: item.day === currentDayName
-  }));
-  
+  }, [userToken, refreshKey]); // Depend on refreshKey
+
+  // Calculate total possible tasks this week (up to today)
+  // const totalPossibleTasks = (new Date().getDay() + 1) * 2; // 2 tasks per day up to today
+  const totalTasksForWeek = 14; // Fixed total for the week bar chart comparison
+
   return (
     <View style={[styles.container, { backgroundColor: theme.boxBackground }]}>
       <Text style={[styles.title, { color: theme.text }]}>Weekly Habit Completion</Text>
       <Text style={[styles.description, { color: theme.subtext }]}>
-        Tracking your daily task completion streak
+        Your daily task completions for the current week
       </Text>
-      
-      <BarChart data={dataWithCurrentDay} />
-      
+
+      {/* BarChart now receives correctly calculated data per day */}
+      <BarChart data={habitData} />
+
       <Text style={[styles.summaryText, { color: theme.subtext }]}>
-        {totalCompleted_daily} of {totalTasks} tasks completed this week
+        {totalCompleted_daily} of {totalTasksForWeek} daily tasks completed this week
       </Text>
     </View>
   );

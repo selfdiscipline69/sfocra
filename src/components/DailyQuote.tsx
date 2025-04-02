@@ -3,13 +3,17 @@ import { Text, StyleSheet } from 'react-native';
 
 interface DailyQuoteProps {
   quote: string;
-  theme: any; // Replace with proper theme type if available
+  author: string;
+  origin?: string | null;
+  theme: any;
 }
 
-const DailyQuote = ({ quote, theme }: DailyQuoteProps) => {
+const DailyQuote = ({ quote, author, origin, theme }: DailyQuoteProps) => {
+  const displayText = `"${quote}"\n- ${author}${origin ? `, ${origin}` : ''}`;
+
   return (
     <Text style={[styles.quoteText, { color: theme.text }]}>
-      {quote}
+      {displayText}
     </Text>
   );
 };

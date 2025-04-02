@@ -5,7 +5,7 @@ import quotesData from '../../assets/Quote.json';
 import questsData from '../../assets/Quest.json';
 import { Task } from '../components/DailyTaskInput';
 import { useFocusEffect } from '@react-navigation/native';
-import { loadUserTaskStatus, getWeeklyTrial, saveWeeklyTrial } from '../utils/StorageUtils';
+import { loadUserTaskStatus } from '../utils/StorageUtils';
 
 // Define interfaces for the new quest structure
 interface DayTask {
@@ -109,14 +109,13 @@ export default function useHomepageData() {
   });
   
   // Content states - updated weeklyTrial to object type
-  const [dailyQuote, setDailyQuote] = useState<string>('');
+  const [dailyQuote, setDailyQuote] = useState<QuoteData | null>(null);
   const [dailyTasks, setDailyTasks] = useState<Task[]>(['', '']);
   const [dailyTaskIds, setDailyTaskIds] = useState<string[]>(['', '']);
   const [weeklyTrial, setWeeklyTrial] = useState<WeeklyTrialData | null>(null);
   const [additionalTasks, setAdditionalTasks] = useState<AdditionalTask[]>([]);
   const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(null);
-  const [currentWeek, setCurrentWeek] = useState<number>(1);
-  const [currentDay, setCurrentDay] = useState<number>(1);
+  const [accountAge, setAccountAge] = useState<number>(1);
 
   // Add new state for completed tasks
   const [completedTasks, setCompletedTasks] = useState<CompletedTaskData[]>([]);
@@ -132,75 +131,80 @@ export default function useHomepageData() {
     setProfileImage(userData.profileImage);
     
     if (userData.userToken) {
-      const choices = await storageService.getUserChoices(userData.userToken);
+      const token = userData.userToken;
+      const choices = await storageService.getUserChoices(token);
       setUserChoices(choices);
       
-      const additionalTasks = await storageService.getAdditionalTasks(userData.userToken);
-      setAdditionalTasks(additionalTasks);
+      const addTasks = await storageService.getAdditionalTasks(token);
+      setAdditionalTasks(addTasks);
       
       // Load tasks with status
-      const tasksWithStatus: Task[] | null = await storageService.getDailyTasksWithStatus(userData.userToken);
+      const tasksWithStatus: Task[] | null = await storageService.getDailyTasksWithStatus(token);
       if (tasksWithStatus && tasksWithStatus.length > 0) {
         setDailyTasks(tasksWithStatus);
+      } else {
+        setDailyTasks(['', '']);
+        setDailyTaskIds(['', '']);
       }
       
-      // Load saved progress
-      const savedProgress = await storageService.getChallengeProgress(userData.userToken);
-      if (savedProgress) {
-        setCurrentWeek(savedProgress.week);
-        setCurrentDay(savedProgress.day);
-      }
+      // Load account age
+      const age = await storageService.getAccountAge(token);
+      console.log("Loaded Account Age:", age); // Log loaded age
+      setAccountAge(age);
 
       // Load completed tasks data
-      const savedCompletedTasks = await storageService.getCompletedTasks(userData.userToken);
+      const savedCompletedTasks = await storageService.getCompletedTasks(token);
       if (savedCompletedTasks) {
         setCompletedTasks(savedCompletedTasks);
       }
+    } else {
+      setUserChoices({ question1: null, question2: null, question4: null });
+      setAdditionalTasks([]);
+      setDailyTasks(['', '']);
+      setDailyTaskIds(['', '']);
+      setWeeklyTrial(null);
+      setCurrentChallenge(null);
+      setAccountAge(1);
+      setCompletedTasks([]);
+      setDailyQuote(null);
     }
   }, []);
 
-  // Load quests and quotes with time checks
-  const loadQuestsAndQuotes = useCallback(async (forceRefresh = false) => {
+  // Load quests based on account age and user class
+  const loadQuests = useCallback(async () => {
+    if (!userToken) {
+      console.log("Load Quests: No user token, skipping.");
+      setDailyTasks(["Login required", ""]);
+      setDailyTaskIds(['', '']);
+      setWeeklyTrial(null);
+      setCurrentChallenge(null);
+      return;
+    }
+
     try {
-      // Check if we need to refresh based on date
-      const shouldRefreshDailyTasks = forceRefresh || await storageService.shouldRefreshDaily(userToken);
-      const shouldRefreshWeeklyTrial = forceRefresh || await storageService.shouldRefreshWeekly(userToken);
-      
-      // First, load the existing tasks with status from storage
+      console.log(`Load Quests: Starting for user ${userToken}, Account Age: ${accountAge}`);
+
+      // Load existing task statuses to preserve them
       const existingTasksWithStatus: Task[] | null = await storageService.getDailyTasksWithStatus(userToken);
       const tasksMap = new Map<string, 'default' | 'completed' | 'canceled'>();
-      
-      if (existingTasksWithStatus && existingTasksWithStatus.length > 0) {
+      if (existingTasksWithStatus) {
         existingTasksWithStatus.forEach((task: Task) => {
           if (typeof task === 'object' && task.text && task.status) {
             tasksMap.set(task.text, task.status);
           }
         });
       }
-      
-      if (!shouldRefreshDailyTasks && !shouldRefreshWeeklyTrial) {
-        console.log("No refresh needed based on timestamps");
-        // If no refresh needed, make sure we still load the existing tasks with status
-        if (existingTasksWithStatus && existingTasksWithStatus.length > 0) {
-          setDailyTasks(existingTasksWithStatus);
-        }
-        return;
-      }
-      
+
       // Type guard for Quest data
-      // Add safety check for questsData
       if (!questsData || typeof questsData !== 'object') {
         console.error('Quest data is not available or not in the expected format');
         handleLoadError(true);
         return;
       }
       
-      // Safely cast questsData
       const typedQuestData = questsData as unknown as QuestData;
       
-      // Verify required structure exists
-      if (!typedQuestData.progressiveChallenges || !Array.isArray(typedQuestData.progressiveChallenges) || 
-          !typedQuestData.taskLibrary || typeof typedQuestData.taskLibrary !== 'object') {
+      if (!typedQuestData.progressiveChallenges || !typedQuestData.taskLibrary) {
         console.error('Quest data is missing required structure', typedQuestData);
         handleLoadError(true);
         return;
@@ -215,17 +219,12 @@ export default function useHomepageData() {
         ]);
         setDailyTaskIds(['', '']);
         
-        if (shouldRefreshWeeklyTrial) {
+        if (weeklyTrial) {
           setWeeklyTrial({
             title: "No user class information",
             description: "Please complete the classification process",
             weeklyTrialSummary: ""
           });
-          await storageService.saveWeeklyTrial(userToken, JSON.stringify({
-            title: "No user class information",
-            description: "Please complete the classification process",
-            weeklyTrialSummary: ""
-          }));
         }
         return;
       }
@@ -272,12 +271,8 @@ export default function useHomepageData() {
         setDailyTasks(["No matching challenges for your profile", "Please try a different profile"]);
         setDailyTaskIds(['', '']);
         
-        if (shouldRefreshWeeklyTrial) {
-          await storageService.saveWeeklyTrial(userToken, JSON.stringify({
-            title: "No challenge available",
-            description: "No challenge matching your profile was found",
-            weeklyTrialSummary: "Please try a different profile"
-          }));
+        if (weeklyTrial) {
+          await storageService.saveWeeklyTrial(userToken, JSON.stringify(weeklyTrial));
         }
         return;
       }
@@ -286,7 +281,7 @@ export default function useHomepageData() {
       let selectedChallenge = currentChallenge;
       
       // If we don't have a challenge yet, or if we're refreshing, select a new one
-      if (!selectedChallenge || forceRefresh) {
+      if (!selectedChallenge) {
         const randomIndex = Math.floor(Math.random() * matchingChallenges.length);
         selectedChallenge = matchingChallenges[randomIndex];
         setCurrentChallenge(selectedChallenge);
@@ -300,8 +295,13 @@ export default function useHomepageData() {
         return;
       }
       
-      // Get the current week and day data
-      const weekIndex = Math.min(currentWeek - 1, selectedChallenge.weeks.length - 1);
+      // Calculate current week number and day number within the week
+      const currentWeekNum = Math.floor((accountAge - 1) / 7) + 1;
+      const currentDayInWeek = (accountAge - 1) % 7 + 1;
+      console.log(`Load Quests: Calculated Week: ${currentWeekNum}, Day in Week: ${currentDayInWeek}`);
+
+      // Get the correct week data (handle cases where challenge might not have enough weeks)
+      const weekIndex = Math.min(currentWeekNum - 1, selectedChallenge.weeks.length - 1);
       const selectedWeek = selectedChallenge.weeks[weekIndex];
       
       if (!selectedWeek || !selectedWeek.days || !Array.isArray(selectedWeek.days) || 
@@ -312,7 +312,7 @@ export default function useHomepageData() {
       }
       
       // Get the day data
-      const dayIndex = Math.min(currentDay - 1, selectedWeek.days.length - 1);
+      const dayIndex = Math.min(currentDayInWeek - 1, selectedWeek.days.length - 1);
       const selectedDay = selectedWeek.days[dayIndex];
       
       if (!selectedDay || !selectedDay.tasks || !Array.isArray(selectedDay.tasks)) {
@@ -400,36 +400,22 @@ export default function useHomepageData() {
         // Check if the selected quote has the expected structure
         if (randomQuote && randomQuote.quoteText) {
           // Set dailyQuote state with only the quote text
-          setDailyQuote(randomQuote.quoteText); 
+          setDailyQuote(randomQuote); 
         } else {
           console.warn("Selected quote data is missing 'quoteText':", randomQuote);
-          setDailyQuote("Quote not available");
+          setDailyQuote({ quoteText: "Quote not available", author: "System", origin: null, authorImageKey: "" });
         }
       } else {
         console.warn("quotesData is not available or empty.");
         // Provide a default quote text
-        setDailyQuote("The unexamined life is not worth living - Socrates"); 
+        setDailyQuote({ quoteText: "The unexamined life is not worth living", author: "Socrates", origin: "Apology", authorImageKey: "socrates" });
       }
-      
-      // Update the timestamps after successful refresh
-      const now = new Date().getTime();
-      const timestamps: {daily?: number, weekly?: number} = {};
-      
-      if (shouldRefreshDailyTasks) {
-        timestamps.daily = now;
-      }
-      
-      if (shouldRefreshWeeklyTrial) {
-        timestamps.weekly = now;
-      }
-      
-      await storageService.saveLastRefreshTimestamps(userToken, timestamps);
       
     } catch (error) {
-      console.error('Error loading quests and quotes:', error);
+      console.error('Error loading quests:', error);
       handleLoadError(true); // Refresh all on error
     }
-  }, [userToken, currentChallenge, currentWeek, currentDay]);
+  }, [userToken, accountAge, currentChallenge]);
 
   // Handle error state
   const handleLoadError = (refreshWeeklyTrial: boolean) => {
@@ -447,7 +433,7 @@ export default function useHomepageData() {
       ]);
     setDailyTaskIds(['', '']);
       
-      setDailyQuote("Error loading daily quote");
+      setDailyQuote(null);
   };
   
   // Get task categories based on task IDs
@@ -508,7 +494,7 @@ export default function useHomepageData() {
   }, [userToken]);
 
   const handleQuoteChange = useCallback((newQuote: string) => {
-    setDailyQuote(newQuote);
+    setDailyQuote(null);
   }, []);
 
   const handleAdditionalTaskChange = useCallback((index: number, newText: string) => {
@@ -537,103 +523,146 @@ export default function useHomepageData() {
     }
   }, [userToken]);
 
-  // Create a stable refreshData function
-  const refreshData = useCallback(() => {
-    loadUserData();
-    loadQuestsAndQuotes(true); // Force refresh regardless of timestamps
-  }, [loadUserData, loadQuestsAndQuotes]);
+  // Refresh data function - Reloads user data which includes age, triggering quest reload
+  const refreshData = useCallback(async () => {
+      console.log("Manual Refresh Triggered");
+      await loadUserData();
+  }, [loadUserData]);
 
-  // Load data on initial mount
+  // Function to increase account age (by adjusting creation date)
+  const increaseAccountAge = useCallback(async () => {
+    if (!userToken) return;
+    console.log("DEV: Attempting to increase account age...");
+    const success = await storageService.increaseAccountCreationDay(userToken);
+    if (success) {
+      await loadUserData(); // Reload user data to get new age and trigger quest update
+    }
+  }, [userToken, loadUserData]);
+
+  // Function to decrease account age (by adjusting creation date)
+  const decreaseAccountAge = useCallback(async () => {
+    if (!userToken) return;
+    console.log("DEV: Attempting to decrease account age...");
+    const success = await storageService.decreaseAccountCreationDay(userToken);
+    if (success) {
+      await loadUserData(); // Reload user data to get new age and trigger quest update
+    }
+  }, [userToken, loadUserData]);
+
+  // Load initial user data on mount
   useEffect(() => {
     loadUserData();
   }, [loadUserData]);
 
-  // Use useFocusEffect to handle loading quests/quotes on focus and refresh
-  const dataLoadedRef = useRef<boolean>(false);
+  // Load quests whenever accountAge or userToken changes (after initial loadUserData)
+   useEffect(() => {
+     if (userToken && accountAge > 0) { // Ensure we have token and age
+       loadQuests();
+     }
+   }, [accountAge, userToken, loadQuests]); // Add loadQuests
+
+  // Load quote - Separate from quest loading
+  const loadQuote = useCallback(() => {
+       console.log("Load Quote: Loading new quote.");
+       if (quotesData && Array.isArray(quotesData) && quotesData.length > 0) {
+           const randomIndex = Math.floor(Math.random() * quotesData.length);
+           const randomQuote: QuoteData = quotesData[randomIndex] as QuoteData;
+           if (randomQuote && randomQuote.quoteText) {
+               setDailyQuote(randomQuote); // Store the full quote object
+           } else {
+               console.warn("Selected quote data is invalid:", randomQuote);
+               setDailyQuote({ quoteText: "Quote not available", author: "System", origin: null, authorImageKey: "" });
+           }
+       } else {
+           console.warn("quotesData is not available or empty.");
+           setDailyQuote({ quoteText: "The unexamined life is not worth living", author: "Socrates", origin: "Apology", authorImageKey: "socrates" });
+       }
+  }, []); // No dependencies, loads randomly each time called
+
+  // Load quote and potentially quests on focus
   useFocusEffect(
     useCallback(() => {
-      const loadData = async () => {
-        // Check if refresh is needed or if data hasn't been loaded yet in this focus session
-        const needsRefresh = await storageService.shouldRefreshDaily(userToken) || await storageService.shouldRefreshWeekly(userToken);
-        
-        if (needsRefresh || !dataLoadedRef.current) {
-          console.log("Focus/Refresh: Loading Quests & Quotes...");
-          await loadQuestsAndQuotes(needsRefresh); // Pass true if refresh is needed by date
-          dataLoadedRef.current = true; // Mark data as loaded for this focus session
-        } else {
-          console.log("Focus: No date refresh needed, loading task status only.");
-          // Optionally reload just task status if needed without full quest refresh
-          const tasks = await loadUserTaskStatus(userToken);
-           if (tasks && tasks.length > 0) {
-             setDailyTasks(tasks);
-           }
-        }
-      };
+      console.log("Homepage Focused");
+      loadQuote(); // Load a new quote every time the screen is focused
 
-      loadData();
+      // Optionally force-reload quests on focus, although the useEffect above handles changes
+      // If you want quests to *always* reload on focus (e.g., to catch background updates):
+      // if (userToken && accountAge > 0) {
+      //    console.log("Focus: Reloading quests");
+      //    loadQuests();
+      // }
+
+      // Reload task status from storage in case it was updated elsewhere?
+      // This might conflict with the status preservation in loadQuests. Be careful.
+      // const reloadStatus = async () => {
+      //    if(userToken) {
+      //       const tasks = await loadUserTaskStatus(userToken);
+      //       if (tasks && tasks.length > 0) {
+      //          setDailyTasks(tasks);
+      //       }
+      //    }
+      // }
+      // reloadStatus();
 
       return () => {
-        // Reset ref when screen loses focus
-        dataLoadedRef.current = false; 
+        // Optional cleanup logic when screen loses focus
       };
-    }, [loadQuestsAndQuotes, userToken, setDailyTasks]) // Add dependencies
+    }, [loadQuote, userToken, accountAge, loadQuests]) // Add dependencies
   );
 
   // Update the addCompletedTask function
   const addCompletedTask = useCallback(async (
-    task: string, 
-    category: string, 
-    duration: number, 
+    task: string,
+    category: string,
+    duration: number,
     isDaily: boolean
   ) => {
+    if (!userToken) return null; // Need user token
+
     try {
       // Normalize the category
       const taskCategory = normalizeCategory(category);
-      
-      // Extract duration from task string if not provided (format: "Task name (30)")
+
+      // Extract duration from task string if not provided
       let taskDuration = duration;
-      if (!taskDuration) {
-        const durationMatch = task.match(/\((\d+)\)/);
-        taskDuration = durationMatch ? parseInt(durationMatch[1], 10) : 30; // Default to 30 min
+      if (!taskDuration || isNaN(taskDuration)) {
+        const durationMatch = task.match(/\((\d+)\s*m/); // Match digits followed by 'm' (minutes)
+        taskDuration = durationMatch ? parseInt(durationMatch[1], 10) : 30; // Default 30
       }
-      
-      // Get account age
-      const accountAge = await storageService.getAccountAge(userToken);
-      
+
+      // Get account age directly from state
+      const currentAccountAge = accountAge;
+
       // Create task completion record
       const record = {
-        day: accountAge,
-        task_name: task.split('(')[0].trim(), // Extract just the task name without duration
+        day: currentAccountAge,
+        task_name: task.split('(')[0].trim(),
         category: taskCategory.toLowerCase(),
         duration: taskDuration,
         is_daily: isDaily ? 1 : 0,
         completed_at: Date.now()
       };
-      
-      // Save the record
+
+      // Save the record using the new structure
       const savedRecord = await storageService.saveTaskCompletionRecord(userToken, record);
-      
-      // Also maintain the existing completedTasks for backward compatibility
+      console.log("Saved task completion record:", savedRecord);
+
+      // Maintain the old completedTasks structure for compatibility if needed
       const newCompletedTask: CompletedTaskData = {
         category: taskCategory.toLowerCase(),
         minutes: taskDuration,
         timestamp: Date.now()
       };
-      
-      const updatedTasks = [...completedTasks, newCompletedTask];
-      setCompletedTasks(updatedTasks);
-      
-      // Save to storage using the old format too
-      if (userToken) {
-        await storageService.saveCompletedTasks(userToken, updatedTasks);
-      }
-      
+      const updatedLegacyTasks = [...completedTasks, newCompletedTask];
+      setCompletedTasks(updatedLegacyTasks);
+      await storageService.saveCompletedTasks(userToken, updatedLegacyTasks); // Save legacy structure
+
       return savedRecord;
     } catch (error) {
       console.error('Error adding completed task:', error);
       return null;
     }
-  }, [completedTasks, userToken]);
+  }, [userToken, accountAge, completedTasks]); // Depend on accountAge from state
 
   // Add a function to explicitly set daily tasks with status
   const setDailyTasksWithStatus = useCallback((tasks: Task[]) => {
@@ -685,21 +714,6 @@ export default function useHomepageData() {
     });
   }, [userToken]);
 
-  // Add a check before saving weekly trial data:
-  const saveWeeklyTrialData = async (token: string, data: WeeklyTrialData) => {
-    if (!token) {
-      console.warn('Cannot save weekly trial: No user token provided');
-      return;
-    }
-    
-    if (!data) {
-      console.warn('Cannot save weekly trial: No data provided');
-      return;
-    }
-    
-    await storageService.saveWeeklyTrial(token, JSON.stringify(data));
-  };
-
   // Return stable object references
   const userData = {
     email,
@@ -712,22 +726,21 @@ export default function useHomepageData() {
   };
 
   const content = {
-    dailyQuote,
+    dailyQuote: dailyQuote?.quoteText ?? "Loading quote...",
+    dailyQuoteAuthor: dailyQuote?.author ?? "",
+    dailyQuoteOrigin: dailyQuote?.origin, // Expose origin
     dailyTasks,
     dailyTaskIds,
     weeklyTrial,
     additionalTasks,
     currentChallenge,
-    currentWeek,
-    currentDay,
     completedTasks,
+    accountAge, // Expose current age
   };
 
   const actions = {
     loadUserData,
-    loadQuestsAndQuotes,
-    handleTaskChange,
-    handleQuoteChange,
+    loadQuests,
     handleAdditionalTaskChange,
     setAdditionalTasks: updateAdditionalTasks,
     refreshData,
@@ -736,6 +749,8 @@ export default function useHomepageData() {
     setCompletedTasks,
     setDailyTasks: setDailyTasksWithStatus,
     updateTaskStatus,
+    increaseAccountAge, // Added action
+    decreaseAccountAge, // Added action
   };
 
   return { userData, content, actions };

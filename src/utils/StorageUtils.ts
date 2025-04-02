@@ -176,108 +176,6 @@ export const saveWeeklyTrial = async (userToken: string, trial: string): Promise
   }
 };
 
-// Save and load challenge progress
-export const saveChallengeProgress = async (
-  userToken: string,
-  progress: { week: number; day: number }
-) => {
-  try {
-    const key = `@challenge_progress_${userToken}`;
-    await AsyncStorage.setItem(key, JSON.stringify(progress));
-  } catch (error) {
-    console.error('Error saving challenge progress:', error);
-  }
-};
-
-export const getChallengeProgress = async (userToken: string) => {
-  try {
-    const key = `@challenge_progress_${userToken}`;
-    const progressData = await AsyncStorage.getItem(key);
-    
-    if (progressData) {
-      return JSON.parse(progressData);
-    }
-    
-    // Default to week 1, day 1
-    return { week: 1, day: 1 };
-  } catch (error) {
-    console.error('Error getting challenge progress:', error);
-    return { week: 1, day: 1 };
-  }
-};
-
-// Save last refresh timestamps
-export const saveLastRefreshTimestamps = async (userToken: string, timestamps: {
-  daily?: number;
-  weekly?: number;
-}) => {
-  try {
-    const key = `@refresh_timestamps_${userToken}`;
-    const currentData = await AsyncStorage.getItem(key);
-    let data = {};
-    
-    if (currentData) {
-      data = JSON.parse(currentData);
-    }
-    
-    // Update with new timestamps
-    const updatedData = { ...data, ...timestamps };
-    await AsyncStorage.setItem(key, JSON.stringify(updatedData));
-  } catch (error) {
-    console.error('Error saving refresh timestamps:', error);
-  }
-};
-
-export const getLastRefreshTimestamps = async (userToken: string) => {
-  try {
-    const key = `@refresh_timestamps_${userToken}`;
-    const data = await AsyncStorage.getItem(key);
-    
-    if (data) {
-      return JSON.parse(data);
-    }
-    
-    // Default to epoch time (will trigger immediate refresh)
-    return { daily: 0, weekly: 0 };
-  } catch (error) {
-    console.error('Error getting refresh timestamps:', error);
-    return { daily: 0, weekly: 0 };
-  }
-};
-
-// Check if refresh is needed based on date
-export const shouldRefreshDaily = async (userToken: string) => {
-  const timestamps = await getLastRefreshTimestamps(userToken);
-  const lastDaily = timestamps.daily || 0;
-  
-  // Get current date at midnight
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  
-  // Get date of last refresh at midnight
-  const lastDate = new Date(lastDaily);
-  const lastDay = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate()).getTime();
-  
-  // Refresh if it's a new day
-  return today > lastDay;
-};
-
-export const shouldRefreshWeekly = async (userToken: string) => {
-  const timestamps = await getLastRefreshTimestamps(userToken);
-  const lastWeekly = timestamps.weekly || 0;
-  
-  // Get current date
-  const now = new Date();
-  
-  // Get date of last refresh
-  const lastDate = new Date(lastWeekly);
-  
-  // Check if it's been 7 or more days since last refresh
-  const dayDiff = Math.floor((now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
-  
-  return dayDiff >= 7;
-};
-
 // Save completed tasks
 export const saveCompletedTasks = async (userToken: string, tasks: any[]) => {
   try {
@@ -386,32 +284,51 @@ export const getTaskCompletionRecords = async (
   }
 };
 
-// Function to calculate account age in days
+// Function to calculate account age in days and save creation date if missing
 export const getAccountAge = async (userToken: string): Promise<number> => {
   try {
-    // Try to get account creation date
-    const creationDateStr = await AsyncStorage.getItem(`@account_creation_date_${userToken}`);
-    
+    const creationDateKey = `@account_creation_date_${userToken}`;
+    let creationDateStr = await AsyncStorage.getItem(creationDateKey);
+    let creationTimestamp: number;
+
     if (creationDateStr) {
-      const creationDate = new Date(parseInt(creationDateStr, 10));
-      const today = new Date();
-      
-      // Calculate days difference
-      const diffTime = Math.abs(today.getTime() - creationDate.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      return diffDays;
+      creationTimestamp = parseInt(creationDateStr, 10);
     } else {
-      // If creation date not found, set it now and return 1
-      await AsyncStorage.setItem(
-        `@account_creation_date_${userToken}`, 
-        Date.now().toString()
-      );
-      return 1;
+      // If creation date not found, set it to the beginning of today and save
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      creationTimestamp = startOfToday.getTime();
+      await AsyncStorage.setItem(creationDateKey, creationTimestamp.toString());
+      console.log("Account creation date not found, set to:", startOfToday.toISOString());
+      return 1; // First day
     }
+
+    const creationDate = new Date(creationTimestamp);
+    const today = new Date();
+    const startOfTodayTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const startOfCreationDayTimestamp = new Date(creationDate.getFullYear(), creationDate.getMonth(), creationDate.getDate()).getTime();
+
+
+    // Calculate days difference based on the start of each day
+    const diffTime = startOfTodayTimestamp - startOfCreationDayTimestamp;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // Add 1 because day 1 is the first day
+
+    // Ensure minimum age is 1
+    return Math.max(1, diffDays);
+
   } catch (error) {
     console.error('Error calculating account age:', error);
-    return 1;
+    // Fallback: Try to set creation date now and return 1
+    try {
+        const creationDateKey = `@account_creation_date_${userToken}`;
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        await AsyncStorage.setItem(creationDateKey, startOfToday.getTime().toString());
+        return 1;
+    } catch (saveError) {
+        console.error('Error saving fallback creation date:', saveError);
+        return 1; // Ultimate fallback
+    }
   }
 };
 
@@ -429,28 +346,6 @@ export const getWeeklyTrial = async (userToken: string): Promise<WeeklyTrialData
   }
 };
 
-// Function to simulate advancing the last daily refresh timestamp for testing
-export const advanceLastDailyRefreshTimestamp = async (userToken: string): Promise<void> => {
-  try {
-    const key = `@refresh_timestamps_${userToken}`;
-    const currentData = await AsyncStorage.getItem(key);
-    let data: { daily?: number; weekly?: number } = {};
-
-    if (currentData) {
-      data = JSON.parse(currentData);
-    }
-
-    // Set the 'daily' timestamp to something definitely before today (e.g., 24 hours ago)
-    const yesterdayTimestamp = Date.now() - 24 * 60 * 60 * 1000;
-    data.daily = yesterdayTimestamp;
-
-    await AsyncStorage.setItem(key, JSON.stringify(data));
-    console.log("DEV: Advanced last daily refresh timestamp to:", new Date(yesterdayTimestamp).toISOString());
-  } catch (error) {
-    console.error('Error advancing last daily refresh timestamp:', error);
-  }
-};
-
 // Add this as a separate export
 export const loadUserTaskStatus = async (userToken: string) => {
   try {
@@ -462,6 +357,67 @@ export const loadUserTaskStatus = async (userToken: string) => {
   }
 };
 
+const getCreationDateKey = (userToken: string) => `@account_creation_date_${userToken}`;
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+// Function to adjust the creation date earlier (increase age)
+export const increaseAccountCreationDay = async (userToken: string): Promise<boolean> => {
+  try {
+    const key = getCreationDateKey(userToken);
+    const creationDateStr = await AsyncStorage.getItem(key);
+    if (!creationDateStr) {
+      console.warn("Cannot increase age: Creation date not found.");
+      return false;
+    }
+    const currentTimestamp = parseInt(creationDateStr, 10);
+    const newTimestamp = currentTimestamp - DAY_IN_MS; // Move creation date one day earlier
+    await AsyncStorage.setItem(key, newTimestamp.toString());
+    console.log("DEV: Adjusted creation date earlier to:", new Date(newTimestamp).toISOString());
+    return true;
+  } catch (error) {
+    console.error("Error increasing account age (adjusting creation date earlier):", error);
+    return false;
+  }
+};
+
+// Function to adjust the creation date later (decrease age)
+export const decreaseAccountCreationDay = async (userToken: string): Promise<boolean> => {
+  try {
+    const key = getCreationDateKey(userToken);
+    const creationDateStr = await AsyncStorage.getItem(key);
+    if (!creationDateStr) {
+      console.warn("Cannot decrease age: Creation date not found.");
+      return false;
+    }
+
+    const currentTimestamp = parseInt(creationDateStr, 10);
+    const newTimestamp = currentTimestamp + DAY_IN_MS; // Move creation date one day later
+
+    // Prevent setting creation date to today or in the future
+    const now = new Date();
+    const startOfTodayTimestamp = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+    if (newTimestamp >= startOfTodayTimestamp) {
+      console.warn("Cannot decrease age below 1. Creation date would be today or later.");
+      // Optionally set it *to* yesterday to ensure age becomes 1
+       const startOfYesterdayTimestamp = startOfTodayTimestamp - DAY_IN_MS;
+       if (currentTimestamp < startOfYesterdayTimestamp) { // Only adjust if not already yesterday
+           await AsyncStorage.setItem(key, startOfYesterdayTimestamp.toString());
+           console.log("DEV: Adjusted creation date to yesterday (minimum age 1):", new Date(startOfYesterdayTimestamp).toISOString());
+           return true;
+       }
+      return false; // Don't allow decreasing further
+    }
+
+    await AsyncStorage.setItem(key, newTimestamp.toString());
+    console.log("DEV: Adjusted creation date later to:", new Date(newTimestamp).toISOString());
+    return true;
+  } catch (error) {
+    console.error("Error decreasing account age (adjusting creation date later):", error);
+    return false;
+  }
+};
+
 // Create and export a storageService object with all the functions
 export const storageService = {
   getUserData,
@@ -470,13 +426,6 @@ export const storageService = {
   saveAdditionalTasks,
   getUserClassKey,
   saveDailyTasks,
-  saveWeeklyTrial,
-  saveChallengeProgress,
-  getChallengeProgress,
-  saveLastRefreshTimestamps,
-  getLastRefreshTimestamps,
-  shouldRefreshDaily,
-  shouldRefreshWeekly,
   saveCompletedTasks,
   getCompletedTasks,
   saveDailyTasksWithStatus,
@@ -485,17 +434,7 @@ export const storageService = {
   getTaskCompletionRecords,
   getAccountAge,
   getWeeklyTrial,
-  advanceLastDailyRefreshTimestamp,
   loadUserTaskStatus,
-  
-  // Add this new function to load user task status
-  loadUserTaskStatus: async (userToken: string) => {
-    try {
-      const taskData = await getDailyTasksWithStatus(userToken);
-      return taskData || [];
-    } catch (error) {
-      console.error('Error loading user task status:', error);
-      return [];
-    }
-  }
+  increaseAccountCreationDay,
+  decreaseAccountCreationDay,
 };

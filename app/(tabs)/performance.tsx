@@ -193,17 +193,6 @@ const AccountAgeDisplay = ({ days, theme }: { days: number, theme: any }) => {
   );
 };
 
-// Add this function near the top, after the imports
-const getDaysSinceAccountCreation = async (userToken: string): Promise<number> => {
-  try {
-    // For now, just return a static value until you implement the real function
-    return 1; // Day 1
-  } catch (error) {
-    console.error('Error getting days since account creation:', error);
-    return 1;
-  }
-};
-
 export default function PerformanceScreen() {
   const router = useRouter();
   const { theme } = useTheme();
@@ -211,153 +200,149 @@ export default function PerformanceScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [error, setError] = useState(false);
-  const [accountAge, setAccountAge] = useState<number>(1); // Default to day 1
+  const [accountAge, setAccountAge] = useState<number>(1); // Initialize with 1
   const [refreshKey, setRefreshKey] = useState<number>(0);
   const [userToken, setUserToken] = useState<string>('');
   
-  // Load the user token at component initialization
+  // Load the user token
   useEffect(() => {
-    const loadUserData = async () => {
-      const userData = await storageService.getUserData();
-      setUserToken(userData.userToken || '');
+    const loadToken = async () => {
+      const data = await storageService.getUserData();
+      setUserToken(data.userToken || '');
     };
-    
-    loadUserData();
+    loadToken();
   }, []);
   
-  // Load data on initial render
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-  
-  // Use useFocusEffect to reload data when the screen comes into focus
-  useFocusEffect(
-    React.useCallback(() => {
-      // Reload data when the screen comes into focus
-      loadDashboardData();
-      return () => {
-        // Cleanup if needed
-      };
-    }, [])
-  );
-  
-  // Then modify the useEffect that loads account age
-  useEffect(() => {
-    const loadAccountAge = async () => {
-      const userData = await storageService.getUserData();
-      if (userData.userToken) {
-        // Use our local function instead of the one from storageService
-        const days = await getDaysSinceAccountCreation(userData.userToken);
-        setAccountAge(days);
-      }
-    };
-    
-    loadAccountAge();
-  }, []);
-  
-  // Function to load dashboard data
-  const loadDashboardData = async () => {
+  // Load initial dashboard data and account age together
+  const loadInitialData = async () => {
     try {
       setIsLoading(true);
       setError(false);
-      
-      // Use the locally defined function
-      const data = await fetchDashboardData();
-      setDashboardData(data);
-    } catch (error) {
-      console.error('Error loading dashboard data:', error);
+
+      // Fetch user data first to get token
+      const userData = await storageService.getUserData();
+      const token = userData.userToken;
+      setUserToken(token || ''); // Update token state
+
+      if (token) {
+        // Fetch dashboard data (which also uses the token internally now)
+        const data = await fetchDashboardData(); // Assumes fetchDashboardData handles token internally
+        setDashboardData(data);
+
+        // Fetch account age using the token
+        const age = await storageService.getAccountAge(token);
+        console.log("PerformanceScreen: Loaded account age:", age);
+        setAccountAge(age);
+      } else {
+        // Handle no token case - maybe show mock data or login prompt
+        const mockData = getMockDashboardData(dayNames[new Date().getDay()]);
+        setDashboardData(mockData);
+        setAccountAge(1); // Default age if no token
+        console.log("PerformanceScreen: No user token found, showing mock data/defaults.");
+      }
+
+    } catch (err) {
+      console.error('Error loading initial performance data:', err);
       setError(true);
+      // Reset or show mock data on error
+      const mockData = getMockDashboardData(dayNames[new Date().getDay()]);
+      setDashboardData(mockData);
+      setAccountAge(1);
     } finally {
       setIsLoading(false);
     }
   };
-  
-  // Add this function to update the refresh key
+
+  // Trigger initial load
+  useEffect(() => {
+    loadInitialData();
+  }, []); // Run once on mount
+
+  // Refactored refresh logic
   const refreshAllComponents = () => {
-    setRefreshKey(prev => prev + 1);
-    loadDashboardData();
+    console.log("PerformanceScreen: Refresh triggered");
+    setRefreshKey(prev => prev + 1); // Update key first
+    loadInitialData(); // Reload all data needed for the screen
   };
-  
+
   // Use useFocusEffect to refresh when screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
-      // Refresh all components when screen comes into focus
-      refreshAllComponents();
+      console.log("PerformanceScreen: Focused");
+      refreshAllComponents(); // Refresh data when screen is focused
       return () => {
-        // Clean up if needed
+        // Optional cleanup
       };
-    }, [])
+    }, []) // Empty dependency array ensures it runs on focus
   );
-  
-  // Update onRefresh to also update the refresh key
-  const onRefresh = async () => {
-    setRefreshing(true);
-    refreshAllComponents();
-    setRefreshing(false);
-  };
-  
-  // Add to the top of the component
+
+  // Event listener for task completion
   useEffect(() => {
-    // Set up event listener for task completion
     const subscription = DeviceEventEmitter.addListener('taskCompleted', () => {
-      console.log('Task completed event received, refreshing performance data');
+      console.log('PerformanceScreen: Task completed event received, refreshing data.');
       refreshAllComponents();
     });
-    
+
     return () => {
-      // Clean up the subscription
       subscription.remove();
     };
-  }, []);
-  
+  }, []); // Run once on mount
+
+  // onRefresh for pull-to-refresh
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadInitialData(); // Use the main loading function
+    setRefreshing(false);
+  };
+
   // Render dashboard content
   const renderDashboardContent = () => {
     if (!dashboardData) {
       return (
         <View style={styles.errorContainer}>
           <Text style={[styles.errorText, { color: theme.text }]}>No data available.</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.retryButton, { backgroundColor: theme.accent }]}
-            onPress={loadDashboardData}
+            onPress={loadInitialData} // Use loadInitialData for retry
           >
             <Text style={styles.retryText}>Load Data</Text>
           </TouchableOpacity>
         </View>
       );
     }
-    
+
     return (
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
         refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
-            onRefresh={onRefresh}
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh} // Use updated onRefresh
             colors={[theme.accent]}
             tintColor={theme.accent}
           />
         }
       >
-        {/* Account Age Display */}
+        {/* Pass the fetched accountAge state */}
         <AccountAgeDisplay days={accountAge} theme={theme} />
-        
+
         <XPLevelTracker xpData={dashboardData.xpData} theme={theme} />
-        <WeeklyHabitSection 
-          theme={theme} 
+        <WeeklyHabitSection
+          theme={theme}
           userToken={userToken}
-          refreshKey={refreshKey} 
+          refreshKey={refreshKey} // Pass refresh key
         />
         <TaskCompletionRate categoryData={dashboardData.categoryData} theme={theme} />
-        <ProgressSummary 
-          theme={theme} 
+        <ProgressSummary
+          theme={theme}
           userToken={userToken}
-          refreshKey={refreshKey} 
+          refreshKey={refreshKey} // Pass refresh key
         />
       </ScrollView>
     );
   };
-  
+
   return (
     <>
       <Stack.Screen 
@@ -374,23 +359,23 @@ export default function PerformanceScreen() {
       />
       
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        {/* Show loading/error states when appropriate (and not during refreshing) */}
+        {/* Loading/Error States */}
         {!refreshing && (
-          <LoadingErrorStates 
-            isLoading={isLoading} 
-            error={error} 
-            theme={theme} 
-            onRetry={loadDashboardData} 
+          <LoadingErrorStates
+            isLoading={isLoading}
+            error={error}
+            theme={theme}
+            onRetry={loadInitialData} // Use loadInitialData for retry
           />
         )}
         
-        {/* Show dashboard content when not loading and no error */}
+        {/* Content */}
         {!isLoading && !error && renderDashboardContent()}
         
-        {/* Bottom Navigation using shared component */}
-        <BottomNavigation 
-          theme={theme} 
-          onAddTaskPress={() => {}}
+        {/* Bottom Navigation */}
+        <BottomNavigation
+          theme={theme}
+          // onAddTaskPress is now optional, no need to pass dummy
         />
       </View>
     </>
@@ -449,7 +434,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
   },
-
 });
 
 export const unstable_settings = {

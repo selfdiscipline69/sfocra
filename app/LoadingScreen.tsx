@@ -19,11 +19,13 @@ const { width } = Dimensions.get('window');
 // Add entries for all authors as you add their images.
 const authorImages: { [key: string]: any } = {
   'socrates': require('../assets/authors/Socrates.png'),
-  // Add other authors here as you get images, e.g.:
-  // 'plato': require('../assets/authors/Plato.png'), 
-  // 'aristotle': require('../assets/authors/Aristotle.png'),
-  // ...
-  // Add a default placeholder image if needed
+  'plato': require('../assets/authors/Plato.png'), 
+  'aristotle': require('../assets/authors/Aristotle.png'),
+  'immanuel_kant': require('../assets/authors/Immanuel_Kant.png'),
+  'friedrich_nietzsche': require('../assets/authors/friedrich_nietzsche.png'),
+  'epictetus': require('../assets/authors/Epictetus.png'),
+  'seneca': require('../assets/authors/Seneca.png'),
+  'marcus_aurelius': require('../assets/authors/Marcus_Aurelius.png'),
   'default': require('../assets/icons/profile.png') // Make sure you have a default icon
 };
 

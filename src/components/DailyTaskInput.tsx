@@ -10,7 +10,7 @@ export type Task = string | { text: string; status: 'default' | 'completed' | 'c
 
 interface DailyTaskInputProps {
   tasks: Task[];
-  onChangeTask: (index: number, text: string) => void;
+  onChangeTask?: (index: number, text: string) => void;
   theme: any; // Replace with proper theme type if available
   categories?: Array<'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity' | undefined>;
   onTaskComplete?: (index: number) => void;
@@ -101,7 +101,6 @@ const CompleteAction = (progress: Animated.AnimatedInterpolation<number>, theme:
 
 const DailyTaskInput = ({ 
   tasks, 
-  onChangeTask, 
   theme, 
   categories = [],
   onTaskComplete = () => {},

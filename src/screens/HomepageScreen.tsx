@@ -101,38 +101,6 @@ const HomepageScreen = () => {
     [actions, content.dailyTaskIds]
   );
   
-  // Fix the infinite loop by using a ref to track if we've loaded data
-  const dataLoadedRef = React.useRef(false);
-  
-  useFocusEffect(
-    React.useCallback(() => {
-      // When screen gets focus, reload task status from storage
-      const loadTaskStatus = async () => {
-        if (userData.userToken) {
-          const tasks = await storageService.loadUserTaskStatus(userData.userToken);
-          if (tasks && tasks.length > 0) {
-            actions.setDailyTasks(tasks);
-          }
-        }
-      };
-      
-      // Only reload data if we haven't already or if returning to the screen
-      if (!dataLoadedRef.current) {
-        //console.log("Homepage focused - reloading data");
-        actions.refreshData();
-        dataLoadedRef.current = true;
-      } else {
-        // When returning to the screen, just load task status
-        loadTaskStatus();
-      }
-      
-      return () => {
-        // When screen loses focus, allow data to be reloaded next time
-        dataLoadedRef.current = false;
-      };
-    }, [actions.refreshData, actions.setDailyTasks, userData.userToken])
-  );
-
   // Generate a random task for the modal
   const generateRandomTask = () => {
     try {
@@ -305,32 +273,24 @@ const HomepageScreen = () => {
 
   // Handle task completion when swiped left
   const handleTaskComplete = (index: number) => {
-    // Get the current task item (string or object)
     const taskItem = content.dailyTasks[index];
-    
-    // Get the task text regardless of format
     const taskText = typeof taskItem === 'string' ? taskItem : taskItem.text;
-    
-    // Extract the category from our task categories array
-    const category = dailyTaskCategories[index] || 'general';
-    
-    // Extract duration from task text if possible
-    let duration = 30; // Default duration
-    const durationMatch = taskText.match(/\((\d+)\)/);
+
+    // Extract category (ensure dailyTaskCategories aligns with filtered tasks in DailyTaskInput)
+    // This might need adjustment if DailyTaskInput filtering changes indices
+    // It might be safer to derive category from taskText or pass it back from DailyTaskInput
+    const category = dailyTaskCategories[index] || 'general'; // Assuming index still aligns
+
+    let duration = 30; // Default
+    // Updated regex to be more robust for formats like (30 min) or (30 minutes)
+    const durationMatch = taskText.match(/\((\d+)\s*m/);
     if (durationMatch && durationMatch[1]) {
       duration = parseInt(durationMatch[1], 10);
     }
-    
-    // Track the completed task in our storage with explicit duration and task type
-    actions.addCompletedTask(taskText, category, duration, true); // true for daily tasks
-    
-    // Emit an event to refresh performance components
+
+    actions.addCompletedTask(taskText, category, duration, true); // true for daily
     DeviceEventEmitter.emit('taskCompleted');
-    
-    // Show a toast or alert
     Alert.alert("Task Completed", `You've completed: ${taskText}`);
-    
-    // Use the updateTaskStatus function
     actions.updateTaskStatus(index, 'completed');
   };
 
@@ -484,48 +444,48 @@ const HomepageScreen = () => {
     );
   };
 
-  const [isDateAdvanceModalVisible, setIsDateAdvanceModalVisible] = useState(false);
-  const [currentDateString, setCurrentDateString] = useState('');
+  // --- Secret Day Adjustment Logic ---
+  const [isDayAdjustModalVisible, setIsDayAdjustModalVisible] = useState(false);
+  const [currentAgeForModal, setCurrentAgeForModal] = useState<number>(1); // To display in modal
   const quoteLongPressTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // --- Secret Trigger Logic ---
   const handleQuotePressIn = () => {
-    // Clear any existing timer
     if (quoteLongPressTimer.current) {
       clearTimeout(quoteLongPressTimer.current);
     }
-    // Start a new timer
     quoteLongPressTimer.current = setTimeout(() => {
       console.log("Quote long press detected!");
-      const today = new Date();
-      setCurrentDateString(today.toLocaleDateString()); // Format date for display
-      setIsDateAdvanceModalVisible(true);
-      quoteLongPressTimer.current = null; // Clear ref after triggering
+      setCurrentAgeForModal(content.accountAge); // Get current age from hook
+      setIsDayAdjustModalVisible(true);
+      quoteLongPressTimer.current = null;
     }, 5000); // 5 seconds
   };
 
   const handleQuotePressOut = () => {
-    // Clear timer if press is released before 5 seconds
     if (quoteLongPressTimer.current) {
       clearTimeout(quoteLongPressTimer.current);
       quoteLongPressTimer.current = null;
     }
   };
 
-  const handleAdvanceDay = async () => {
+  const handleAdjustDay = async (adjustment: 'increase' | 'decrease') => {
      if (userData.userToken) {
-       console.log("DEV: Advancing day...");
-       await storageService.advanceLastDailyRefreshTimestamp(userData.userToken);
-       // Trigger data refresh immediately
-       actions.loadQuestsAndQuotes(true); // Force refresh
-       setIsDateAdvanceModalVisible(false);
-       Alert.alert("Day Advanced", "Daily tasks should refresh on next load/focus.");
+       setIsDayAdjustModalVisible(false); // Close modal immediately
+       if (adjustment === 'increase') {
+           console.log("DEV: Triggering increase account age...");
+           await actions.increaseAccountAge();
+           Alert.alert("Age Increased", "Account age increased by 1. Tasks should refresh.");
+       } else if (adjustment === 'decrease') {
+            console.log("DEV: Triggering decrease account age...");
+           await actions.decreaseAccountAge();
+           Alert.alert("Age Decreased", "Account age decreased by 1 (if possible). Tasks should refresh.");
+       }
      } else {
         Alert.alert("Error", "User token not found.");
-        setIsDateAdvanceModalVisible(false);
+        setIsDayAdjustModalVisible(false);
      }
   };
-  // --- End Secret Trigger Logic ---
+  // --- End Secret Day Adjustment Logic ---
 
   return (
     <KeyboardAvoidingView
@@ -555,23 +515,25 @@ const HomepageScreen = () => {
           refreshControl={
             <RefreshControl
               refreshing={false}
-              onRefresh={() => {
-                console.log("Manual refresh triggered");
-                actions.refreshData();
-              }}
+              onRefresh={actions.refreshData}
               colors={[theme.accent]}
               tintColor={theme.accent}
             />
           }
         >
-          {/* Header with Profile and Quote - Add Pressable for secret trigger */}
+          {/* Header with Profile and Quote */}
           <View style={styles.header}>
             <Pressable
               onPressIn={handleQuotePressIn}
               onPressOut={handleQuotePressOut}
               style={styles.quotePressable}
             >
-              <DailyQuote quote={content.dailyQuote} theme={theme} />
+              <DailyQuote
+                 quote={content.dailyQuote}
+                 author={content.dailyQuoteAuthor}
+                 origin={content.dailyQuoteOrigin}
+                 theme={theme}
+              />
             </Pressable>
             
             <View style={styles.headerButtons}>
@@ -600,7 +562,6 @@ const HomepageScreen = () => {
             <View style={styles.dailyTasksContainer}>
               <DailyTaskInput 
                 tasks={content.dailyTasks} 
-                onChangeTask={actions.handleTaskChange}
                 theme={theme}
                 categories={dailyTaskCategories as any}
                 onTaskComplete={handleTaskComplete}
@@ -797,40 +758,47 @@ const HomepageScreen = () => {
           )}
         </Modal>
 
-        {/* --- Date Advance Modal --- */}
+        {/* --- Day Adjustment Modal --- */}
         <Modal
           animationType="fade"
           transparent={true}
-          visible={isDateAdvanceModalVisible}
-          onRequestClose={() => setIsDateAdvanceModalVisible(false)}
+          visible={isDayAdjustModalVisible}
+          onRequestClose={() => setIsDayAdjustModalVisible(false)}
         >
           <View style={styles.modalOverlay}>
             <View style={[styles.modalContent, { backgroundColor: theme.boxBackground }]}>
-              <Text style={[styles.modalTitle, { color: theme.text }]}>Simulate Day Change (DEV)</Text>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>Adjust Day (DEV)</Text>
               <Text style={[styles.modalText, { color: theme.text, marginBottom: 20 }]}>
-                Current Date: {currentDateString}
+                Current Account Age: {currentAgeForModal}
               </Text>
               <Text style={[styles.modalText, { color: theme.text, marginBottom: 20, textAlign: 'center' }]}>
-                Do you want to advance the internal 'last refresh' date to simulate the next day? This will trigger a daily task refresh on the next app focus or manual refresh.
+                Adjust the internal account creation date to simulate a different day? This affects task/challenge loading.
               </Text>
 
               <TouchableOpacity
                 style={[styles.modalButton, { backgroundColor: theme.accent }]}
-                onPress={handleAdvanceDay}
+                onPress={() => handleAdjustDay('increase')}
               >
-                <Text style={styles.modalButtonText}>Advance Day</Text>
+                <Text style={styles.modalButtonText}>Add 1 Day (Age +1)</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: theme.mode === 'dark' ? '#555' : '#ccc', marginTop: 10 }]}
-                onPress={() => setIsDateAdvanceModalVisible(false)}
+                style={[styles.modalButton, { backgroundColor: '#ff9800' }]} // Orange for subtract
+                onPress={() => handleAdjustDay('decrease')}
+              >
+                <Text style={styles.modalButtonText}>Subtract 1 Day (Age -1)</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: theme.mode === 'dark' ? '#555' : '#ccc', marginTop: 15 }]}
+                onPress={() => setIsDayAdjustModalVisible(false)}
               >
                 <Text style={[styles.modalButtonText, { color: theme.mode === 'dark' ? '#fff' : '#000'}]}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
         </Modal>
-        {/* --- End Date Advance Modal --- */}
+        {/* --- End Day Adjustment Modal --- */}
 
         {/* Bottom Navigation - Pass the addNewTask function */}
         <BottomNavigation 
@@ -1010,13 +978,14 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 16,
     marginBottom: 10,
+    textAlign: 'center',
   },
   modalButton: {
     width: '80%',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 10,
   },
   modalButtonText: {
     color: 'white',
