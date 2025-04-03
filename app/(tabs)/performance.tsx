@@ -30,12 +30,6 @@ interface DashboardData {
     nextLevelXP: number;
     previousLevelXP: number;
   };
-  habitData: {
-    day: string;
-    completed: number;
-    total: number;
-    isCurrentDay: boolean;
-  }[];
   categoryData: {
     category: string;
     count: number; // Changed from minutes to count
