@@ -15,7 +15,9 @@ import {
   Alert,
   RefreshControl,
   DeviceEventEmitter,
-  Pressable
+  Pressable,
+  Image,
+  Animated
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -74,6 +76,7 @@ const HomepageScreen = () => {
   const [randomTaskCategory, setRandomTaskCategory] = useState<string>('General');
   const [customTaskCategory, setCustomTaskCategory] = useState<string>('Select');
   const [customTaskTime, setCustomTaskTime] = useState<string>('');
+  const [dailyTaskCategories, setDailyTaskCategories] = useState<string[]>([]);
   
   // Define available categories
   const taskCategories = ["Fitness", "Knowledge", "Mindfulness", "Social", "Creativity"];
@@ -88,17 +91,84 @@ const HomepageScreen = () => {
     
     // Map path code to category
     switch(pathCode) {
-      case '1': return 'mindfulness'; // Mental path
-      case '2': return 'fitness';     // Physical path
-      case '3': return 'social';      // Balanced path
-      default: return 'general';
+      case '1': return 'mindfulness' as const; // Mental path
+      case '2': return 'fitness' as const;     // Physical path
+      case '3': return 'social' as const;      // Balanced path
+      default: return 'general' as const;
     }
   }, [content.weeklyTrial, content.currentChallenge]);
   
-  // Use the task categories from the task library
-  const dailyTaskCategories = React.useMemo(() => 
-    actions.getTaskCategories(),
-    [actions, content.dailyTaskIds]
+  // Load task categories - separate from the memoization to ensure it updates
+  const loadTaskCategories = useCallback(async () => {
+    // Make sure we filter out any undefined values
+    const categories = actions.getTaskCategories().filter(
+      (category): category is string => typeof category === 'string'
+    );
+    
+    // Only update state if categories have actually changed
+    if (JSON.stringify(categories) !== JSON.stringify(dailyTaskCategories)) {
+      console.log('Categories changed, updating state');
+      setDailyTaskCategories(categories);
+    }
+  }, [actions, dailyTaskCategories]);
+
+  // Refresh categories only when dailyTaskIds changes substantially
+  const dailyTaskIdsRef = useRef(content.dailyTaskIds);
+  
+  useEffect(() => {
+    // Only reload categories if the dailyTaskIds array has actually changed in meaningful ways
+    const oldIds = dailyTaskIdsRef.current || [];
+    const newIds = content.dailyTaskIds || [];
+    
+    // Simple length check
+    if (oldIds.length !== newIds.length) {
+      console.log('Task IDs count changed, refreshing categories');
+      loadTaskCategories();
+      dailyTaskIdsRef.current = newIds;
+      return;
+    }
+    
+    // Check if any IDs actually changed
+    const hasChanges = newIds.some((id, index) => id !== oldIds[index]);
+    if (hasChanges) {
+      console.log('Task IDs changed, refreshing categories');
+      loadTaskCategories();
+      dailyTaskIdsRef.current = newIds;
+    }
+  }, [content.dailyTaskIds, loadTaskCategories]);
+  
+  // Refresh content when the screen is focused
+  const isInitialFocus = useRef(true);
+  const isRefreshing = useRef(false);
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('Homepage screen focused');
+      
+      if (userData.userToken && !isRefreshing.current) {
+        isRefreshing.current = true;
+        
+        // Only refresh data the first time or after initial mount
+        if (!isInitialFocus.current) {
+          console.log('Refreshing data on focus');
+          actions.refreshData().then(() => {
+            // After data is refreshed, reload the categories
+            loadTaskCategories();
+            isRefreshing.current = false;
+          }).catch(() => {
+            isRefreshing.current = false;
+          });
+        } else {
+          console.log('Skipping initial focus refresh');
+          isInitialFocus.current = false;
+          isRefreshing.current = false;
+        }
+      }
+      
+      return () => {
+        // Cleanup on unfocus if needed
+      };
+    }, [userData.userToken]) // Remove actions.refreshData and loadTaskCategories from dependencies
   );
   
   // Generate a random task for the modal
@@ -271,15 +341,80 @@ const HomepageScreen = () => {
   // Close all modals
   const closeAllModals = () => setModalType('none');
 
+  // Add state for celebration modal
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [completedTaskText, setCompletedTaskText] = useState('');
+  const [completedCategory, setCompletedCategory] = useState('');
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.5)).current;
+  
+  // Function to show celebration and animate it
+  const showCelebrationModal = (taskText: string, category: string) => {
+    setCompletedTaskText(taskText);
+    setCompletedCategory(category);
+    setShowCelebration(true);
+    
+    // Reset animations
+    fadeAnim.setValue(0);
+    scaleAnim.setValue(0.5);
+    
+    // Start animations
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 8,
+        tension: 40,
+        useNativeDriver: true,
+      })
+    ]).start();
+  };
+  
+  // Get confetti color based on category
+  const getCelebrationColor = (category: string) => {
+    switch(category.toLowerCase()) {
+      case 'fitness': return themes.light.categoryColors.fitness;
+      case 'learning': return themes.light.categoryColors.learning;
+      case 'knowledge': return themes.light.categoryColors.learning;
+      case 'mindfulness': return themes.light.categoryColors.mindfulness;
+      case 'social': return themes.light.categoryColors.social;
+      case 'creativity': return themes.light.categoryColors.creativity;
+      default: return theme.accent; // Use theme accent as default
+    }
+  };
+  
+  // Handle closing the celebration modal
+  const closeCelebration = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowCelebration(false);
+    });
+  };
+
   // Handle task completion when swiped left
   const handleTaskComplete = (index: number) => {
     const taskItem = content.dailyTasks[index];
     const taskText = typeof taskItem === 'string' ? taskItem : taskItem.text;
 
-    // Extract category (ensure dailyTaskCategories aligns with filtered tasks in DailyTaskInput)
-    // This might need adjustment if DailyTaskInput filtering changes indices
-    // It might be safer to derive category from taskText or pass it back from DailyTaskInput
-    const category = dailyTaskCategories[index] || 'general'; // Assuming index still aligns
+    // First try to get category from the task object if available
+    let category: string;
+    
+    if (typeof taskItem === 'object' && 'category' in taskItem && taskItem.category) {
+      // If the task object has a category property, use that
+      category = taskItem.category as string;
+      console.log(`Using category from task object: ${category}`);
+    } else {
+      // Fall back to the categories array
+      category = dailyTaskCategories[index] || 'general';
+      console.log(`Using category from array: ${category}`);
+    }
 
     let duration = 30; // Default
     // Updated regex to be more robust for formats like (30 min) or (30 minutes)
@@ -288,10 +423,31 @@ const HomepageScreen = () => {
       duration = parseInt(durationMatch[1], 10);
     }
 
-    actions.addCompletedTask(taskText, category, duration, true); // true for daily
-    DeviceEventEmitter.emit('taskCompleted');
-    Alert.alert("Task Completed", `You've completed: ${taskText}`);
-    actions.updateTaskStatus(index, 'completed');
+    // Save the completion record directly using createTaskCompletionRecord
+    const day = content.accountAge;
+    const completionRecord = {
+      day,
+      task_name: taskText,
+      category,
+      duration,
+      is_daily: 1, // 1 for daily tasks
+      completed_at: Date.now()
+    };
+    
+    // Save the record
+    storageService.saveTaskCompletionRecord(userData.userToken, completionRecord)
+      .then(() => {
+        console.log(`Task completion record saved with category: ${category}`);
+        // Emit event for completed task with category info
+        DeviceEventEmitter.emit('taskCompleted', { category });
+        
+        // Show celebration instead of alert
+        showCelebrationModal(taskText, category);
+        actions.updateTaskStatus(index, 'completed');
+      })
+      .catch(error => {
+        console.error('Error saving task completion record:', error);
+      });
   };
 
   // Handle task cancellation when swiped right
@@ -329,21 +485,45 @@ const HomepageScreen = () => {
     
     if (!completedTask) return; // Guard against index out of bounds
 
+    // Get the category from the task object, with a fallback to 'general'
     const category = completedTask.category || 'general';
-    // Extract duration - Check for "minutes"
+    console.log(`Completing additional task with category: ${category}`);
+    
+    // Extract duration from task text if available
     let duration = 0; // Default duration for additional tasks if not specified
     const durationMatch = completedTask.text.match(/\((\d+)\s*minutes?\)/);
     if (durationMatch && durationMatch[1]) {
         duration = parseInt(durationMatch[1], 10);
     }
 
-    actions.addCompletedTask(completedTask.text, category, duration, false); // false for additional tasks
+    // Save the completion record directly using saveTaskCompletionRecord
+    const day = content.accountAge;
+    const completionRecord = {
+      day,
+      task_name: completedTask.text,
+      category,
+      duration,
+      is_daily: 0, // 0 for additional tasks
+      completed_at: Date.now()
+    };
     
-    DeviceEventEmitter.emit('taskCompleted');
-    Alert.alert("Task Completed", `You've completed: ${completedTask.text}`);
-    
-    const updatedTasks = currentTasks.filter((_, i) => i !== index); // Use filter for immutability
-    actions.setAdditionalTasks(updatedTasks);
+    // Save the record
+    storageService.saveTaskCompletionRecord(userData.userToken, completionRecord)
+      .then(() => {
+        console.log(`Additional task completion record saved with category: ${category}`);
+        // Emit event for completed task with category info
+        DeviceEventEmitter.emit('taskCompleted', { category });
+        
+        // Show celebration instead of alert
+        showCelebrationModal(completedTask.text, category);
+        
+        // Remove the completed task from the list
+        const updatedTasks = currentTasks.filter((_, i) => i !== index); 
+        actions.setAdditionalTasks(updatedTasks);
+      })
+      .catch(error => {
+        console.error('Error saving additional task completion record:', error);
+      });
   };
 
   // Handle additional task cancellation when swiped right
@@ -375,17 +555,15 @@ const HomepageScreen = () => {
     taskName: string;
     isActive: boolean;
     startTime: Date | null;
+    timerStopped: boolean;
+    elapsedSeconds: number;
+    pausedAt: Date | null;
   } | null>(null);
   
-  // Fix the implementation to use the component's own state
+  // Modified to start the timer immediately without confirmation
   const handleTaskLongPress = (index: number, taskText: string) => {
     // Check if this is a timer task
-    if (!taskText || !taskText.includes('(') || !taskText.includes(')')) {
-      return; // Not a valid task format for timer
-    }
-
-    // Extract task name (everything before the duration in parentheses)
-    const taskName = taskText.split('(')[0].trim();
+    if (!taskText) return; // Skip empty tasks
     
     // Check if we're already timing something
     if (activeTimer && activeTimer.isActive) {
@@ -397,51 +575,110 @@ const HomepageScreen = () => {
       return;
     }
     
-    // Confirm timer start
-    Alert.alert(
-      "Start Timer",
-      `Start tracking time for "${taskName}"?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Start", 
-          onPress: () => {
-            const now = new Date();
-            // Set active timer with start time
-            setActiveTimer({
-              taskIndex: index,
-              taskName,
-              isActive: true,
-              startTime: now
-            });
-          }
-        }
-      ]
-    );
+    // Extract task name (everything before the duration in parentheses if it exists)
+    const taskName = taskText.includes('(') ? taskText.split('(')[0].trim() : taskText;
+    
+    // Start timer immediately
+    const now = new Date();
+    setActiveTimer({
+      taskIndex: index,
+      taskName,
+      isActive: true,
+      startTime: now,
+      timerStopped: false,
+      elapsedSeconds: 0,
+      pausedAt: null
+    });
   };
   
-  // Handle stopping the timer
+  // Modified to actually stop the timer and calculate elapsed time
   const handleStopTimer = () => {
     if (!activeTimer) return;
     
-    Alert.alert(
-      "Stop Timer",
-      "Stop tracking time for this task?",
-      [
-        { text: "Continue", style: "cancel" },
-        { 
-          text: "Stop", 
-          style: "destructive",
-          onPress: () => {
-            // Fix: Ensure the update function correctly handles null
-            setActiveTimer((prev) => (prev ? { ...prev, isActive: false } : null));
-            setTimeout(() => {
-              setActiveTimer(null);
-            }, 5000); // Keep delay or adjust as needed
-          }
-        }
-      ]
+    const now = new Date();
+    
+    // Calculate total elapsed seconds up to now
+    const elapsedSeconds = activeTimer.startTime 
+      ? Math.floor((now.getTime() - activeTimer.startTime.getTime()) / 1000) 
+      : 0;
+    
+    // Stop the timer and save elapsed time
+    setActiveTimer(prev => 
+      prev ? { 
+        ...prev, 
+        timerStopped: true,
+        elapsedSeconds: elapsedSeconds,
+        pausedAt: now
+      } : null
     );
+  };
+  
+  // Resume timer by creating a new start time adjusted for elapsed time
+  const handleResumeTimer = () => {
+    if (!activeTimer || !activeTimer.pausedAt) return;
+    
+    const now = new Date();
+    const timeElapsedSincePause = now.getTime() - activeTimer.pausedAt.getTime();
+    
+    // Adjust start time to account for the pause time
+    const adjustedStartTime = new Date(now.getTime() - (activeTimer.elapsedSeconds * 1000));
+    
+    setActiveTimer(prev => 
+      prev ? { 
+        ...prev, 
+        timerStopped: false,
+        startTime: adjustedStartTime,
+        pausedAt: null
+      } : null
+    );
+  };
+
+  // Add finishTimer function
+  const handleFinishTimer = () => {
+    // Check if we have an active timer
+    if (!activeTimer) return;
+    
+    // Get the current filtered daily tasks count
+    const filteredDailyTasks = content.dailyTasks
+      .map((taskItem, index) => {
+        const taskObj = typeof taskItem === 'string' 
+          ? { text: taskItem, status: 'default' as const } 
+          : taskItem;
+        
+        const status = typeof taskItem === 'string' ? 'default' : taskItem.status;
+        return { status, index };
+      })
+      .filter(item => item.status === 'default');
+    
+    const dailyTaskCount = filteredDailyTasks.length;
+    
+    // Find the task that matches our timer's index and name
+    const timerTaskName = activeTimer.taskName;
+    
+    // Try to find among daily tasks first
+    let foundInDaily = false;
+    content.dailyTasks.forEach((task, index) => {
+      const taskText = typeof task === 'string' ? task : task.text;
+      if (taskText.includes(timerTaskName) && index === activeTimer.taskIndex) {
+        // The handleTaskComplete function has the logic to extract category
+        // It will check if the task has a category property
+        handleTaskComplete(index);
+        foundInDaily = true;
+      }
+    });
+    
+    // If not in daily tasks, check additional tasks
+    if (!foundInDaily) {
+      const additionalTasks = content.additionalTasks as AdditionalTask[];
+      additionalTasks.forEach((task, index) => {
+        if (task.text.includes(timerTaskName)) {
+          handleAdditionalTaskComplete(index);
+        }
+      });
+    }
+    
+    // Reset the timer
+    setActiveTimer(null);
   };
 
   // --- Secret Day Adjustment Logic ---
@@ -487,6 +724,122 @@ const HomepageScreen = () => {
   };
   // --- End Secret Day Adjustment Logic ---
 
+  // Refresh content when the screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      if (userData.userToken) {
+        console.log('Homepage screen focused, refreshing data');
+        actions.refreshData();
+      }
+      return () => {
+        // Cleanup on unfocus if needed
+      };
+    }, [userData.userToken, actions.refreshData])
+  );
+
+  // Refresh content on login/logout changes and listen for task events
+  useEffect(() => {
+    if (userData.userToken) {
+      actions.refreshData();
+    }
+    
+    // Listen for task completion events
+    const completionSubscription = DeviceEventEmitter.addListener('taskCompleted', () => {
+      console.log('HomepageScreen: Task completed event received');
+      // We don't need to refresh here as the tasks are already updated through direct state changes
+    });
+    
+    // Listen for task restoration events
+    const restorationSubscription = DeviceEventEmitter.addListener('taskRestored', (data) => {
+      console.log('HomepageScreen: Task restored event received', data);
+      // Refresh data to show the restored task
+      actions.refreshData();
+    });
+    
+    return () => {
+      completionSubscription.remove();
+      restorationSubscription.remove();
+    };
+  }, [userData.userToken, actions.refreshData]);
+
+  // Complete a task and record it in storage
+  const handleCompleteTask = useCallback(async (taskText: string, taskIndex: number, taskCategory?: string) => {
+    try {
+      // Get the category for this task
+      const category = taskCategory || dailyTaskCategories[taskIndex] || 'general';
+      console.log(`Completing task with category: ${category}`);
+      
+      // Create a completion record with category info
+      const completionRecord = {
+        taskName: taskText,
+        category: category,
+        timestamp: new Date().toISOString(),
+        duration: activeTimer?.elapsedSeconds ? Math.round(activeTimer.elapsedSeconds / 60) : 0,
+        isDailyTask: true
+      };
+      
+      // Save the completion record
+      const existingData = await AsyncStorage.getItem(`taskCompletions_${userData.userToken}`);
+      const completions = existingData ? JSON.parse(existingData) : [];
+      completions.push(completionRecord);
+      await AsyncStorage.setItem(`taskCompletions_${userData.userToken}`, JSON.stringify(completions));
+      
+      // Update tasks in storage
+      await AsyncStorage.setItem(`@dailyTasksWithStatus_${userData.userToken}`, JSON.stringify(content.dailyTasks));
+      
+      // Emit event for completed task
+      DeviceEventEmitter.emit('taskCompleted', completionRecord);
+      
+      // Finally, refresh the data
+      actions.refreshData();
+    } catch (error) {
+      console.error('Error completing task:', error);
+    }
+  }, [content.dailyTasks, userData.userToken, dailyTaskCategories, activeTimer?.elapsedSeconds, actions.refreshData]);
+
+  const handleCompleteAdditionalTask = useCallback(async (index: number) => {
+    try {
+      if (!content.additionalTasks || index >= content.additionalTasks.length) {
+        console.error('Invalid index or no additional tasks available');
+        return;
+      }
+
+      const task = content.additionalTasks[index];
+      if (!task || !task.text) {
+        console.error('Task is undefined or has no text');
+        return;
+      }
+
+      // Create completion record with category information
+      const completionRecord = {
+        taskName: task.text || '',
+        category: task.category || 'general', // Include the task category
+        timestamp: new Date().toISOString(),
+        duration: activeTimer?.elapsedSeconds ? Math.round(activeTimer.elapsedSeconds / 60) : 0,
+        isDailyTask: false
+      };
+
+      // Save the completion record
+      const existingData = await AsyncStorage.getItem(`taskCompletions_${userData.userToken}`);
+      const completions = existingData ? JSON.parse(existingData) : [];
+      completions.push(completionRecord);
+      await AsyncStorage.setItem(`taskCompletions_${userData.userToken}`, JSON.stringify(completions));
+
+      // Update additional tasks
+      const newAdditionalTasks = [...content.additionalTasks];
+      newAdditionalTasks.splice(index, 1);
+      await AsyncStorage.setItem(`additionalTasks_${userData.userToken}`, JSON.stringify(newAdditionalTasks));
+
+      // Emit event for task completion with category info
+      DeviceEventEmitter.emit('taskCompleted', completionRecord);
+
+      // Finally refresh data
+      actions.refreshData();
+    } catch (error) {
+      console.error('Error completing additional task:', error);
+    }
+  }, [content.additionalTasks, userData.userToken, activeTimer?.elapsedSeconds, actions.refreshData]);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -502,6 +855,10 @@ const HomepageScreen = () => {
               taskName={activeTimer.taskName}
               startTime={activeTimer.startTime || undefined}
               onStop={handleStopTimer}
+              timerStopped={activeTimer.timerStopped}
+              onFinish={handleFinishTimer}
+              onResume={handleResumeTimer}
+              elapsedSeconds={activeTimer.elapsedSeconds}
             />
           </>
         )}
@@ -800,6 +1157,67 @@ const HomepageScreen = () => {
         </Modal>
         {/* --- End Day Adjustment Modal --- */}
 
+        {/* Task Completion Celebration Modal */}
+        <Modal
+          animationType="none"
+          transparent={true}
+          visible={showCelebration}
+          onRequestClose={closeCelebration}
+        >
+          <Animated.View 
+            style={[
+              styles.celebrationModalOverlay,
+              { opacity: fadeAnim }
+            ]}
+          >
+            <Animated.View 
+              style={[
+                styles.celebrationModalContent,
+                { 
+                  backgroundColor: theme.boxBackground,
+                  transform: [{ scale: scaleAnim }]
+                }
+              ]}
+            >
+              <View style={styles.celebrationIconContainer}>
+                <Text style={styles.celebrationEmoji}>🎉</Text>
+                <Text style={styles.celebrationEmoji}>🏆</Text>
+                <Text style={styles.celebrationEmoji}>✨</Text>
+              </View>
+              
+              <Text style={[styles.celebrationTitle, { color: theme.text }]}>
+                Task Completed!
+              </Text>
+              
+              <Text style={[styles.celebrationTaskText, { color: theme.text }]}>
+                {completedTaskText}
+              </Text>
+              
+              <View 
+                style={[
+                  styles.categoryBadge, 
+                  { backgroundColor: getCelebrationColor(completedCategory) }
+                ]}
+              >
+                <Text style={styles.categoryBadgeText}>
+                  {completedCategory.charAt(0).toUpperCase() + completedCategory.slice(1)}
+                </Text>
+              </View>
+              
+              <Text style={[styles.celebrationMessage, { color: theme.text }]}>
+                Great job! Keep up the good work!
+              </Text>
+              
+              <TouchableOpacity
+                style={[styles.celebrationButton, { backgroundColor: theme.accent }]}
+                onPress={closeCelebration}
+              >
+                <Text style={styles.celebrationButtonText}>Continue</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </Animated.View>
+        </Modal>
+
         {/* Bottom Navigation - Pass the addNewTask function */}
         <BottomNavigation 
           theme={theme} 
@@ -988,6 +1406,76 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   modalButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  // Celebration Modal Styles
+  celebrationModalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  celebrationModalContent: {
+    width: width * 0.85,
+    borderRadius: 15,
+    padding: 25,
+    alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
+  },
+  celebrationIconContainer: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  celebrationEmoji: {
+    fontSize: 40,
+    marginHorizontal: 5,
+  },
+  celebrationTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  celebrationTaskText: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  categoryBadge: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginBottom: 20,
+  },
+  categoryBadgeText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  celebrationMessage: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 25,
+    fontStyle: 'italic',
+  },
+  celebrationButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    alignItems: 'center',
+    width: '80%',
+  },
+  celebrationButtonText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,

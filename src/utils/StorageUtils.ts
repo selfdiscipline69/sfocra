@@ -190,8 +190,15 @@ export const saveCompletedTasks = async (userToken: string, tasks: any[]) => {
 // Get completed tasks
 export const getCompletedTasks = async (userToken: string) => {
   try {
-    const tasksData = await AsyncStorage.getItem(`@completed_tasks_${userToken}`);
-    return tasksData ? JSON.parse(tasksData) : [];
+    // Get completion records directly 
+    const records = await getTaskCompletionRecords(userToken);
+    
+    // Convert the records to the format expected by the chart
+    return records.map(record => ({
+      category: record.category,
+      count: 1, // Each record represents one completed task
+      timestamp: record.completed_at
+    }));
   } catch (error) {
     console.error('Error getting completed tasks:', error);
     return [];
@@ -418,6 +425,76 @@ export const decreaseAccountCreationDay = async (userToken: string): Promise<boo
   }
 };
 
+// Function to update a task's duration
+export const updateTaskDuration = async (
+  userToken: string,
+  taskId: number,
+  newDuration: number
+): Promise<boolean> => {
+  try {
+    // Get existing records
+    const records = await getTaskCompletionRecords(userToken);
+    
+    // Find the task by ID
+    const taskIndex = records.findIndex(record => record.id === taskId);
+    
+    if (taskIndex === -1) {
+      console.error(`Task with ID ${taskId} not found`);
+      return false;
+    }
+    
+    // Update the duration
+    records[taskIndex].duration = newDuration;
+    
+    // Save the updated records
+    await AsyncStorage.setItem(
+      `@task_completion_records_${userToken}`, 
+      JSON.stringify(records)
+    );
+    
+    return true;
+  } catch (error) {
+    console.error('Error updating task duration:', error);
+    return false;
+  }
+};
+
+// Function to remove a task completion record
+export const removeTaskCompletionRecord = async (
+  userToken: string,
+  taskId: number
+): Promise<TaskCompletionRecord | null> => {
+  try {
+    // Get existing records
+    const records = await getTaskCompletionRecords(userToken);
+    
+    // Find the task record
+    const taskIndex = records.findIndex(record => record.id === taskId);
+    
+    if (taskIndex === -1) {
+      console.error(`Task with ID ${taskId} not found`);
+      return null;
+    }
+    
+    // Get the task record before removing
+    const removedTask = records[taskIndex];
+    
+    // Remove the task
+    const updatedRecords = [...records.slice(0, taskIndex), ...records.slice(taskIndex + 1)];
+    
+    // Save the updated records
+    await AsyncStorage.setItem(
+      `@task_completion_records_${userToken}`, 
+      JSON.stringify(updatedRecords)
+    );
+    
+    return removedTask;
+  } catch (error) {
+    console.error('Error removing task completion record:', error);
+    return null;
+  }
+};
+
 // Create and export a storageService object with all the functions
 export const storageService = {
   getUserData,
@@ -437,4 +514,6 @@ export const storageService = {
   loadUserTaskStatus,
   increaseAccountCreationDay,
   decreaseAccountCreationDay,
+  updateTaskDuration,
+  removeTaskCompletionRecord,
 };

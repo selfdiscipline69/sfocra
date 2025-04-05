@@ -6,7 +6,11 @@ import { Swipeable } from 'react-native-gesture-handler';
 import AnimatedSpriteIcon from './AnimatedSpriteIcon';
 
 // Define task type that can be either a string or an object with status
-export type Task = string | { text: string; status: 'default' | 'completed' | 'canceled' };
+export type Task = string | { 
+  text: string; 
+  status: 'default' | 'completed' | 'canceled';
+  category?: string;
+};
 
 interface DailyTaskInputProps {
   tasks: Task[];
@@ -118,11 +122,16 @@ const DailyTaskInput = ({
       const taskText = typeof taskItem === 'string' ? taskItem : taskItem.text;
       const status = typeof taskItem === 'string' ? 'default' : taskItem.status;
       
+      // Get the category either from the task object if it exists, or from the categories prop
+      const taskCategory = typeof taskItem === 'object' && 'category' in taskItem
+        ? (taskItem as any).category
+        : categories?.[index];
+      
       return {
         text: taskText,
         status,
         index,
-        category: categories[index]
+        category: taskCategory
       };
     })
     .filter(item => 

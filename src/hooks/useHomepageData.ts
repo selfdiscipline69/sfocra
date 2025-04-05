@@ -436,40 +436,73 @@ export default function useHomepageData() {
       setDailyQuote(null);
   };
   
-  // Get task categories based on task IDs
-  const getTaskCategories = useCallback(() => {
-    if (!questsData || !dailyTaskIds || !Array.isArray(dailyTaskIds)) {
-      return ['undefined', 'undefined'];
-    }
-    
+  // Return stable object references
+  const userData = {
+    email,
+    password,
+    userToken,
+    userName,
+    userHandle,
+    profileImage,
+    userChoices,
+  };
+
+  const content = {
+    dailyQuote: dailyQuote?.quoteText ?? "Loading quote...",
+    dailyQuoteAuthor: dailyQuote?.author ?? "",
+    dailyQuoteOrigin: dailyQuote?.origin, // Expose origin
+    dailyTasks,
+    dailyTaskIds,
+    weeklyTrial,
+    additionalTasks,
+    currentChallenge,
+    completedTasks,
+    accountAge, // Expose current age
+  };
+  
+  // Get task categories - ensure we're getting both from the task library and from AsyncStorage
+  const getTaskCategories = useCallback((): Array<'mindfulness' | 'learning' | 'creativity' | 'social' | 'fitness' | undefined | string> => {
     try {
-      const typedQuestData = questsData as unknown as QuestData;
-      // Guard against undefined task library
-      if (!typedQuestData || !typedQuestData.taskLibrary) {
-        return dailyTaskIds.map(() => undefined);
-      }
+      // If we don't have any tasks, return an empty array
+      if (!dailyTasks || !Array.isArray(dailyTasks)) return [];
       
-      const taskLibrary = typedQuestData.taskLibrary;
-      
-      return dailyTaskIds.map(taskId => {
-        if (!taskId) return undefined;
-        const category = getTaskCategory(taskId, taskLibrary);
-        
-        // Convert category names to expected component props
-        switch (category) {
-          case 'physical': return 'fitness';
-          case 'mindfulness': return 'mindfulness';
-          case 'learning': return 'learning';
-          case 'social': return 'social'; 
-          case 'creativity': return 'creativity';
-          default: return undefined;
+      // Process each daily task to find its category
+      const taskCategories = dailyTasks.map((task, index) => {
+        // For string-only tasks, we need to check if we have categories in dailyTaskIds 
+        if (typeof task === 'string') {
+          // Try to find a matching task ID
+          const taskId = dailyTaskIds && dailyTaskIds[index];
+          if (taskId) {
+            // Convert from task library generic categories to our specific ones
+            const category = getTaskCategory(taskId, questsData?.taskLibrary as any);
+            switch (category) {
+              case 'physical': return 'fitness';
+              case 'mindfulness': return 'mindfulness';
+              case 'learning': return 'learning';
+              case 'social': return 'social'; 
+              case 'creativity': return 'creativity';
+              default: return undefined;
+            }
+          }
+        } else {
+          // For object tasks, check if they have a category property
+          const taskObj = task as any; // Use any temporarily to access potential category
+          if (taskObj.category) {
+            return taskObj.category;
+          }
         }
+        
+        // Default to undefined if no category found
+        return undefined;
       });
+      
+      // Filter out undefined values
+      return taskCategories.filter(cat => cat !== undefined) as Array<'mindfulness' | 'learning' | 'creativity' | 'social' | 'fitness' | string>;
     } catch (error) {
       console.error('Error getting task categories:', error);
-      return dailyTaskIds.map(() => undefined);
+      return [];
     }
-  }, [dailyTaskIds]);
+  }, [dailyTasks, dailyTaskIds]);
 
   // Update task handlers - use useCallback
   const handleTaskChange = useCallback((index: number, newTask: string) => {
@@ -524,9 +557,23 @@ export default function useHomepageData() {
   }, [userToken]);
 
   // Refresh data function - Reloads user data which includes age, triggering quest reload
+  const isRefreshingData = useRef(false);
+  
   const refreshData = useCallback(async () => {
+    // Prevent concurrent refreshes
+    if (isRefreshingData.current) {
+      console.log("Refresh already in progress, skipping");
+      return;
+    }
+    
+    try {
+      isRefreshingData.current = true;
       console.log("Manual Refresh Triggered");
       await loadUserData();
+    } finally {
+      // Always reset the flag, even if an error occurs
+      isRefreshingData.current = false;
+    }
   }, [loadUserData]);
 
   // Function to increase account age (by adjusting creation date)
@@ -713,30 +760,6 @@ export default function useHomepageData() {
       return updatedTasks;
     });
   }, [userToken]);
-
-  // Return stable object references
-  const userData = {
-    email,
-    password,
-    userToken,
-    userName,
-    userHandle,
-    profileImage,
-    userChoices,
-  };
-
-  const content = {
-    dailyQuote: dailyQuote?.quoteText ?? "Loading quote...",
-    dailyQuoteAuthor: dailyQuote?.author ?? "",
-    dailyQuoteOrigin: dailyQuote?.origin, // Expose origin
-    dailyTasks,
-    dailyTaskIds,
-    weeklyTrial,
-    additionalTasks,
-    currentChallenge,
-    completedTasks,
-    accountAge, // Expose current age
-  };
 
   const actions = {
     loadUserData,

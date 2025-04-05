@@ -17,7 +17,7 @@ import * as storageService from '../../src/utils/StorageUtils';
 import XPLevelTracker from '../../components/performance/XPLevelTracker';
 import WeeklyHabitSection from '../../components/performance/WeeklyHabitSection';
 import TaskCompletionRate from '../../components/performance/TaskCompletionRate';
-import ProgressSummary from '../../components/performance/ProgressSummary';
+import CompletedTasks from '../../components/performance/CompletedTasks';
 import LoadingErrorStates from '../../components/performance/LoadingErrorStates';
 import BottomNavigation from '../../components/BottomNavigation';
 import { getCategoryColor, CATEGORIES } from '../../src/components/performance/CategoryColorUtils';
@@ -270,15 +270,23 @@ export default function PerformanceScreen() {
     }, []) // Empty dependency array ensures it runs on focus
   );
 
-  // Event listener for task completion
+  // Event listeners for task completion and restoration
   useEffect(() => {
-    const subscription = DeviceEventEmitter.addListener('taskCompleted', () => {
+    // Listen for task completion
+    const completionSubscription = DeviceEventEmitter.addListener('taskCompleted', () => {
       console.log('PerformanceScreen: Task completed event received, refreshing data.');
       refreshAllComponents();
     });
 
+    // Listen for task restoration (when a task is undone)
+    const restorationSubscription = DeviceEventEmitter.addListener('taskRestored', () => {
+      console.log('PerformanceScreen: Task restored event received, refreshing data.');
+      refreshAllComponents();
+    });
+
     return () => {
-      subscription.remove();
+      completionSubscription.remove();
+      restorationSubscription.remove();
     };
   }, []); // Run once on mount
 
@@ -328,7 +336,7 @@ export default function PerformanceScreen() {
           refreshKey={refreshKey} // Pass refresh key
         />
         <TaskCompletionRate categoryData={dashboardData.categoryData} theme={theme} />
-        <ProgressSummary
+        <CompletedTasks
           theme={theme}
           userToken={userToken}
           refreshKey={refreshKey} // Pass refresh key

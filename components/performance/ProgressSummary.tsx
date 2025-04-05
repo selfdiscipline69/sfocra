@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import * as storageService from '../../src/utils/StorageUtils';
 
 interface ProgressSummaryProps {
@@ -8,9 +8,11 @@ interface ProgressSummaryProps {
   refreshKey?: number; // Add refresh key to trigger updates
 }
 
-const ProgressSummary = ({ theme, userToken, refreshKey = 0 }: ProgressSummaryProps) => {
+const CompletedTasks = ({ theme, userToken, refreshKey = 0 }: ProgressSummaryProps) => {
   const [loading, setLoading] = useState(true);
   const [completionRecords, setCompletionRecords] = useState<storageService.TaskCompletionRecord[]>([]);
+  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   
   // Add refreshKey to dependencies to force a refresh
   useEffect(() => {
@@ -26,7 +28,7 @@ const ProgressSummary = ({ theme, userToken, refreshKey = 0 }: ProgressSummaryPr
         // Sort by most recent first
         records.sort((a, b) => b.completed_at - a.completed_at);
         setCompletionRecords(records);
-        console.log('Updated progress summary with records:', records.length);
+        console.log('Updated task completion with records:', records.length);
       } catch (error) {
         console.error('Error fetching task completion records:', error);
       } finally {
@@ -53,55 +55,154 @@ const ProgressSummary = ({ theme, userToken, refreshKey = 0 }: ProgressSummaryPr
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength - 3) + '...';
   };
+
+  // Get category color based on category name
+  const getCategoryColor = (category: string) => {
+    const colors: { [key: string]: string } = {
+      work: '#3498db',
+      health: '#2ecc71',
+      learning: '#9b59b6',
+      personal: '#e74c3c',
+      fitness: '#1abc9c',
+      social: '#f39c12',
+      family: '#e67e22',
+      default: theme.accent
+    };
+    
+    return colors[category.toLowerCase()] || colors.default;
+  };
+
+  // Get all unique categories
+  const getUniqueCategories = () => {
+    const categories = completionRecords.map(record => record.category);
+    return ['all', ...new Set(categories)];
+  };
+
+  // Filter records by category
+  const getFilteredRecords = () => {
+    if (activeFilter === 'all') return completionRecords;
+    return completionRecords.filter(record => record.category === activeFilter);
+  };
+
+  // Toggle expanded task view
+  const toggleTaskExpansion = (taskId: string) => {
+    if (expandedTaskId === taskId) {
+      setExpandedTaskId(null);
+    } else {
+      setExpandedTaskId(taskId);
+    }
+  };
   
+  const filteredRecords = getFilteredRecords();
+  const uniqueCategories = getUniqueCategories();
+
   return (
-    <View style={styles.container}>
-      <Text style={[styles.title, { color: theme.text }]}>Your Progress</Text>
-      <Text style={[styles.text, { color: theme.subtext }]}>
-        You're making great strides in your journey! Keep up the good work to reach your next level.
-      </Text>
+    <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#1f1f1f' : '#f8f8f8', borderRadius: 12 }]}>
+      <View style={styles.headerContainer}>
+        <Text style={[styles.title, { color: theme.text }]}>Completed Tasks</Text>
+        <Text style={[styles.taskCount, { color: theme.accent }]}>
+          {filteredRecords.length} {filteredRecords.length === 1 ? 'task' : 'tasks'} completed
+        </Text>
+      </View>
       
       {loading ? (
         <ActivityIndicator size="large" color={theme.accent} style={styles.loader} />
       ) : completionRecords.length > 0 ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.tableContainer}>
-          <View>
-            {/* Table Header */}
-            <View style={styles.tableRow}>
-              <Text style={[styles.headerCell, styles.dayCell, { color: theme.text, backgroundColor: theme.mode === 'dark' ? '#333' : '#f0f0f0' }]}>Day</Text>
-              <Text style={[styles.headerCell, styles.taskCell, { color: theme.text, backgroundColor: theme.mode === 'dark' ? '#333' : '#f0f0f0' }]}>Task</Text>
-              <Text style={[styles.headerCell, styles.categoryCell, { color: theme.text, backgroundColor: theme.mode === 'dark' ? '#333' : '#f0f0f0' }]}>Category</Text>
-              <Text style={[styles.headerCell, styles.durationCell, { color: theme.text, backgroundColor: theme.mode === 'dark' ? '#333' : '#f0f0f0' }]}>Duration</Text>
-              <Text style={[styles.headerCell, styles.typeCell, { color: theme.text, backgroundColor: theme.mode === 'dark' ? '#333' : '#f0f0f0' }]}>Type</Text>
-              <Text style={[styles.headerCell, styles.dateCell, { color: theme.text, backgroundColor: theme.mode === 'dark' ? '#333' : '#f0f0f0' }]}>Completed</Text>
-            </View>
-            
-            {/* Table Rows */}
-            {completionRecords.map((record, index) => (
-              <View 
-                key={record.id} 
+        <>
+          {/* Category Filters */}
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            style={styles.filterContainer}
+            contentContainerStyle={{ paddingVertical: 10 }}
+          >
+            {uniqueCategories.map(category => (
+              <TouchableOpacity
+                key={category}
                 style={[
-                  styles.tableRow, 
-                  { backgroundColor: index % 2 === 0 ? 
-                    (theme.mode === 'dark' ? '#222' : '#f9f9f9') : 
-                    (theme.mode === 'dark' ? '#333' : '#ffffff') 
+                  styles.filterButton,
+                  { 
+                    backgroundColor: activeFilter === category 
+                      ? (category === 'all' ? theme.accent : getCategoryColor(category)) 
+                      : theme.mode === 'dark' ? '#333' : '#e0e0e0',
+                    opacity: activeFilter === category ? 1 : 0.7
                   }
                 ]}
+                onPress={() => setActiveFilter(category)}
               >
-                <Text style={[styles.cell, styles.dayCell, { color: theme.text }]}>{record.day}</Text>
-                <Text style={[styles.cell, styles.taskCell, { color: theme.text }]}>{truncateText(record.task_name, 15)}</Text>
-                <Text style={[styles.cell, styles.categoryCell, { color: theme.text }]}>{capitalize(record.category)}</Text>
-                <Text style={[styles.cell, styles.durationCell, { color: theme.text }]}>{record.duration} min</Text>
-                <Text style={[styles.cell, styles.typeCell, { color: theme.text }]}>{record.is_daily ? 'Daily' : 'Custom'}</Text>
-                <Text style={[styles.cell, styles.dateCell, { color: theme.text }]}>{formatDate(record.completed_at)}</Text>
-              </View>
+                <Text 
+                  style={[
+                    styles.filterText, 
+                    { 
+                      color: activeFilter === category 
+                        ? 'white' 
+                        : theme.text 
+                    }
+                  ]}
+                >
+                  {category === 'all' ? 'All' : capitalize(category)}
+                </Text>
+              </TouchableOpacity>
             ))}
-          </View>
-        </ScrollView>
+          </ScrollView>
+
+          {/* Task List */}
+          <ScrollView style={styles.taskListContainer}>
+            {filteredRecords.map((record, index) => (
+              <TouchableOpacity
+                key={record.id.toString()}
+                style={[
+                  styles.taskCard,
+                  { 
+                    backgroundColor: theme.mode === 'dark' ? 'rgba(40, 40, 40, 0.7)' : 'rgba(250, 250, 250, 0.7)',
+                    borderLeftWidth: 4,
+                    borderLeftColor: getCategoryColor(record.category),
+                    marginBottom: index === filteredRecords.length - 1 ? 0 : 12
+                  }
+                ]}
+                onPress={() => toggleTaskExpansion(record.id.toString())}
+                activeOpacity={0.7}
+              >
+                <View style={styles.taskHeader}>
+                  <View style={styles.taskTitleContainer}>
+                    <Text style={[styles.taskTitle, { color: theme.text }]}>
+                      {record.task_name}
+                    </Text>
+                    <View style={styles.taskMeta}>
+                      <Text style={[styles.taskMetaText, { color: theme.subtext }]}>
+                        Day {record.day} • {record.duration} min
+                      </Text>
+                      <View style={[styles.taskType, { backgroundColor: record.is_daily ? theme.accent : 'transparent' }]}>
+                        <Text style={[styles.taskTypeText, { color: record.is_daily ? 'white' : theme.subtext }]}>
+                          {record.is_daily ? 'Daily' : 'Custom'}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(record.category) + '22' }]}>
+                    <Text style={[styles.categoryText, { color: getCategoryColor(record.category) }]}>
+                      {capitalize(record.category)}
+                    </Text>
+                  </View>
+                </View>
+                
+                {expandedTaskId === record.id.toString() && (
+                  <View style={styles.taskExpanded}>
+                    <View style={styles.divider} />
+                    <View style={styles.expandedDetails}>
+                      <Text style={[styles.expandedLabel, { color: theme.subtext }]}>Completed at:</Text>
+                      <Text style={[styles.expandedValue, { color: theme.text }]}>{formatDate(record.completed_at)}</Text>
+                    </View>
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </>
       ) : (
-        <View style={styles.emptyContainer}>
+        <View style={[styles.emptyContainer, { borderColor: theme.mode === 'dark' ? '#444' : '#ddd' }]}>
           <Text style={[styles.emptyText, { color: theme.subtext }]}>
-            Every greatness starts somewhere unnoticed, make the difference and act now. Complete one task to see your progress.
+            No completed tasks yet. Complete a task to see your achievements here.
           </Text>
         </View>
       )}
@@ -113,63 +214,125 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 16,
     marginBottom: 30,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  text: {
-    fontSize: 14,
-    lineHeight: 20,
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 16,
   },
-  tableContainer: {
-    marginTop: 10,
-  },
-  tableRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  headerCell: {
-    padding: 10,
+  title: {
+    fontSize: 20,
     fontWeight: 'bold',
+  },
+  taskCount: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  filterContainer: {
+    marginBottom: 16,
+  },
+  filterButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  filterText: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  taskListContainer: {
+    maxHeight: 500,
+  },
+  taskCard: {
+    borderRadius: 8,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  taskHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  taskTitleContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
+  taskTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  taskMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  taskMetaText: {
+    fontSize: 13,
+    marginRight: 8,
+  },
+  taskType: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  taskTypeText: {
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  categoryBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  categoryText: {
     fontSize: 12,
-    textAlign: 'center',
+    fontWeight: '600',
   },
-  dayCell: {
-    width: 40,
+  taskExpanded: {
+    marginTop: 12,
   },
-  taskCell: {
-    width: 120,
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(150, 150, 150, 0.2)',
+    marginBottom: 12,
   },
-  categoryCell: {
-    width: 90,
+  expandedDetails: {
+    marginBottom: 8,
   },
-  durationCell: {
-    width: 70,
-  },
-  typeCell: {
-    width: 60,
-  },
-  dateCell: {
-    width: 100,
-  },
-  cell: {
-    padding: 10,
+  expandedLabel: {
     fontSize: 12,
-    textAlign: 'center',
+    marginBottom: 2,
+  },
+  expandedValue: {
+    fontSize: 14,
   },
   loader: {
     marginTop: 20,
+    marginBottom: 20,
   },
   emptyContainer: {
     marginTop: 20,
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ddd',
     borderStyle: 'dashed',
   },
   emptyText: {
@@ -180,4 +343,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProgressSummary;
+export default CompletedTasks;

@@ -55,10 +55,15 @@ const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({
     if (customBgColor) {
       return customBgColor;
     }
+    
+    // Normalize category to lowercase for consistent comparison
+    const normalizedCategory = category?.toLowerCase() as keyof typeof theme.categoryColors;
+    
     // Use category color if available
-    if (category && theme.categoryColors[category]) {
-      return theme.categoryColors[category];
+    if (normalizedCategory && theme.categoryColors[normalizedCategory]) {
+      return theme.categoryColors[normalizedCategory];
     }
+    
     // Default background if no category
     return theme.mode === 'dark' ? '#2C2C2E' : '#F2F2F7';
   };
@@ -132,36 +137,38 @@ const WeeklyTrialBox: React.FC<WeeklyTrialBoxProps> = ({
             {/* Title with sprite for fitness, learning, mindfulness, social, or creativity */}
             <View style={styles.titleContainer}>
               <View style={styles.leftContainer}>
-                {category && !['fitness', 'learning', 'mindfulness', 'social', 'creativity'].includes(category) && title !== "Weekly Challenge" && (
+                {category && 
+                 !['fitness', 'learning', 'mindfulness', 'social', 'creativity'].includes(category.toLowerCase()) && 
+                 title !== "Weekly Challenge" && (
                   <PixelArtIcon 
                     category={category} 
                     size={24} 
                     color={textColor}
                   />
                 )}
-                <Text style={[styles.title, { color: textColor, marginLeft: category && !['fitness', 'learning', 'mindfulness', 'social', 'creativity'].includes(category) && title !== "Weekly Challenge" ? 8 : 0 }]}>{title}</Text>
+                <Text style={[styles.title, { color: textColor, marginLeft: category && !['fitness', 'learning', 'mindfulness', 'social', 'creativity'].includes(category.toLowerCase()) && title !== "Weekly Challenge" ? 8 : 0 }]}>{title}</Text>
               </View>
-              {category === 'fitness' && title !== "Weekly Challenge" && (
+              {category?.toLowerCase() === 'fitness' && title !== "Weekly Challenge" && (
                 <View style={styles.spriteContainer}>
                   <AnimatedSpriteIcon size={80} />
                 </View>
               )}
-              {category === 'learning' && title !== "Weekly Challenge" && (
+              {category?.toLowerCase() === 'learning' && title !== "Weekly Challenge" && (
                 <View style={styles.spriteContainer}>
                   <AnimatedLearningIcon size={75} />
                 </View>
               )}
-              {category === 'mindfulness' && title !== "Weekly Challenge" && (
+              {category?.toLowerCase() === 'mindfulness' && title !== "Weekly Challenge" && (
                 <View style={styles.spriteContainer}>
                   <AnimatedMindfulnessIcon size={80} />
                 </View>
               )}
-              {category === 'social' && title !== "Weekly Challenge" && (
+              {category?.toLowerCase() === 'social' && title !== "Weekly Challenge" && (
                 <View style={styles.spriteContainer}>
                   <AnimatedSocialIcon size={75} />
                 </View>
               )}
-              {category === 'creativity' && title !== "Weekly Challenge" && (
+              {category?.toLowerCase() === 'creativity' && title !== "Weekly Challenge" && (
                 <View style={styles.spriteContainer}>
                   <AnimatedCreativityIcon size={75} />
                 </View>

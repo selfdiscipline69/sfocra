@@ -9,29 +9,45 @@ interface TimerDisplayProps {
   taskName?: string;
   startTime?: Date;
   onStop?: () => void;
+  timerStopped?: boolean;
+  onFinish?: () => void;
+  onResume?: () => void;
+  elapsedSeconds?: number;
 }
 
-const TimerDisplay = ({ isRunning, taskName, startTime, onStop }: TimerDisplayProps) => {
-  const [elapsedTime, setElapsedTime] = useState(0);
+const TimerDisplay = ({ 
+  isRunning, 
+  taskName, 
+  startTime, 
+  onStop,
+  timerStopped = false,
+  onFinish,
+  onResume,
+  elapsedSeconds = 0
+}: TimerDisplayProps) => {
+  const [elapsedTime, setElapsedTime] = useState(elapsedSeconds);
   const { theme } = useTheme(); // Get the current theme
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
     
-    if (isRunning && startTime) {
+    if (isRunning && startTime && !timerStopped) {
       interval = setInterval(() => {
         const now = new Date();
         const elapsed = Math.floor((now.getTime() - startTime.getTime()) / 1000);
         setElapsedTime(elapsed);
       }, 1000);
-    } else {
-      setElapsedTime(0);
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, startTime]);
+  }, [isRunning, startTime, timerStopped]);
+
+  // Update local state when elapsedSeconds prop changes
+  useEffect(() => {
+    setElapsedTime(elapsedSeconds);
+  }, [elapsedSeconds]);
 
   if (!isRunning) return null;
 
@@ -45,6 +61,9 @@ const TimerDisplay = ({ isRunning, taskName, startTime, onStop }: TimerDisplayPr
       }
     ]}>
       <View style={styles.timerContent}>
+        <Text style={[styles.timerLabel, { color: theme.text }]}>
+          {timerStopped ? 'Timer Stopped' : 'Timer Active'}
+        </Text>
         <Text style={[styles.taskName, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
           {taskName || 'Task'}
         </Text>
@@ -55,24 +74,44 @@ const TimerDisplay = ({ isRunning, taskName, startTime, onStop }: TimerDisplayPr
           </Text>
         )}
       </View>
-      <TouchableOpacity 
-        style={[styles.stopButton, { backgroundColor: theme.accent }]} 
-        onPress={onStop}
-      >
-        <Ionicons name="stop-circle" size={16} color="white" />
-        <Text style={styles.stopText}>Stop</Text>
-      </TouchableOpacity>
+      
+      {timerStopped ? (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity 
+            style={[styles.actionButton, { backgroundColor: '#27ae60' }]}
+            onPress={onResume}
+          >
+            <Ionicons name="play-circle" size={16} color="white" />
+            <Text style={styles.buttonText}>Resume</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.actionButton, { backgroundColor: '#e74c3c' }]}
+            onPress={onFinish}
+          >
+            <Ionicons name="checkmark-circle" size={16} color="white" />
+            <Text style={styles.buttonText}>Finish</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <TouchableOpacity 
+          style={[styles.actionButton, { backgroundColor: '#e74c3c' }]}
+          onPress={onStop}
+        >
+          <Ionicons name="stop-circle" size={16} color="white" />
+          <Text style={styles.buttonText}>Stop</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderRadius: 10,
-    padding: 12,
+    padding: 16,
     margin: 10,
     marginBottom: 15,
     shadowColor: '#000',
@@ -82,16 +121,23 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   timerContent: {
-    flex: 1,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  timerLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 4,
   },
   taskName: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
+    textAlign: 'center',
   },
   time: {
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 32,
+    fontWeight: 'bold',
     fontVariant: ['tabular-nums'],
     marginVertical: 2,
   },
@@ -99,11 +145,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 2,
   },
-  stopButton: {
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+    marginTop: 8,
+  },
+  actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     borderRadius: 20,
     justifyContent: 'center',
     shadowColor: '#000',
@@ -112,7 +164,7 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     elevation: 1,
   },
-  stopText: {
+  buttonText: {
     color: 'white',
     fontWeight: '600',
     marginLeft: 6,
