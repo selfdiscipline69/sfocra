@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Dimensions, Alert, DeviceEventEmitter } from 'react-native';
 import * as storageService from '../../src/utils/StorageUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCategoryColor } from '../../src/components/performance/CategoryColorUtils';
 
 interface CompletedTasksProps {
   theme: any;
@@ -62,22 +63,6 @@ const CompletedTasks = ({ theme, userToken, refreshKey = 0 }: CompletedTasksProp
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength - 3) + '...';
-  };
-
-  // Get category color based on category name
-  const getCategoryColor = (category: string) => {
-    const colors: { [key: string]: string } = {
-      work: '#3498db',
-      health: '#2ecc71',
-      learning: '#9b59b6',
-      personal: '#e74c3c',
-      fitness: '#1abc9c',
-      social: '#f39c12',
-      family: '#e67e22',
-      default: theme.accent
-    };
-    
-    return colors[category.toLowerCase()] || colors.default;
   };
 
   // Get all unique categories
@@ -194,14 +179,6 @@ const CompletedTasks = ({ theme, userToken, refreshKey = 0 }: CompletedTasksProp
         if (['mindfulness', 'learning', 'creativity', 'social', 'fitness'].includes(lowerCat)) {
           return lowerCat;
         }
-        
-        // Map non-standard categories
-        if (lowerCat === 'knowledge') return 'learning';
-        if (lowerCat === 'physical') return 'fitness';
-        if (lowerCat === 'health') return 'fitness';
-        if (lowerCat === 'work') return 'learning';
-        if (lowerCat === 'personal') return 'mindfulness';
-        if (lowerCat === 'family') return 'social';
         
         // Default fallback
         return 'mindfulness';
