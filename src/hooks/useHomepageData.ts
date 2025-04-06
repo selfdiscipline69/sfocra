@@ -1,37 +1,47 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { UserChoices, AdditionalTask } from '../types/UserTypes';
-import * as storageService from '../utils/StorageUtils';
+import * as storageService from '../utils/StorageUtils'; // Import all as storageService
+// Import specific functions if preferred, e.g.:
+// import { storageService, normalizeCategory } from '../utils/StorageUtils';
 import quotesData from '../../assets/Quote.json';
 import questsData from '../../assets/Quest.json';
-import { Task } from '../components/DailyTaskInput';
+import { Task } from '../components/DailyTaskInput'; // Use Task type from component
 import { useFocusEffect } from '@react-navigation/native';
-import { loadUserTaskStatus } from '../utils/StorageUtils';
 
 // Define interfaces for the new quest structure
-interface DayTask {
+interface DayTaskQuest { // Renamed to avoid conflict with component Task type
   dayNumber: number;
-  tasks: string[];
+  tasks: string[]; // These are task IDs from the library
 }
 
-interface Week {
+interface WeekQuest { // Renamed
   weekNumber: number;
   weeklyTrial: string;
-  days: DayTask[];
+  days: DayTaskQuest[];
 }
 
-interface Challenge {
+interface ChallengeQuest { // Renamed
   id: string;
   path: string;
   intensity: number;
   title: string;
   description: string;
-  weeks: Week[];
+  weeks: WeekQuest[];
+}
+
+interface TaskLibraryItem {
+  task: string; // The actual task text
+  category: string;
+  duration?: string;
+  intensities?: { [key: string]: { duration: string } };
 }
 
 interface QuestData {
-  progressiveChallenges: Challenge[];
-  taskLibrary: Record<string, any>;
+  progressiveChallenges: ChallengeQuest[];
+  taskLibrary: Record<string, TaskLibraryItem>; // Map Task ID to TaskLibraryItem
 }
+
 
 // WeeklyTrial type to match our updated component
 interface WeeklyTrialData {
@@ -40,51 +50,23 @@ interface WeeklyTrialData {
   weeklyTrialSummary: string;
 }
 
-interface TaskLibraryItem {
-  task: string;
-  category: string;
-  intensities: {
-    [key: string]: {
-      duration: string;
-    }
-  }
-}
 
 // Helper function to determine task category from task ID with safe access
-const getTaskCategory = (taskId: string, taskLibrary: Record<string, TaskLibraryItem> | undefined): string => {
+const getTaskCategoryFromLibrary = (taskId: string, taskLibrary: Record<string, TaskLibraryItem> | undefined): string => {
   if (!taskId || !taskLibrary) return 'general';
-  
   const task = taskLibrary[taskId];
-  return task ? task.category : 'general';
+  const category = task ? (task.category || 'general') : 'general';
+  return storageService.normalizeCategory(category); // Use normalizeCategory from storage
 };
 
-// Define a new interface for completed task tracking
+
+// Define a new interface for completed task tracking (Legacy for charts)
 interface CompletedTaskData {
   category: string;
   minutes: number;
   timestamp: number;
 }
 
-// Add this function to normalize category names
-const normalizeCategory = (category: string): string => {
-  const lowerCategory = (category || '').toLowerCase();
-  
-  // Map variations to standard categories
-  if (lowerCategory.includes('knowledge')) return 'learning';
-  if (lowerCategory.includes('physical')) return 'fitness';
-  
-  // Return standard categories directly
-  switch (lowerCategory) {
-    case 'fitness':
-    case 'learning':
-    case 'mindfulness':
-    case 'social':
-    case 'creativity':
-      return lowerCategory;
-    default:
-      return 'general';
-  }
-};
 
 // Add type for the structured quote
 interface QuoteData {
@@ -102,26 +84,23 @@ export default function useHomepageData() {
   const [userName, setUserName] = useState<string>('');
   const [userHandle, setUserHandle] = useState<string>('');
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [userChoices, setUserChoices] = useState<UserChoices>({
-    question1: null,
-    question2: null,
-    question4: null,
-  });
-  
-  // Content states - updated weeklyTrial to object type
+  const [userChoices, setUserChoices] = useState<UserChoices>({ question1: null, question2: null, question4: null });
+
+  // Content states
   const [dailyQuote, setDailyQuote] = useState<QuoteData | null>(null);
-  const [dailyTasks, setDailyTasks] = useState<Task[]>(['', '']);
-  const [dailyTaskIds, setDailyTaskIds] = useState<string[]>(['', '']);
+  const [dailyTasks, setDailyTasks] = useState<Task[]>([]); // Always Task objects
+  const [dailyTaskIds, setDailyTaskIds] = useState<string[]>([]); // Store IDs for reference
   const [weeklyTrial, setWeeklyTrial] = useState<WeeklyTrialData | null>(null);
   const [additionalTasks, setAdditionalTasks] = useState<AdditionalTask[]>([]);
-  const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(null);
-  const [accountAge, setAccountAge] = useState<number>(1);
+  const [currentChallenge, setCurrentChallenge] = useState<ChallengeQuest | null>(null);
+  const [accountAge, setAccountAge] = useState<number>(0); // Init to 0
 
-  // Add new state for completed tasks
+  // Add new state for completed tasks (Legacy for charts)
   const [completedTasks, setCompletedTasks] = useState<CompletedTaskData[]>([]);
 
-  // Load user data from storage - use useCallback to ensure stable function reference
+  // Load user data from storage
   const loadUserData = useCallback(async () => {
+    console.log("loadUserData: Starting");
     const userData = await storageService.getUserData();
     setEmail(userData.email);
     setPassword(userData.password);
@@ -129,493 +108,45 @@ export default function useHomepageData() {
     setUserName(userData.userName);
     setUserHandle(userData.userHandle);
     setProfileImage(userData.profileImage);
-    
+
     if (userData.userToken) {
       const token = userData.userToken;
       const choices = await storageService.getUserChoices(token);
       setUserChoices(choices);
-      
       const addTasks = await storageService.getAdditionalTasks(token);
-      setAdditionalTasks(addTasks);
-      
-      // Load tasks with status
-      const tasksWithStatus: Task[] | null = await storageService.getDailyTasksWithStatus(token);
-      if (tasksWithStatus && tasksWithStatus.length > 0) {
-        setDailyTasks(tasksWithStatus);
-      } else {
-        setDailyTasks(['', '']);
-        setDailyTaskIds(['', '']);
-      }
-      
-      // Load account age
+      setAdditionalTasks(addTasks || []);
       const age = await storageService.getAccountAge(token);
-      console.log("Loaded Account Age:", age); // Log loaded age
-      setAccountAge(age);
-
-      // Load completed tasks data
+      setAccountAge(age); // Set age state, triggers useEffect for loadQuests
       const savedCompletedTasks = await storageService.getCompletedTasks(token);
-      if (savedCompletedTasks) {
-        setCompletedTasks(savedCompletedTasks);
-      }
+      setCompletedTasks(savedCompletedTasks || []);
+      const savedWeeklyTrial = await storageService.getWeeklyTrial(token);
+      setWeeklyTrial(savedWeeklyTrial);
     } else {
+      // Reset state if no token
       setUserChoices({ question1: null, question2: null, question4: null });
       setAdditionalTasks([]);
-      setDailyTasks(['', '']);
-      setDailyTaskIds(['', '']);
+      setDailyTasks([]);
+      setDailyTaskIds([]);
       setWeeklyTrial(null);
       setCurrentChallenge(null);
-      setAccountAge(1);
+      setAccountAge(0);
       setCompletedTasks([]);
       setDailyQuote(null);
     }
-  }, []);
+    console.log("loadUserData: Finished. Age:", accountAge); // Log age after setting
+  }, [accountAge]); // Include accountAge dependency? Maybe not needed here
 
-  // Load quests based on account age and user class
-  const loadQuests = useCallback(async () => {
-    if (!userToken) {
-      console.log("Load Quests: No user token, skipping.");
-      setDailyTasks(["Login required", ""]);
-      setDailyTaskIds(['', '']);
-      setWeeklyTrial(null);
-      setCurrentChallenge(null);
-      return;
-    }
-
-    try {
-      console.log(`Load Quests: Starting for user ${userToken}, Account Age: ${accountAge}`);
-
-      // Load existing task statuses to preserve them
-      const existingTasksWithStatus: Task[] | null = await storageService.getDailyTasksWithStatus(userToken);
-      const tasksMap = new Map<string, 'default' | 'completed' | 'canceled'>();
-      if (existingTasksWithStatus) {
-        existingTasksWithStatus.forEach((task: Task) => {
-          if (typeof task === 'object' && task.text && task.status) {
-            tasksMap.set(task.text, task.status);
-          }
-        });
-      }
-
-      // Type guard for Quest data
-      if (!questsData || typeof questsData !== 'object') {
-        console.error('Quest data is not available or not in the expected format');
-        handleLoadError(true);
-        return;
-      }
-      
-      const typedQuestData = questsData as unknown as QuestData;
-      
-      if (!typedQuestData.progressiveChallenges || !typedQuestData.taskLibrary) {
-        console.error('Quest data is missing required structure', typedQuestData);
-        handleLoadError(true);
-        return;
-      }
-      
-      const classKey = await storageService.getUserClassKey(userToken);
-      
-      if (!classKey) {
-        setDailyTasks([
-          "No user class information found",
-          "Please complete the classification process"
-        ]);
-        setDailyTaskIds(['', '']);
-        
-        if (weeklyTrial) {
-          setWeeklyTrial({
-            title: "No user class information",
-            description: "Please complete the classification process",
-            weeklyTrialSummary: ""
-          });
-        }
-        return;
-      }
-      
-      // Handle both old and new format class keys
-      let pathCode: string;
-      let intensity: number;
-
-      if (classKey.includes('-epic-') || classKey.includes('-beginner-')) {
-        // New format: "path-difficulty-consequence" (e.g. "1-epic-consequence")
-        const parts = classKey.split('-');
-        pathCode = parts[0];
-        
-        // Map difficulty to numeric intensity
-        const difficulty = parts[1];
-        intensity = difficulty === 'epic' ? 4 : 2; // Map 'epic' to 4, 'beginner' to 2
-      } else {
-        // Old format: "path-intensity-tracking-consequence" (e.g. "1-3-2-1")
-        const parts = classKey.split('-');
-        pathCode = parts[0];
-        intensity = parseInt(parts[1], 10);
-        
-        if (isNaN(intensity)) {
-          console.error('Invalid intensity in class key:', classKey);
-          handleLoadError(true);
-          return;
-        }
-      }
-      
-      // Get all challenges matching this path code and intensity
-      const matchingChallenges = typedQuestData.progressiveChallenges.filter(
-        challenge => challenge.id && challenge.id.startsWith(`${pathCode}-${intensity}`)
-      );
-      
-      if (matchingChallenges.length === 0) {
-        // No matching challenges
-        console.warn(`No challenges found for ${pathCode}-${intensity}`);
-        setWeeklyTrial({
-          title: "No challenge available",
-          description: "No challenge matching your profile was found",
-          weeklyTrialSummary: "Please try a different profile"
-        });
-        setCurrentChallenge(null);
-        setDailyTasks(["No matching challenges for your profile", "Please try a different profile"]);
-        setDailyTaskIds(['', '']);
-        
-        if (weeklyTrial) {
-          await storageService.saveWeeklyTrial(userToken, JSON.stringify(weeklyTrial));
-        }
-        return;
-      }
-      
-      // Randomly select one of the matching challenges or use the previously selected one
-      let selectedChallenge = currentChallenge;
-      
-      // If we don't have a challenge yet, or if we're refreshing, select a new one
-      if (!selectedChallenge) {
-        const randomIndex = Math.floor(Math.random() * matchingChallenges.length);
-        selectedChallenge = matchingChallenges[randomIndex];
-        setCurrentChallenge(selectedChallenge);
-      }
-      
-      // Safety check for selected challenge
-      if (!selectedChallenge || !selectedChallenge.weeks || !Array.isArray(selectedChallenge.weeks) || 
-          selectedChallenge.weeks.length === 0) {
-        console.error('Selected challenge has no weeks data');
-        handleLoadError(true);
-        return;
-      }
-      
-      // Calculate current week number and day number within the week
-      const currentWeekNum = Math.floor((accountAge - 1) / 7) + 1;
-      const currentDayInWeek = (accountAge - 1) % 7 + 1;
-      console.log(`Load Quests: Calculated Week: ${currentWeekNum}, Day in Week: ${currentDayInWeek}`);
-
-      // Get the correct week data (handle cases where challenge might not have enough weeks)
-      const weekIndex = Math.min(currentWeekNum - 1, selectedChallenge.weeks.length - 1);
-      const selectedWeek = selectedChallenge.weeks[weekIndex];
-      
-      if (!selectedWeek || !selectedWeek.days || !Array.isArray(selectedWeek.days) || 
-          selectedWeek.days.length === 0) {
-        console.error('Selected week has no days data');
-        handleLoadError(true);
-        return;
-      }
-      
-      // Get the day data
-      const dayIndex = Math.min(currentDayInWeek - 1, selectedWeek.days.length - 1);
-      const selectedDay = selectedWeek.days[dayIndex];
-      
-      if (!selectedDay || !selectedDay.tasks || !Array.isArray(selectedDay.tasks)) {
-        console.error('Selected day has no tasks data');
-        handleLoadError(true);
-        return;
-      }
-      
-      // Set weekly trial data
-      const weeklyTrialData: WeeklyTrialData = {
-        title: selectedChallenge.title || "Challenge",
-        description: selectedChallenge.description || "No description available",
-        weeklyTrialSummary: selectedWeek.weeklyTrial || "No weekly trial summary available"
-      };
-      
-      setWeeklyTrial(weeklyTrialData);
-      await storageService.saveWeeklyTrial(userToken, JSON.stringify(weeklyTrialData));
-      
-      // Set daily tasks from the selected day
-      const tasks = selectedDay.tasks;
-      
-      // In case there are more than 2 tasks, trim to just the first 2
-      const taskIds = tasks.slice(0, 2);
-      if (taskIds.length === 0) {
-        // No tasks found
-        setDailyTasks(["No tasks for this day", "Please check back tomorrow"]);
-        setDailyTaskIds(['', '']);
-        return;
-      }
-      
-      // Format task text with duration from the task library
-      const taskLibrary = typedQuestData.taskLibrary;
-      const formattedTasks = taskIds.map(taskId => {
-        // Ensure taskId is a string and exists in the library
-        if (!taskId || typeof taskId !== 'string' || !taskLibrary[taskId]) {
-          console.warn(`Task not found in library: ${taskId}`);
-          return `Unknown task: ${taskId}`;
-        }
-        
-        const taskInfo = taskLibrary[taskId];
-        if (!taskInfo) return `Unknown task: ${taskId}`;
-        
-        // Get the duration directly from the task - no intensity levels to check
-        const duration = taskInfo.duration;
-        
-        if (!duration) {
-          console.warn(`No duration found for task ${taskId}`);
-          return `${taskInfo.task} (Duration not found)`;
-        }
-        
-        return `${taskInfo.task} (${duration})`;
-      });
-      
-      // Transform formatted tasks to Task objects (string or {text, status})
-      const tasksWithPreservedStatus = formattedTasks.map(taskText => {
-        // Check if this task text exists in our loaded tasks and has a non-default status
-        const existingStatus = tasksMap.get(taskText);
-        
-        if (existingStatus && ['completed', 'canceled'].includes(existingStatus)) {
-          // Preserve the existing status
-          return { text: taskText, status: existingStatus };
-        }
-        
-        // Otherwise use the task as a plain string (default status)
-        return taskText;
-      });
-      
-      setDailyTasks(tasksWithPreservedStatus);
-      setDailyTaskIds(taskIds);
-      
-      // Save tasks with preserved status
-      await storageService.saveDailyTasksWithStatus(userToken, tasksWithPreservedStatus.map(task => {
-        if (typeof task === 'string') {
-          return { text: task, status: 'default' };
-        }
-        return task;
-      }));
-      
-      // Handle daily quote using the new structure
-      if (quotesData && Array.isArray(quotesData) && quotesData.length > 0) {
-        const randomIndex = Math.floor(Math.random() * quotesData.length);
-        // Cast the selected item to the new QuoteData interface
-        const randomQuote: QuoteData = quotesData[randomIndex] as QuoteData; 
-        
-        // Check if the selected quote has the expected structure
-        if (randomQuote && randomQuote.quoteText) {
-          // Set dailyQuote state with only the quote text
-          setDailyQuote(randomQuote); 
-        } else {
-          console.warn("Selected quote data is missing 'quoteText':", randomQuote);
-          setDailyQuote({ quoteText: "Quote not available", author: "System", origin: null, authorImageKey: "" });
-        }
-      } else {
-        console.warn("quotesData is not available or empty.");
-        // Provide a default quote text
-        setDailyQuote({ quoteText: "The unexamined life is not worth living", author: "Socrates", origin: "Apology", authorImageKey: "socrates" });
-      }
-      
-    } catch (error) {
-      console.error('Error loading quests:', error);
-      handleLoadError(true); // Refresh all on error
-    }
-  }, [userToken, accountAge, currentChallenge]);
-
-  // Handle error state
-  const handleLoadError = (refreshWeeklyTrial: boolean) => {
-      if (refreshWeeklyTrial) {
-      setWeeklyTrial({
-        title: "Error loading challenge",
-        description: "There was a problem loading your weekly challenge",
-        weeklyTrialSummary: "Please try again later"
-      });
-      }
-      
-      setDailyTasks([
-        "Error loading daily task 1",
-        "Error loading daily task 2"
-      ]);
-    setDailyTaskIds(['', '']);
-      
-      setDailyQuote(null);
-  };
-  
-  // Return stable object references
-  const userData = {
-    email,
-    password,
-    userToken,
-    userName,
-    userHandle,
-    profileImage,
-    userChoices,
-  };
-
-  const content = {
-    dailyQuote: dailyQuote?.quoteText ?? "Loading quote...",
-    dailyQuoteAuthor: dailyQuote?.author ?? "",
-    dailyQuoteOrigin: dailyQuote?.origin, // Expose origin
-    dailyTasks,
-    dailyTaskIds,
-    weeklyTrial,
-    additionalTasks,
-    currentChallenge,
-    completedTasks,
-    accountAge, // Expose current age
-  };
-  
-  // Get task categories - ensure we're getting both from the task library and from AsyncStorage
-  const getTaskCategories = useCallback((): Array<'mindfulness' | 'learning' | 'creativity' | 'social' | 'fitness' | undefined | string> => {
-    try {
-      // If we don't have any tasks, return an empty array
-      if (!dailyTasks || !Array.isArray(dailyTasks)) return [];
-      
-      // Process each daily task to find its category
-      const taskCategories = dailyTasks.map((task, index) => {
-        // For string-only tasks, we need to check if we have categories in dailyTaskIds 
-        if (typeof task === 'string') {
-          // Try to find a matching task ID
-          const taskId = dailyTaskIds && dailyTaskIds[index];
-          if (taskId) {
-            // Convert from task library generic categories to our specific ones
-            const category = getTaskCategory(taskId, questsData?.taskLibrary as any);
-            switch (category) {
-              case 'physical': return 'fitness';
-              case 'mindfulness': return 'mindfulness';
-              case 'learning': return 'learning';
-              case 'social': return 'social'; 
-              case 'creativity': return 'creativity';
-              default: return undefined;
-            }
-          }
-        } else {
-          // For object tasks, check if they have a category property
-          const taskObj = task as any; // Use any temporarily to access potential category
-          if (taskObj.category) {
-            return taskObj.category;
-          }
-        }
-        
-        // Default to undefined if no category found
-        return undefined;
-      });
-      
-      // Filter out undefined values
-      return taskCategories.filter(cat => cat !== undefined) as Array<'mindfulness' | 'learning' | 'creativity' | 'social' | 'fitness' | string>;
-    } catch (error) {
-      console.error('Error getting task categories:', error);
-      return [];
-    }
-  }, [dailyTasks, dailyTaskIds]);
-
-  // Update task handlers - use useCallback
-  const handleTaskChange = useCallback((index: number, newTask: string) => {
-    setDailyTasks(prevTasks => {
-      const updatedTasks = [...prevTasks];
-      
-      // If the current task is an object with status, update only the text
-      if (typeof updatedTasks[index] === 'object') {
-        (updatedTasks[index] as any).text = newTask;
-      } else {
-        // Otherwise, replace the string
-        updatedTasks[index] = newTask;
-      }
-      
-      // Use StorageUtils instead of direct AsyncStorage
-      if (userToken) {
-        storageService.saveDailyTasksWithStatus(userToken, updatedTasks);
-      }
-      
-      return updatedTasks;
-    });
-  }, [userToken]);
-
-  const handleQuoteChange = useCallback((newQuote: string) => {
-    setDailyQuote(null);
-  }, []);
-
-  const handleAdditionalTaskChange = useCallback((index: number, newText: string) => {
-    setAdditionalTasks(prevTasks => {
-      const updatedTasks = [...prevTasks];
-      if (updatedTasks[index]) {
-        updatedTasks[index] = {...updatedTasks[index], text: newText};
-        
-        // Store the updated tasks with proper closure handling
-        if (userToken) {
-          storageService.saveAdditionalTasks(userToken, updatedTasks);
-        }
-        return updatedTasks;
-      }
-      return prevTasks;
-    });
-  }, [userToken]);
-
-  // Add a dedicated function to set additional tasks
-  const updateAdditionalTasks = useCallback((tasks: AdditionalTask[]) => {
-    setAdditionalTasks(tasks);
-    
-    // Store the updated tasks
-    if (userToken) {
-      storageService.saveAdditionalTasks(userToken, tasks);
-    }
-  }, [userToken]);
-
-  // Refresh data function - Reloads user data which includes age, triggering quest reload
-  const isRefreshingData = useRef(false);
-  
-  const refreshData = useCallback(async () => {
-    // Prevent concurrent refreshes
-    if (isRefreshingData.current) {
-      console.log("Refresh already in progress, skipping");
-      return;
-    }
-    
-    try {
-      isRefreshingData.current = true;
-      console.log("Manual Refresh Triggered");
-      await loadUserData();
-    } finally {
-      // Always reset the flag, even if an error occurs
-      isRefreshingData.current = false;
-    }
-  }, [loadUserData]);
-
-  // Function to increase account age (by adjusting creation date)
-  const increaseAccountAge = useCallback(async () => {
-    if (!userToken) return;
-    console.log("DEV: Attempting to increase account age...");
-    const success = await storageService.increaseAccountCreationDay(userToken);
-    if (success) {
-      await loadUserData(); // Reload user data to get new age and trigger quest update
-    }
-  }, [userToken, loadUserData]);
-
-  // Function to decrease account age (by adjusting creation date)
-  const decreaseAccountAge = useCallback(async () => {
-    if (!userToken) return;
-    console.log("DEV: Attempting to decrease account age...");
-    const success = await storageService.decreaseAccountCreationDay(userToken);
-    if (success) {
-      await loadUserData(); // Reload user data to get new age and trigger quest update
-    }
-  }, [userToken, loadUserData]);
-
-  // Load initial user data on mount
-  useEffect(() => {
-    loadUserData();
-  }, [loadUserData]);
-
-  // Load quests whenever accountAge or userToken changes (after initial loadUserData)
-   useEffect(() => {
-     if (userToken && accountAge > 0) { // Ensure we have token and age
-       loadQuests();
-     }
-   }, [accountAge, userToken, loadQuests]); // Add loadQuests
 
   // Load quote - Separate from quest loading
   const loadQuote = useCallback(() => {
        console.log("Load Quote: Loading new quote.");
-       if (quotesData && Array.isArray(quotesData) && quotesData.length > 0) {
-           const randomIndex = Math.floor(Math.random() * quotesData.length);
-           const randomQuote: QuoteData = quotesData[randomIndex] as QuoteData;
+       // Type guard for quotesData
+       const typedQuotesData = quotesData as unknown as QuoteData[];
+       if (typedQuotesData && Array.isArray(typedQuotesData) && typedQuotesData.length > 0) {
+           const randomIndex = Math.floor(Math.random() * typedQuotesData.length);
+           const randomQuote: QuoteData = typedQuotesData[randomIndex];
            if (randomQuote && randomQuote.quoteText) {
-               setDailyQuote(randomQuote); // Store the full quote object
+               setDailyQuote(randomQuote);
            } else {
                console.warn("Selected quote data is invalid:", randomQuote);
                setDailyQuote({ quoteText: "Quote not available", author: "System", origin: null, authorImageKey: "" });
@@ -624,156 +155,349 @@ export default function useHomepageData() {
            console.warn("quotesData is not available or empty.");
            setDailyQuote({ quoteText: "The unexamined life is not worth living", author: "Socrates", origin: "Apology", authorImageKey: "socrates" });
        }
-  }, []); // No dependencies, loads randomly each time called
+  }, []);
 
-  // Load quote and potentially quests on focus
-  useFocusEffect(
-    useCallback(() => {
-      console.log("Homepage Focused");
-      loadQuote(); // Load a new quote every time the screen is focused
 
-      // Optionally force-reload quests on focus, although the useEffect above handles changes
-      // If you want quests to *always* reload on focus (e.g., to catch background updates):
-      // if (userToken && accountAge > 0) {
-      //    console.log("Focus: Reloading quests");
-      //    loadQuests();
-      // }
+  // Handle error state more gracefully
+  const handleLoadError = useCallback((errorSource: string, refreshWeeklyTrial: boolean) => {
+      console.error(`handleLoadError called from ${errorSource}`);
+      if (refreshWeeklyTrial) {
+          setWeeklyTrial({
+              title: "Error loading challenge",
+              description: "There was a problem loading the weekly challenge.",
+              weeklyTrialSummary: "Please try refreshing."
+          });
+      }
+      // Set daily tasks to an empty array or a specific error task object
+      setDailyTasks([{ id: 'error-loading', text: "Error loading daily tasks.", status: 'default', category: 'general' }]);
+      setDailyTaskIds(['error-loading']);
 
-      // Reload task status from storage in case it was updated elsewhere?
-      // This might conflict with the status preservation in loadQuests. Be careful.
-      // const reloadStatus = async () => {
-      //    if(userToken) {
-      //       const tasks = await loadUserTaskStatus(userToken);
-      //       if (tasks && tasks.length > 0) {
-      //          setDailyTasks(tasks);
-      //       }
-      //    }
-      // }
-      // reloadStatus();
+      // Don't clear quote on error
+      if (!dailyQuote) loadQuote();
+  }, [dailyQuote, loadQuote]); // Dependencies for handleLoadError
 
-      return () => {
-        // Optional cleanup logic when screen loses focus
-      };
-    }, [loadQuote, userToken, accountAge, loadQuests]) // Add dependencies
-  );
 
-  // Update the addCompletedTask function
-  const addCompletedTask = useCallback(async (
-    task: string,
-    category: string,
-    duration: number,
-    isDaily: boolean
-  ) => {
-    if (!userToken) return null; // Need user token
+  // Load quests based on account age and user class - REFACTORED
+  const loadQuests = useCallback(async () => {
+    if (!userToken || accountAge <= 0) {
+      console.log(`Load Quests: Skipping (token: ${!!userToken}, age: ${accountAge})`);
+      setDailyTasks([]);
+      setDailyTaskIds([]);
+      // Optionally clear weekly trial if dependent on quests?
+      // setWeeklyTrial(null);
+      // setCurrentChallenge(null);
+      return;
+    }
 
     try {
-      // Normalize the category
-      const taskCategory = normalizeCategory(category);
+      console.log(`Load Quests: Starting for user ${userToken}, Account Age: ${accountAge}`);
 
-      // Extract duration from task string if not provided
-      let taskDuration = duration;
-      if (!taskDuration || isNaN(taskDuration)) {
-        const durationMatch = task.match(/\((\d+)\s*m/); // Match digits followed by 'm' (minutes)
-        taskDuration = durationMatch ? parseInt(durationMatch[1], 10) : 30; // Default 30
+      // 1. Attempt to load saved state for the *current* day using getDailyTasksState
+      const savedState = await storageService.getDailyTasksState(userToken);
+
+      if (savedState && savedState.accountAge === accountAge) {
+          console.log(`Load Quests: Found saved state for day ${accountAge}. Using tasks.`);
+          setDailyTasks(savedState.tasks || []); // Use saved tasks, ensure array
+          const loadedTaskIds = (savedState.tasks || []).map(task => task.id || '').filter(Boolean);
+          setDailyTaskIds(loadedTaskIds);
+          if (!dailyQuote) loadQuote(); // Load quote if missing
+
+          // Re-load weekly trial based on current challenge/age if not persisted separately or needs refresh
+          // (logic below finds the challenge/week again if needed)
+           if (!weeklyTrial && questsData) { // Add questsData check
+               // Replicate logic to find current challenge/week based on age
+               const typedQuestData = questsData as QuestData;
+               const classKey = await storageService.getUserClassKey(userToken);
+               if (classKey && typedQuestData.progressiveChallenges) {
+                  // ... (Simplified logic to find challenge and week) ...
+                   let pathCode: string, intensity: number;
+                   // ... (parse classKey) ...
+                    if (classKey.includes('-epic-') || classKey.includes('-beginner-')) {
+                        const parts = classKey.split('-'); pathCode = parts[0]; intensity = parts[1] === 'epic' ? 4 : 2;
+                    } else {
+                        const parts = classKey.split('-'); pathCode = parts[0]; intensity = parseInt(parts[1], 10);
+                        if (isNaN(intensity)) { intensity = 2; } // Default intensity
+                    }
+
+                   const matchingChallenges = typedQuestData.progressiveChallenges.filter(c => c.id && c.id.startsWith(`${pathCode}-${intensity}`));
+                   if (matchingChallenges.length > 0) {
+                       const selectedC = currentChallenge && matchingChallenges.some(mc => mc.id === currentChallenge.id)
+                           ? currentChallenge
+                           : matchingChallenges[0]; // Or random selection
+                       if (selectedC && selectedC.weeks) {
+                           const currentWeekNum = Math.floor((accountAge - 1) / 7) + 1;
+                           const weekIndex = Math.min(currentWeekNum - 1, selectedC.weeks.length - 1);
+                           const selectedW = selectedC.weeks[weekIndex];
+                           if (selectedW) {
+                               const wtData: WeeklyTrialData = { title: selectedC.title, description: selectedC.description, weeklyTrialSummary: selectedW.weeklyTrial };
+                               setWeeklyTrial(wtData);
+                               setCurrentChallenge(selectedC); // Ensure current challenge is set
+                           }
+                       }
+                   }
+               }
+           }
+
+
+          return; // Use the saved state and exit
       }
 
-      // Get account age directly from state
-      const currentAccountAge = accountAge;
+      // 2. If no valid saved state, fetch quests from data files
+      console.log(`Load Quests: Fetching new quests for day ${accountAge}.`);
 
-      // Create task completion record
-      const record = {
-        day: currentAccountAge,
-        task_name: task.split('(')[0].trim(),
-        category: taskCategory.toLowerCase(),
-        duration: taskDuration,
-        is_daily: isDaily ? 1 : 0,
-        completed_at: Date.now()
-      };
+      // --- Load Quest Data and Class Key ---
+      if (!questsData) { handleLoadError('Quest Data Missing', true); return; }
+      const typedQuestData = questsData as unknown as QuestData;
+      if (!typedQuestData.progressiveChallenges || !typedQuestData.taskLibrary) { handleLoadError('Quest Structure Invalid', true); return; }
 
-      // Save the record using the new structure
-      const savedRecord = await storageService.saveTaskCompletionRecord(userToken, record);
-      console.log("Saved task completion record:", savedRecord);
+      const classKey = await storageService.getUserClassKey(userToken);
+      if (!classKey) {
+          console.warn("Load Quests: No user class key found.");
+          setDailyTasks([ { id: 'error-class-1', text: "No user class info found", status: 'default', category: 'general' }, { id: 'error-class-2', text: "Complete classification", status: 'default', category: 'general' }]);
+          setDailyTaskIds(['error-class-1', 'error-class-2']);
+          setWeeklyTrial({ title: "No user class", description: "Complete classification", weeklyTrialSummary: "" });
+          setCurrentChallenge(null);
+          if (!dailyQuote) loadQuote();
+          return;
+      }
 
-      // Maintain the old completedTasks structure for compatibility if needed
-      const newCompletedTask: CompletedTaskData = {
-        category: taskCategory.toLowerCase(),
-        minutes: taskDuration,
-        timestamp: Date.now()
-      };
-      const updatedLegacyTasks = [...completedTasks, newCompletedTask];
-      setCompletedTasks(updatedLegacyTasks);
-      await storageService.saveCompletedTasks(userToken, updatedLegacyTasks); // Save legacy structure
-
-      return savedRecord;
-    } catch (error) {
-      console.error('Error adding completed task:', error);
-      return null;
-    }
-  }, [userToken, accountAge, completedTasks]); // Depend on accountAge from state
-
-  // Add a function to explicitly set daily tasks with status
-  const setDailyTasksWithStatus = useCallback((tasks: Task[]) => {
-    setDailyTasks(tasks);
-    
-    // Save tasks including their status to storage
-    if (userToken) {
-      // We need to store both text and status
-      const tasksForStorage = tasks.map(task => {
-        if (typeof task === 'string') {
-          return { text: task, status: 'default' };
+      // --- Find Challenge, Week, Day ---
+       let pathCode: string, intensity: number;
+        if (classKey.includes('-epic-') || classKey.includes('-beginner-')) {
+            const parts = classKey.split('-'); pathCode = parts[0]; intensity = parts[1] === 'epic' ? 4 : 2;
+        } else {
+            const parts = classKey.split('-'); pathCode = parts[0]; intensity = parseInt(parts[1], 10);
+            if (isNaN(intensity)) { handleLoadError('Class Key Intensity', true); return; }
         }
-        return task;
+
+       const matchingChallenges = typedQuestData.progressiveChallenges.filter(c => c.id && c.id.startsWith(`${pathCode}-${intensity}`));
+       if (matchingChallenges.length === 0) {
+            console.warn(`No challenges found for ${pathCode}-${intensity}`);
+            setWeeklyTrial({ title: "No challenge", description: "No challenge matching profile", weeklyTrialSummary: "Try different profile?" });
+            setCurrentChallenge(null);
+            setDailyTasks([ { id: 'error-match-1', text: "No matching challenges", status: 'default', category: 'general' }, { id: 'error-match-2', text: "Try different profile?", status: 'default', category: 'general' }]);
+            setDailyTaskIds(['error-match-1', 'error-match-2']);
+            if (!dailyQuote) loadQuote();
+            return;
+       }
+
+       // Select challenge (persist or random)
+        let selectedChallenge = currentChallenge;
+        if (!selectedChallenge || !matchingChallenges.some(c => c.id === selectedChallenge?.id)) {
+           const randomIndex = Math.floor(Math.random() * matchingChallenges.length);
+           selectedChallenge = matchingChallenges[randomIndex];
+        }
+       if (!selectedChallenge || !selectedChallenge.weeks || selectedChallenge.weeks.length === 0) { handleLoadError('Challenge Weeks', true); return; }
+       if (currentChallenge?.id !== selectedChallenge.id) setCurrentChallenge(selectedChallenge); // Update state if changed
+
+       // Calculate week/day indices
+       const currentWeekNum = Math.floor((accountAge - 1) / 7) + 1;
+       const currentDayInWeek = (accountAge - 1) % 7 + 1;
+       const weekIndex = Math.min(currentWeekNum - 1, selectedChallenge.weeks.length - 1);
+       const selectedWeek = selectedChallenge.weeks[weekIndex];
+       if (!selectedWeek || !selectedWeek.days || selectedWeek.days.length === 0) { handleLoadError('Week Days', true); return; }
+       const dayIndex = Math.min(currentDayInWeek - 1, selectedWeek.days.length - 1);
+       const selectedDay = selectedWeek.days[dayIndex];
+       if (!selectedDay || !Array.isArray(selectedDay.tasks)) { handleLoadError('Day Tasks', true); return; }
+
+      // --- Set Weekly Trial ---
+      const weeklyTrialData: WeeklyTrialData = { title: selectedChallenge.title, description: selectedChallenge.description, weeklyTrialSummary: selectedWeek.weeklyTrial };
+      if (JSON.stringify(weeklyTrial) !== JSON.stringify(weeklyTrialData)) {
+        setWeeklyTrial(weeklyTrialData);
+        await storageService.saveWeeklyTrial(userToken, JSON.stringify(weeklyTrialData));
+      }
+
+      // --- Get Task IDs and Format Tasks ---
+      const taskIdsForDay = selectedDay.tasks.slice(0, 2); // Max 2 tasks
+      const taskLibrary = typedQuestData.taskLibrary;
+      const newTasks: Task[] = taskIdsForDay.map((taskId) => {
+        if (!taskId || !taskLibrary[taskId]) {
+          console.warn(`Task not found/invalid ID: ${taskId}`);
+          return { id: taskId || `unknown-${Date.now()}`, text: `Unknown task: ${taskId}`, status: 'default', category: 'general' };
+        }
+        const taskInfo = taskLibrary[taskId];
+        const taskIntensityLevel = intensity; // Assume challenge intensity applies
+        const duration = taskInfo.duration || taskInfo.intensities?.[taskIntensityLevel]?.duration || '30';
+        const taskText = `${taskInfo.task} (${duration} min)`;
+        const category = getTaskCategoryFromLibrary(taskId, taskLibrary);
+        return { id: taskId, text: taskText, status: 'default', category: category };
       });
-      
-      // Store the tasks with status
-      storageService.saveDailyTasksWithStatus(userToken, tasksForStorage);
+
+       setDailyTasks(newTasks);
+       setDailyTaskIds(taskIdsForDay);
+
+      // 4. Save the newly fetched state for this day using saveDailyTasksState
+      console.log(`Load Quests: Saving new tasks state for day ${accountAge}`, newTasks);
+      await storageService.saveDailyTasksState(userToken, { tasks: newTasks, accountAge });
+
+      // 5. Load quote if not already loaded
+      if (!dailyQuote) loadQuote();
+
+    } catch (error) {
+      console.error('Error during loadQuests execution:', error);
+      handleLoadError('loadQuests Catch', true);
+    }
+  }, [userToken, accountAge, currentChallenge, weeklyTrial, dailyQuote, loadQuote, handleLoadError]);
+
+
+  // Load initial user data on mount
+  useEffect(() => {
+    loadUserData();
+  }, [loadUserData]);
+
+  // Load quests whenever accountAge changes *after* initial load and is valid
+   useEffect(() => {
+     if (userToken && accountAge > 0) {
+       console.log(`useEffect[accountAge, userToken]: Triggering loadQuests for age ${accountAge}`);
+       loadQuests();
+     }
+   }, [accountAge, userToken, loadQuests]); // loadQuests dependency is important
+
+
+   // Load quote on focus (example, could be triggered differently)
+   useFocusEffect(
+     useCallback(() => {
+       console.log("Homepage Focused: Loading quote.");
+       loadQuote();
+       // Optional: Trigger data refresh if needed based on focus events
+       // Be cautious of excessive refreshes
+       // actions.refreshData();
+     }, [loadQuote]) // Add other dependencies like actions.refreshData if used
+   );
+
+  // --- Actions ---
+
+  const userData = { email, password, userToken, userName, userHandle, profileImage, userChoices };
+  const content = {
+      dailyQuote: dailyQuote?.quoteText ?? "Loading quote...",
+      dailyQuoteAuthor: dailyQuote?.author ?? "",
+      dailyQuoteOrigin: dailyQuote?.origin,
+      dailyTasks, // Always Task objects
+      dailyTaskIds,
+      weeklyTrial,
+      additionalTasks,
+      currentChallenge,
+      completedTasks, // Legacy chart data
+      accountAge,
+  };
+
+  const getTaskCategories = useCallback((): Array<string> => {
+      return dailyTasks
+          .map(task => task.category || 'general')
+          .filter(Boolean); // Filter out undefined/null/empty strings
+  }, [dailyTasks]);
+
+
+  const updateAdditionalTasks = useCallback((tasks: AdditionalTask[]) => {
+    setAdditionalTasks(tasks);
+    if (userToken) {
+      storageService.saveAdditionalTasks(userToken, tasks);
     }
   }, [userToken]);
 
-  // Add a function to update task status
+  const isRefreshingData = useRef(false);
+  const refreshData = useCallback(async () => {
+    if (isRefreshingData.current) { console.log("Refresh already in progress"); return; }
+    try {
+      isRefreshingData.current = true;
+      console.log("Manual Refresh Triggered: Calling loadUserData");
+      await loadUserData(); // Reloads user data, triggers age change, which triggers loadQuests
+      loadQuote(); // Also refresh the quote
+    } catch(error){ console.error("Error during refreshData:", error); }
+    finally { isRefreshingData.current = false; }
+  }, [loadUserData, loadQuote]);
+
+  // Adjust account age (DEV TOOL)
+  const increaseAccountAge = useCallback(async () => {
+    if (!userToken) return;
+    console.log("DEV: Increasing account age...");
+    const success = await storageService.increaseAccountCreationDay(userToken);
+    if (success) await loadUserData(); // Reload user data to get new age
+  }, [userToken, loadUserData]);
+
+  const decreaseAccountAge = useCallback(async () => {
+    if (!userToken) return;
+    console.log("DEV: Decreasing account age...");
+    const success = await storageService.decreaseAccountCreationDay(userToken);
+    if (success) await loadUserData(); // Reload user data to get new age
+  }, [userToken, loadUserData]);
+
+
+  // --- Task Status Update Logic - Uses saveDailyTasksState ---
   const updateTaskStatus = useCallback((index: number, status: 'completed' | 'canceled') => {
     setDailyTasks(prevTasks => {
-      const updatedTasks = [...prevTasks];
-      
-      // Get the task text, regardless of current format
-      const taskText = typeof updatedTasks[index] === 'string'
-        ? updatedTasks[index] as string
-        : (updatedTasks[index] as any).text;
-      
-      // Update to new format with status
-      updatedTasks[index] = {
-        text: taskText,
-        status: status
-      };
-      
-      // Save the updated tasks with status
-      if (userToken) {
-        const tasksForStorage = updatedTasks.map(task => {
-          if (typeof task === 'string') {
-            return { text: task, status: 'default' };
-          }
-          return task;
-        });
-        storageService.saveDailyTasksWithStatus(userToken, tasksForStorage);
+      if (index < 0 || index >= prevTasks.length) {
+          console.error(`updateTaskStatus: Invalid index ${index}`);
+          return prevTasks;
       }
-      
-      return updatedTasks;
+
+      const updatedTasks = [...prevTasks];
+      const taskItem = updatedTasks[index]; // Already validated as Task object
+
+      // Prevent updating already processed tasks to avoid duplicate saves/logic
+      if (taskItem.status === status) {
+         console.log(`updateTaskStatus: Task at index ${index} already has status ${status}. Skipping.`);
+         return prevTasks;
+      }
+
+      updatedTasks[index] = { ...taskItem, status: status };
+      console.log(`updateTaskStatus: Set index ${index} to status ${status}`);
+
+      // Save the entire updated state using saveDailyTasksState
+      if (userToken && accountAge > 0) {
+          console.log(`updateTaskStatus: Saving tasks state for day ${accountAge}`);
+          storageService.saveDailyTasksState(userToken, { tasks: updatedTasks, accountAge });
+      } else {
+          console.warn("updateTaskStatus: Cannot save state - missing token or invalid age.");
+      }
+      return updatedTasks; // Return the new state array
     });
-  }, [userToken]);
+  }, [userToken, accountAge]); // Depends on token and age
+
+
+  // (Legacy function for chart data - keep if needed, ensure consistency)
+  const addCompletedTask = useCallback(async (
+    taskText: string, category: string, duration: number, isDaily: boolean
+  ) => {
+    if (!userToken || accountAge <= 0) return null;
+    try {
+      const taskCategory = storageService.normalizeCategory(category); // Use exported function
+      let taskDuration = duration;
+      if (isNaN(taskDuration)) {
+        const durationMatch = taskText.match(/\((\d+)\s*min\)/);
+        taskDuration = durationMatch ? parseInt(durationMatch[1], 10) : 30;
+      }
+
+      const record = {
+        day: accountAge, task_name: taskText.split('(')[0].trim(), category: taskCategory.toLowerCase(), duration: taskDuration, is_daily: isDaily ? 1 : 0, completed_at: Date.now()
+      };
+      const savedRecord = await storageService.saveTaskCompletionRecord(userToken, record);
+      if (savedRecord) {
+          console.log("Saved task completion record (legacy addCompletedTask path):", savedRecord.id);
+          // Maintain the old completedTasks structure for compatibility if needed
+          const newCompletedTask: CompletedTaskData = { category: taskCategory.toLowerCase(), minutes: taskDuration, timestamp: Date.now() };
+          setCompletedTasks(prev => [...prev, newCompletedTask]); // Update state immutably
+          await storageService.saveCompletedTasks(userToken, [...completedTasks, newCompletedTask]); // Save updated legacy array
+          return savedRecord;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error adding completed task (legacy addCompletedTask path):', error);
+      return null;
+    }
+   }, [userToken, accountAge, completedTasks]); // Depend on completedTasks state
+
 
   const actions = {
     loadUserData,
-    loadQuests,
-    handleAdditionalTaskChange,
+    // loadQuests, // Not typically called directly
     setAdditionalTasks: updateAdditionalTasks,
     refreshData,
     getTaskCategories,
-    addCompletedTask,
-    setCompletedTasks,
-    setDailyTasks: setDailyTasksWithStatus,
-    updateTaskStatus,
-    increaseAccountAge, // Added action
-    decreaseAccountAge, // Added action
+    addCompletedTask, // Legacy chart data
+    updateTaskStatus, // Key function for completion/cancellation
+    increaseAccountAge,
+    decreaseAccountAge,
   };
 
   return { userData, content, actions };

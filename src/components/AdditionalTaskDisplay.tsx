@@ -5,6 +5,9 @@ import WeeklyTrialBox, { useBoxTextColor } from './WeeklyTrialBox';
 import { Swipeable } from 'react-native-gesture-handler';
 import AnimatedSpriteIcon from './AnimatedSpriteIcon';
 
+// Type for WeeklyTrialBox category prop - adjust as needed
+type WeeklyTrialBoxCategory = 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity' | 'general' | undefined;
+
 interface AdditionalTaskDisplayProps {
   tasks: AdditionalTask[];
   theme: any; // Replace with proper theme type if available
@@ -15,24 +18,23 @@ interface AdditionalTaskDisplayProps {
   onToggleImageVisibility?: (index: number) => void;
   onTaskComplete?: (index: number) => void;
   onTaskCancel?: (index: number) => void;
-  onTaskLongPress?: (index: number, text: string) => void;
+  onTaskLongPress?: (index: number, taskItem: AdditionalTask) => void;
 }
 
 // Component for the content of the additional task box
-const AdditionalTaskContent = ({ 
+const AdditionalTaskContent = ({
   text,
   onLongPress,
   category
-}: { 
+}: {
   text: string;
   onLongPress?: () => void;
   category?: string;
 }) => {
-  // Use the box text color from context
   const textColor = useBoxTextColor();
   
   return (
-    <TouchableWithoutFeedback onLongPress={onLongPress}>
+    <TouchableWithoutFeedback onLongPress={onLongPress} delayLongPress={300}>
       <View style={{ width: '100%' }}>
         <Text style={[styles.taskText, { color: textColor }]}>
           {text}
@@ -198,11 +200,11 @@ const AdditionalTaskDisplay = ({
             >
               <WeeklyTrialBox 
                 title={`Additional Task ${index + 1}`}
-                category={task.category}
+                category={task.category as WeeklyTrialBoxCategory}
               >
                 <AdditionalTaskContent 
                   text={task.text} 
-                  onLongPress={() => onTaskLongPress && onTaskLongPress(index, task.text)}
+                  onLongPress={() => onTaskLongPress && onTaskLongPress(index, task)}
                   category={task.category}
                 />
               </WeeklyTrialBox>
