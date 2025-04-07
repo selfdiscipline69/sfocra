@@ -108,7 +108,7 @@ export default function useHomepageData() {
     setUserName(userData.userName);
     setUserHandle(userData.userHandle);
     setProfileImage(userData.profileImage);
-
+    
     if (userData.userToken) {
       const token = userData.userToken;
       const choices = await storageService.getUserChoices(token);
@@ -154,7 +154,7 @@ export default function useHomepageData() {
        } else {
            console.warn("quotesData is not available or empty.");
            setDailyQuote({ quoteText: "The unexamined life is not worth living", author: "Socrates", origin: "Apology", authorImageKey: "socrates" });
-       }
+    }
   }, []);
 
 
@@ -249,7 +249,7 @@ export default function useHomepageData() {
       if (!questsData) { handleLoadError('Quest Data Missing', true); return; }
       const typedQuestData = questsData as unknown as QuestData;
       if (!typedQuestData.progressiveChallenges || !typedQuestData.taskLibrary) { handleLoadError('Quest Structure Invalid', true); return; }
-
+      
       const classKey = await storageService.getUserClassKey(userToken);
       if (!classKey) {
           console.warn("Load Quests: No user class key found.");
@@ -258,53 +258,53 @@ export default function useHomepageData() {
           setWeeklyTrial({ title: "No user class", description: "Complete classification", weeklyTrialSummary: "" });
           setCurrentChallenge(null);
           if (!dailyQuote) loadQuote();
-          return;
+        return;
       }
-
+      
       // --- Find Challenge, Week, Day ---
        let pathCode: string, intensity: number;
-        if (classKey.includes('-epic-') || classKey.includes('-beginner-')) {
+      if (classKey.includes('-epic-') || classKey.includes('-beginner-')) {
             const parts = classKey.split('-'); pathCode = parts[0]; intensity = parts[1] === 'epic' ? 4 : 2;
-        } else {
+      } else {
             const parts = classKey.split('-'); pathCode = parts[0]; intensity = parseInt(parts[1], 10);
             if (isNaN(intensity)) { handleLoadError('Class Key Intensity', true); return; }
         }
 
        const matchingChallenges = typedQuestData.progressiveChallenges.filter(c => c.id && c.id.startsWith(`${pathCode}-${intensity}`));
-       if (matchingChallenges.length === 0) {
-            console.warn(`No challenges found for ${pathCode}-${intensity}`);
+      if (matchingChallenges.length === 0) {
+        console.warn(`No challenges found for ${pathCode}-${intensity}`);
             setWeeklyTrial({ title: "No challenge", description: "No challenge matching profile", weeklyTrialSummary: "Try different profile?" });
-            setCurrentChallenge(null);
+        setCurrentChallenge(null);
             setDailyTasks([ { id: 'error-match-1', text: "No matching challenges", status: 'default', category: 'general' }, { id: 'error-match-2', text: "Try different profile?", status: 'default', category: 'general' }]);
             setDailyTaskIds(['error-match-1', 'error-match-2']);
             if (!dailyQuote) loadQuote();
-            return;
-       }
-
+        return;
+      }
+      
        // Select challenge (persist or random)
-        let selectedChallenge = currentChallenge;
+      let selectedChallenge = currentChallenge;
         if (!selectedChallenge || !matchingChallenges.some(c => c.id === selectedChallenge?.id)) {
-           const randomIndex = Math.floor(Math.random() * matchingChallenges.length);
-           selectedChallenge = matchingChallenges[randomIndex];
+        const randomIndex = Math.floor(Math.random() * matchingChallenges.length);
+        selectedChallenge = matchingChallenges[randomIndex];
         }
        if (!selectedChallenge || !selectedChallenge.weeks || selectedChallenge.weeks.length === 0) { handleLoadError('Challenge Weeks', true); return; }
        if (currentChallenge?.id !== selectedChallenge.id) setCurrentChallenge(selectedChallenge); // Update state if changed
 
        // Calculate week/day indices
-       const currentWeekNum = Math.floor((accountAge - 1) / 7) + 1;
-       const currentDayInWeek = (accountAge - 1) % 7 + 1;
-       const weekIndex = Math.min(currentWeekNum - 1, selectedChallenge.weeks.length - 1);
-       const selectedWeek = selectedChallenge.weeks[weekIndex];
+      const currentWeekNum = Math.floor((accountAge - 1) / 7) + 1;
+      const currentDayInWeek = (accountAge - 1) % 7 + 1;
+      const weekIndex = Math.min(currentWeekNum - 1, selectedChallenge.weeks.length - 1);
+      const selectedWeek = selectedChallenge.weeks[weekIndex];
        if (!selectedWeek || !selectedWeek.days || selectedWeek.days.length === 0) { handleLoadError('Week Days', true); return; }
-       const dayIndex = Math.min(currentDayInWeek - 1, selectedWeek.days.length - 1);
-       const selectedDay = selectedWeek.days[dayIndex];
+      const dayIndex = Math.min(currentDayInWeek - 1, selectedWeek.days.length - 1);
+      const selectedDay = selectedWeek.days[dayIndex];
        if (!selectedDay || !Array.isArray(selectedDay.tasks)) { handleLoadError('Day Tasks', true); return; }
 
       // --- Set Weekly Trial ---
       const weeklyTrialData: WeeklyTrialData = { title: selectedChallenge.title, description: selectedChallenge.description, weeklyTrialSummary: selectedWeek.weeklyTrial };
       if (JSON.stringify(weeklyTrial) !== JSON.stringify(weeklyTrialData)) {
-        setWeeklyTrial(weeklyTrialData);
-        await storageService.saveWeeklyTrial(userToken, JSON.stringify(weeklyTrialData));
+      setWeeklyTrial(weeklyTrialData);
+      await storageService.saveWeeklyTrial(userToken, JSON.stringify(weeklyTrialData));
       }
 
       // --- Get Task IDs and Format Tasks ---
@@ -332,7 +332,7 @@ export default function useHomepageData() {
 
       // 5. Load quote if not already loaded
       if (!dailyQuote) loadQuote();
-
+      
     } catch (error) {
       console.error('Error during loadQuests execution:', error);
       handleLoadError('loadQuests Catch', true);
@@ -369,14 +369,14 @@ export default function useHomepageData() {
 
   const userData = { email, password, userToken, userName, userHandle, profileImage, userChoices };
   const content = {
-      dailyQuote: dailyQuote?.quoteText ?? "Loading quote...",
-      dailyQuoteAuthor: dailyQuote?.author ?? "",
+    dailyQuote: dailyQuote?.quoteText ?? "Loading quote...",
+    dailyQuoteAuthor: dailyQuote?.author ?? "",
       dailyQuoteOrigin: dailyQuote?.origin,
       dailyTasks, // Always Task objects
-      dailyTaskIds,
-      weeklyTrial,
-      additionalTasks,
-      currentChallenge,
+    dailyTaskIds,
+    weeklyTrial,
+    additionalTasks,
+    currentChallenge,
       completedTasks, // Legacy chart data
       accountAge,
   };
@@ -447,7 +447,7 @@ export default function useHomepageData() {
       if (userToken && accountAge > 0) {
           console.log(`updateTaskStatus: Saving tasks state for day ${accountAge}`);
           storageService.saveDailyTasksState(userToken, { tasks: updatedTasks, accountAge });
-      } else {
+       } else {
           console.warn("updateTaskStatus: Cannot save state - missing token or invalid age.");
       }
       return updatedTasks; // Return the new state array
@@ -474,11 +474,11 @@ export default function useHomepageData() {
       const savedRecord = await storageService.saveTaskCompletionRecord(userToken, record);
       if (savedRecord) {
           console.log("Saved task completion record (legacy addCompletedTask path):", savedRecord.id);
-          // Maintain the old completedTasks structure for compatibility if needed
+      // Maintain the old completedTasks structure for compatibility if needed
           const newCompletedTask: CompletedTaskData = { category: taskCategory.toLowerCase(), minutes: taskDuration, timestamp: Date.now() };
           setCompletedTasks(prev => [...prev, newCompletedTask]); // Update state immutably
           await storageService.saveCompletedTasks(userToken, [...completedTasks, newCompletedTask]); // Save updated legacy array
-          return savedRecord;
+      return savedRecord;
       }
       return null;
     } catch (error) {

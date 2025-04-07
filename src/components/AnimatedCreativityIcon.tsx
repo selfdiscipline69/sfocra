@@ -107,7 +107,7 @@ const AnimatedCreativityIcon: React.FC<AnimatedCreativityIconProps> = ({ size = 
         resizeMode="contain"
       />
       <Animated.Image
-        source={require('../assets/creativity-sprite-4.png')}
+        source={require('../../src/assets/creativity-sprite-4.png')} 
         style={[
           styles.sprite,
           {
