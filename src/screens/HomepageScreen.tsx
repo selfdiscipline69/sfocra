@@ -34,7 +34,7 @@ import WeeklyTrialSection from '../components/WeeklyTrialSection';
 import DailyTaskInput from '../components/DailyTaskInput';
 import AdditionalTaskDisplay from '../components/AdditionalTaskDisplay';
 import BottomNavigation from '../components/BottomNavigation';
-import TimerDisplay, { TimerDisplayProps } from '../components/TimerDisplay';
+import TimerDisplay from '../components/TimerDisplay';
 
 // Task Addition Utilities
 import { addCustomTask } from '../utils/taskAdditionUtils';
@@ -260,6 +260,10 @@ const HomepageScreen = () => {
     const adjustedStartTime = new Date(Date.now() - (activeTimer.elapsedSeconds * 1000));
     setActiveTimer(prev => prev ? { ...prev, isActive: true, timerStopped: false, startTime: adjustedStartTime } : null);
   };
+  const handleDiscardTimer = () => {
+      console.log("Discarding timer");
+      setActiveTimer(null); // Simply remove the timer state
+  };
   const handleFinishTimer = () => {
     if (!activeTimer) return;
     let finalElapsedSeconds = activeTimer.elapsedSeconds;
@@ -303,8 +307,21 @@ const HomepageScreen = () => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={[styles.container, { backgroundColor: theme.background }]} keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 20} >
       <View style={styles.innerContainer}>
-        {/* Active Timer Display */}
-        {activeTimer && ( <TimerDisplay isRunning={activeTimer.isActive} taskName={activeTimer.taskName} startTime={activeTimer.startTime || undefined} onStop={handleStopTimer} timerStopped={activeTimer.timerStopped} onFinish={handleFinishTimer} onResume={handleResumeTimer} elapsedSeconds={activeTimer.elapsedSeconds} /* Pass theme if needed: theme={theme} */ /> )}
+        {/* Active Timer Display - Add onDiscard */}
+        {activeTimer && (
+          <TimerDisplay
+            isRunning={activeTimer.isActive}
+            taskName={activeTimer.taskName}
+            startTime={activeTimer.startTime || undefined}
+            onStop={handleStopTimer}
+            timerStopped={activeTimer.timerStopped}
+            onFinish={handleFinishTimer}
+            onResume={handleResumeTimer}
+            onDiscard={handleDiscardTimer}
+            elapsedSeconds={activeTimer.elapsedSeconds}
+            theme={theme}
+          />
+        )}
 
         {/* ScrollView */}
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={true} scrollEnabled={true} style={styles.scrollView} refreshControl={ <RefreshControl refreshing={false} onRefresh={actions.refreshData} colors={[theme.accent]} tintColor={theme.accent} /> } >
@@ -404,16 +421,31 @@ const HomepageScreen = () => {
             </View>
         </Modal>
 
-        {/* Celebration Modal */}
+        {/* Celebration Modal - Updated Structure */}
         <Modal animationType="none" transparent={true} visible={showCelebration} onRequestClose={closeCelebration}>
              <Animated.View style={[styles.celebrationModalOverlay, { opacity: fadeAnim }]}>
                 <Animated.View style={[styles.celebrationModalContent, { backgroundColor: theme.boxBackground, transform: [{ scale: scaleAnim }] }]}>
-                    <View style={styles.celebrationIconContainer}><Text style={styles.celebrationEmoji}>🎉</Text><Text style={styles.celebrationEmoji}>🏆</Text><Text style={styles.celebrationEmoji}>✨</Text></View>
-                    <Text style={[styles.celebrationTitle, { color: theme.text }]}>Task Completed!</Text>
+                    {/* Title Name */}
+                    <Text style={[styles.CongratulationText, { color: theme.text }]}>You've completed a task Hero</Text>
+                    {/* Add Image */}
+                    <Image
+                       source={require('../../assets/images/task_done_aftermath_ill.png')} // Adjust path if needed
+                       style={styles.celebrationImage}
+                       resizeMode="cover"
+                    />
+                    {/* Task Name */}
                     <Text style={[styles.celebrationTaskText, { color: theme.text }]}>{completedTaskText}</Text>
-                    <View style={[styles.categoryBadge, { backgroundColor: getCelebrationColor(completedCategory) }]}><Text style={styles.categoryBadgeText}>{completedCategory.charAt(0).toUpperCase() + completedCategory.slice(1)}</Text></View>
-                    <Text style={[styles.celebrationMessage, { color: theme.text }]}>Great job!</Text>
-                    <TouchableOpacity style={[styles.celebrationButton, { backgroundColor: theme.accent }]} onPress={closeCelebration}><Text style={styles.celebrationButtonText}>Continue</Text></TouchableOpacity>
+                    {/* Quote */}
+                    <Text style={[styles.celebrationQuote, { color: theme.text }]}>
+                        "You have to work hard in the dark to shine in the light."
+                    </Text>
+                    <Text style={[styles.celebrationQuoteAuthor, { color: theme.subtext || '#888' }]}>
+                        - Kobe Bryant
+                    </Text>
+                    {/* Continue Button */}
+                    <TouchableOpacity style={[styles.celebrationButton, { backgroundColor: theme.accent }]} onPress={closeCelebration}>
+                        <Text style={styles.celebrationButtonText}>Continue</Text>
+                    </TouchableOpacity>
                 </Animated.View>
              </Animated.View>
         </Modal>
@@ -461,16 +493,41 @@ const styles = StyleSheet.create({
   modalText: { fontSize: 16, marginBottom: 15, textAlign: 'center', lineHeight: 22 },
   modalButton: { width: '85%', paddingVertical: 14, borderRadius: 8, alignItems: 'center', marginTop: 12 },
   modalButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  celebrationModalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.7)' },
-  celebrationModalContent: { width: width * 0.85, borderRadius: 15, padding: 25, alignItems: 'center', shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5 },
-  celebrationIconContainer: { flexDirection: 'row', marginBottom: 15 },
-  celebrationEmoji: { fontSize: 40, marginHorizontal: 5 },
-  celebrationTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
-  celebrationTaskText: { fontSize: 18, textAlign: 'center', marginBottom: 15, paddingHorizontal: 10 },
-  categoryBadge: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginBottom: 20 },
-  categoryBadgeText: { color: 'white', fontWeight: 'bold', fontSize: 14 },
-  celebrationMessage: { fontSize: 16, textAlign: 'center', marginBottom: 25, fontStyle: 'italic' },
-  celebrationButton: { paddingVertical: 12, paddingHorizontal: 25, borderRadius: 25, alignItems: 'center', width: '80%' },
+  celebrationModalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.75)' }, // Darker overlay maybe
+  celebrationModalContent: { width: width * 0.85, borderRadius: 15, paddingVertical: 30, paddingHorizontal: 20, alignItems: 'center', shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5 },
+  celebrationImage: {
+    width: 200, // Adjust size as needed
+    height: 200, // Adjust size as needed
+    marginBottom: 25,
+  },
+  CongratulationText: {
+    fontSize: 20, // Keep or adjust
+    fontWeight: 'bold', // Make task name bold maybe
+    textAlign: 'center',
+    marginBottom: 20, // Spacing before quote
+    paddingHorizontal: 10
+},
+  celebrationTaskText: {
+      fontSize: 17, // Keep or adjust
+      fontWeight: 'bold', // Make task name bold maybe
+      textAlign: 'center',
+      marginBottom: 20, // Spacing before quote
+      paddingHorizontal: 10
+  },
+  celebrationQuote: {
+    fontSize: 14,
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginBottom: 8,
+    paddingHorizontal: 15,
+    lineHeight: 22,
+  },
+  celebrationQuoteAuthor: {
+    fontSize: 13,
+    textAlign: 'center',
+    marginBottom: 30, // Spacing before button
+  },
+  celebrationButton: { paddingVertical: 12, paddingHorizontal: 25, borderRadius: 25, alignItems: 'center', width: '70%', alignSelf: 'center' }, // Make button slightly smaller?
   celebrationButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
 });
 
