@@ -122,8 +122,9 @@ const DailyTaskInput = ({
         >
           <WeeklyTrialBox
             title={`Daily Task`}
-            // Fix: Cast category, ensuring 'general' is allowed by WeeklyTrialBoxCategory
-            category={taskItem.category as WeeklyTrialBoxCategory}
+            // Fix: Pass undefined directly if category is 'general', otherwise pass the category.
+            // No need for casting if WeeklyTrialBox expects the specific string types or undefined.
+            category={taskItem.category === 'general' ? undefined : taskItem.category}
             theme={theme}
           >
             <TaskDisplay
