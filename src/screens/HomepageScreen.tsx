@@ -25,7 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Custom hooks
 import useHomepageData from '../hooks/useHomepageData';
 import { useTheme } from '../context/ThemeContext';
-import { storageService, normalizeCategory } from '../utils/StorageUtils';
+import { storageService, normalizeCategory, TaskCompletionRecord } from '../utils/StorageUtils';
 
 // Components
 import ProfileSection from '../components/ProfileSection';
@@ -207,8 +207,17 @@ const HomepageScreen = () => {
     let duration = 30; const durationMatch = taskText.match(/\((\d+)\s*min\)/);
     if (durationMatch?.[1]) duration = parseInt(durationMatch[1], 10);
     const day = content.accountAge;
+    const originalTaskId = taskItem.id; // Get original task ID
     if (day <= 0 || !userData.userToken) { console.error("Cannot save completion: Invalid age/token."); return; }
-    const record = { day, task_name: taskText.split('(')[0].trim(), category: category.toLowerCase(), duration, is_daily: 1, completed_at: Date.now() };
+    const record: Omit<TaskCompletionRecord, 'id'> = {
+      day,
+      task_name: taskText.split('(')[0].trim(),
+      category: category.toLowerCase(),
+      duration,
+      is_daily: 1,
+      completed_at: Date.now(),
+      original_task_id: originalTaskId // Pass the original ID
+    };
     storageService.saveTaskCompletionRecord(userData.userToken, record)
       .then(saved => { if (saved) { console.log(`Record saved (ID: ${saved.id})`); DeviceEventEmitter.emit('taskCompleted', { category }); showCelebrationModal(taskText, category); actions.updateTaskStatus(index, 'completed'); } else { console.error('Failed save.'); }})
       .catch(err => { console.error('Error saving:', err); });
@@ -224,8 +233,18 @@ const HomepageScreen = () => {
     const task = currentTasks[index]; if (!task) return;
     const category = task.category || 'general'; let duration = 30;
     const match = task.text.match(/\((\d+)\s*min\)/); if (match?.[1]) duration = parseInt(match[1], 10);
-    const day = content.accountAge; if (day <= 0 || !userData.userToken) { console.error("Cannot save add. completion: Invalid age/token."); return; }
-    const record = { day, task_name: task.text.split('(')[0].trim(), category: category.toLowerCase(), duration, is_daily: 0, completed_at: Date.now() };
+    const day = content.accountAge;
+    const originalTaskId = task.id; // Get original task ID
+    if (day <= 0 || !userData.userToken) { console.error("Cannot save add. completion: Invalid age/token."); return; }
+    const record: Omit<TaskCompletionRecord, 'id'> = {
+      day,
+      task_name: task.text.split('(')[0].trim(),
+      category: category.toLowerCase(),
+      duration,
+      is_daily: 0,
+      completed_at: Date.now(),
+      original_task_id: originalTaskId // Pass the original ID
+    };
     storageService.saveTaskCompletionRecord(userData.userToken, record)
       .then(saved => { if (saved) { console.log(`Add. record saved (ID: ${saved.id})`); DeviceEventEmitter.emit('taskCompleted', { category }); showCelebrationModal(task.text, category); actions.setAdditionalTasks(currentTasks.filter((_, i) => i !== index)); } else { console.error('Failed save add.'); }})
       .catch(err => { console.error('Error saving add.:', err); });
@@ -270,19 +289,47 @@ const HomepageScreen = () => {
     if (activeTimer.isActive && activeTimer.startTime) {
         finalElapsedSeconds += Math.floor((Date.now() - activeTimer.startTime.getTime()) / 1000);
     }
-    const { taskIndex, isDaily, taskId, taskName } = activeTimer;
-    console.log(`Finishing timer: ${isDaily ? 'Daily' : 'Add.'} idx ${taskIndex}, ID ${taskId}, Name: ${taskName}, Elapsed: ${finalElapsedSeconds}s`);
+    const { taskIndex, isDaily, taskId } = activeTimer; // No need for taskName here
+    console.log(`Finishing timer: ${isDaily ? 'Daily' : 'Add.'} idx ${taskIndex}, ID ${taskId}, Elapsed: ${finalElapsedSeconds}s`);
+    
+    // Update duration in completion record if > 0 seconds
+    if (finalElapsedSeconds > 0 && userData.userToken) {
+        // Find the most recent completion record for this task ID (or task details if no ID)
+        // This is a bit tricky as completion happens AFTER timer finish.
+        // Maybe save the record ID when completion happens, or update the record *after* completion.
+        // For now, let's assume we can update later if needed, or handle duration on completion itself.
+         console.log("Timer finished, duration update not implemented directly here yet.");
+    }
+
     setActiveTimer(null); // Reset timer state first
     if (isDaily) {
         const taskItem = content.dailyTasks?.[taskIndex];
-        if (typeof taskItem === 'object' && taskItem !== null && (taskItem.id === taskId || !taskId)) { handleTaskComplete(taskIndex); }
-        else { console.error(`Daily task mismatch on finish: idx ${taskIndex}, ID ${taskId}`); }
+        // Match using taskId from the timer state
+        if (typeof taskItem === 'object' && taskItem !== null && taskItem.id === taskId) {
+             handleTaskComplete(taskIndex);
+        } else {
+            console.error(`Daily task mismatch or invalid on finish: idx ${taskIndex}, ID ${taskId}`);
+            // Attempt to find by index if ID match failed but index is valid
+            if (content.dailyTasks && taskIndex >= 0 && taskIndex < content.dailyTasks.length) {
+                console.warn(`Attempting completion by index ${taskIndex} due to ID mismatch.`);
+                handleTaskComplete(taskIndex);
+            }
+        }
     } else {
         const currentTasks: AdditionalTask[] = content.additionalTasks || [];
         if (taskIndex < currentTasks.length) {
              const taskItem = currentTasks[taskIndex];
-             if (taskItem && (taskItem.id === taskId || !taskId)) { handleAdditionalTaskComplete(taskIndex); }
-             else { console.error(`Add. task mismatch on finish: idx ${taskIndex}, ID ${taskId}`); }
+             // Match using taskId from the timer state
+             if (taskItem && taskItem.id === taskId) {
+                 handleAdditionalTaskComplete(taskIndex);
+             } else {
+                 console.error(`Add. task mismatch or invalid on finish: idx ${taskIndex}, ID ${taskId}`);
+                 // Attempt to find by index if ID match failed but index is valid
+                 if (taskIndex >= 0 && taskIndex < currentTasks.length) {
+                     console.warn(`Attempting completion by index ${taskIndex} due to ID mismatch.`);
+                     handleAdditionalTaskComplete(taskIndex);
+                 }
+             }
         } else { console.error(`Invalid add. task index on finish: ${taskIndex}`); }
     }
   };
@@ -303,6 +350,18 @@ const HomepageScreen = () => {
        else { await actions.decreaseAccountAge(); Alert.alert("Age Decreased"); }
   };
   // --- End Secret Day Adjustment Logic ---
+
+  // Add listener for task state updates
+  useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener('taskStateUpdated', () => {
+      console.log('HomepageScreen: Received taskStateUpdated event, refreshing data.');
+      actions.refreshData(); // Refresh data to reflect changes
+    });
+
+    return () => {
+      subscription.remove(); // Clean up listener on unmount
+    };
+  }, [actions.refreshData]); // Add dependency
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={[styles.container, { backgroundColor: theme.background }]} keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 20} >

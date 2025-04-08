@@ -190,10 +190,10 @@ export default function SignupScreen() {
               </Animated.View>
               {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
-              {/* Forgot Password */}
+              {/* Forgot Password
               <TouchableOpacity>
                 <Text style={styles.forgotPassword}>Forgot password?</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
 
               {/* Login Button */}
               <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
@@ -208,7 +208,7 @@ export default function SignupScreen() {
                 </TouchableOpacity>
               </View>
 
-              {/* Social Login Options */}
+              {/* Social Login Options
               <Text style={styles.orContinue}>Or continue with</Text>
               <View style={styles.socialContainer}>
                 <TouchableOpacity style={styles.socialButton}>
@@ -220,7 +220,7 @@ export default function SignupScreen() {
                 <TouchableOpacity style={styles.socialButton}>
                   <Image source={require('../assets/icons/facebook.png')} style={styles.icon} />
                 </TouchableOpacity>
-              </View>
+              </View> */}
 
             </ScrollView>
           </TouchableWithoutFeedback>

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity
 import * as storageService from '../../src/utils/StorageUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCategoryColor } from '../../src/components/performance/CategoryColorUtils';
+import { AdditionalTask } from '../../src/types/UserTypes';
 
 interface CompletedTasksProps {
   theme: any;
@@ -28,6 +29,7 @@ const CompletedTasks = ({ theme, userToken, refreshKey = 0 }: CompletedTasksProp
       return;
     }
     
+    setLoading(true); // Set loading true when fetching
     try {
       const records = await storageService.getTaskCompletionRecords(userToken);
       // Sort by most recent first
@@ -36,6 +38,8 @@ const CompletedTasks = ({ theme, userToken, refreshKey = 0 }: CompletedTasksProp
       console.log('Updated task completion with records:', records.length);
     } catch (error) {
       console.error('Error fetching task completion records:', error);
+      // Keep existing records on error? Or clear them? Let's keep them for now.
+      // setCompletionRecords([]);
     } finally {
       setLoading(false);
     }
@@ -86,168 +90,151 @@ const CompletedTasks = ({ theme, userToken, refreshKey = 0 }: CompletedTasksProp
     }
   };
   
-  // Handle long press to undo task completion
-  const handleUndoTaskCompletion = async (taskId: string) => {
+  // Handle long press to undo task completion - REFACTORED LOGIC
+  const handleUndoTaskCompletion = async (recordIdString: string) => {
+    const recordId = parseInt(recordIdString, 10);
+    if (isNaN(recordId) || !userToken) {
+        Alert.alert("Error", "Invalid task record or user.");
+        return;
+    }
+
+    // Find the record locally first to avoid extra fetches if possible
+    const recordToUndo = completionRecords.find(record => record.id === recordId);
+    if (!recordToUndo) {
+        Alert.alert("Error", "Task record not found locally.");
+        // Optionally re-fetch records here if state might be stale
+        // await fetchCompletionRecords();
+        return;
+    }
+
     Alert.alert(
-      "Undo Task",
-      "Do you want to return this task to your active tasks?",
+      "Undo Task Completion",
+      `Return "${recordToUndo.task_name}" to your active tasks?`,
       [
+        { text: "Cancel", style: "cancel" },
         {
-          text: "Cancel",
-          style: "cancel"
-        },
-        {
-          text: "Undo Completion",
-          style: "default",
+          text: "Undo",
+          style: "destructive", // Make it red to indicate action
           onPress: async () => {
+            setLoading(true); // Indicate processing
             try {
-              // Find the task record
-              const id = parseInt(taskId, 10);
-              
-              // Only proceed if we haven't already removed this task
-              if (completionRecords.some(record => record.id === id)) {
-                const removedTask = await storageService.removeTaskCompletionRecord(userToken, id);
-                
-                if (removedTask) {
-                  // Update local state immediately
-                  setCompletionRecords(prev => prev.filter(record => record.id !== id));
-                  
-                  // Check if it was a daily or additional task
-                  const taskName = removedTask.task_name;
-                  const category = removedTask.category;
-                  const duration = removedTask.duration;
-                  const isDailyTask = removedTask.is_daily === 1;
-                  
-                  // Manually restore the task
-                  const success = await restoreTask({
-                    taskName,
-                    category,
-                    duration,
-                    isDailyTask
-                  });
-                  
-                  if (success) {
-                    // Force a refresh in the HomepageScreen
-                    DeviceEventEmitter.emit('taskRestored', {
-                      taskName,
-                      category,
-                      duration,
-                      isDailyTask
+              // 1. Remove the record from storage, getting the removed record details
+              const removedRecord = await storageService.removeTaskCompletionRecord(userToken, recordId);
+
+              if (!removedRecord) {
+                throw new Error("Failed to remove the task completion record from storage.");
+              }
+
+              // 2. Update local state immediately
+              setCompletionRecords(prev => prev.filter(record => record.id !== recordId));
+
+              let successMessage = "";
+              let taskRestored = false;
+
+              // 3. Check if it was a daily or additional task
+              if (removedRecord.is_daily === 0) {
+                // --- Restore Additional Task ---
+                const currentTasks = await storageService.getAdditionalTasks(userToken);
+                const taskText = removedRecord.duration > 0
+                  ? `${removedRecord.task_name} (${removedRecord.duration} min)`
+                  : removedRecord.task_name;
+                const standardCategory = storageService.normalizeCategory(removedRecord.category);
+
+                const restoredTask: AdditionalTask = {
+                  // Use original ID if available, otherwise generate a new one
+                  id: removedRecord.original_task_id || `restored-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                  text: taskText,
+                  completed: false,
+                  category: standardCategory === 'general' ? undefined : standardCategory as any, // Match AdditionalTask type
+                  color: getCategoryColor(standardCategory), // Get color based on category
+                  showImage: false, // Default values
+                  image: null,      // Default values
+                };
+
+                // Avoid adding duplicates if the task somehow already exists (e.g., multiple rapid clicks)
+                if (!currentTasks.some(task => task.id === restoredTask.id)) {
+                    const updatedTasks = [...currentTasks, restoredTask];
+                    await storageService.saveAdditionalTasks(userToken, updatedTasks);
+                    successMessage = `Task "${removedRecord.task_name}" restored to Additional Tasks.`;
+                    taskRestored = true;
+                } else {
+                     successMessage = `Task "${removedRecord.task_name}" was already present in Additional Tasks.`;
+                }
+
+              } else {
+                // --- Restore Daily Task (only if it's from today) ---
+                const currentAccountAge = await storageService.getAccountAge(userToken);
+
+                if (removedRecord.day === currentAccountAge) {
+                  const dailyState = await storageService.getDailyTasksState(userToken);
+                  if (dailyState && dailyState.tasks) {
+                    let taskFoundAndUpdated = false;
+                    const updatedTasks = dailyState.tasks.map(task => {
+                      // Try matching by original_task_id first, then by details as fallback
+                      if (task.id && removedRecord.original_task_id && task.id === removedRecord.original_task_id && (task.status === 'completed' || task.status === 'canceled')) {
+                        taskFoundAndUpdated = true;
+                        return { ...task, status: 'default' as const };
+                      }
+                      // Fallback: Match by name, category, duration (less reliable)
+                       const recordTaskText = removedRecord.duration > 0
+                          ? `${removedRecord.task_name} (${removedRecord.duration} min)`
+                          : removedRecord.task_name;
+                      if (!removedRecord.original_task_id && task.text === recordTaskText && (task.status === 'completed' || task.status === 'canceled')) {
+                         // Basic check if category also matches
+                         const taskCat = storageService.normalizeCategory(task.category || 'general');
+                         const recordCat = storageService.normalizeCategory(removedRecord.category);
+                         if(taskCat === recordCat) {
+                            console.warn(`Restoring daily task ${task.id || task.text} by text/category match (no original ID)`);
+                            taskFoundAndUpdated = true;
+                            return { ...task, status: 'default' as const };
+                         }
+                      }
+                      return task;
                     });
-                    
-                    // Wait a short time to ensure the data is saved before showing alert
-                    setTimeout(() => {
-                      // Show success message
-                      Alert.alert("Success", `Task "${taskName}" has been moved back to ${isDailyTask ? 'daily' : 'additional'} tasks.`);
-                    }, 300);
+
+                    if (taskFoundAndUpdated) {
+                      await storageService.saveDailyTasksState(userToken, { ...dailyState, tasks: updatedTasks });
+                      successMessage = `Task "${removedRecord.task_name}" restored to Today's Daily Tasks.`;
+                      taskRestored = true;
+                    } else {
+                      // Task wasn't found in today's list (maybe already removed or ID mismatch?)
+                      successMessage = `Task "${removedRecord.task_name}" could not be found in today's active tasks to restore.`;
+                       console.warn("Could not find matching daily task to restore status for:", removedRecord);
+                    }
+                  } else {
+                     successMessage = "Could not load today's task list to restore the task.";
                   }
-                  
-                  // Refresh completion records
-                  fetchCompletionRecords();
+                } else {
+                  // Task is from a previous day
+                  successMessage = `Task "${removedRecord.task_name}" is from a previous day and was not restored to active tasks.`;
+                  taskRestored = false; // Not restored to active list
                 }
               }
+
+              // 4. Emit event for HomepageScreen to refresh if a task was actually restored to active
+              if (taskRestored) {
+                DeviceEventEmitter.emit('taskStateUpdated');
+                 console.log("Emitted taskStateUpdated event");
+              }
+
+              // 5. Show success/info message
+              // Use setTimeout to ensure state updates visually before alert
+               setTimeout(() => {
+                   Alert.alert("Undo Complete", successMessage);
+               }, 100);
+
             } catch (error) {
               console.error('Error undoing task completion:', error);
-              Alert.alert("Error", "Failed to undo task completion. Please try again.");
+              Alert.alert("Error", `Failed to undo task completion: ${error instanceof Error ? error.message : 'Unknown error'}`);
+              // Optionally attempt to refetch records if an error occurred during processing
+              fetchCompletionRecords();
+            } finally {
+              setLoading(false);
             }
           }
         }
       ]
     );
-  };
-  
-  // Manually restore a task without using events
-  const restoreTask = async (data: { 
-    taskName: string, 
-    category: string, 
-    duration: number, 
-    isDailyTask: boolean 
-  }) => {
-    try {
-      const { taskName, category, duration, isDailyTask } = data;
-      
-      // Create task text with duration if available
-      const taskText = duration > 0 
-        ? `${taskName} (${duration} min)`
-        : taskName;
-      
-      // Define standard category mapping to ensure consistency across the app
-      const mapCategoryToStandard = (cat: string): string => {
-        const lowerCat = cat.toLowerCase();
-        
-        // Standard categories
-        if (['mindfulness', 'learning', 'creativity', 'social', 'fitness'].includes(lowerCat)) {
-          return lowerCat;
-        }
-        
-        // Default fallback
-        return 'mindfulness';
-      };
-      
-      // Get the standardized category
-      const standardCategory = mapCategoryToStandard(category);
-      
-      if (isDailyTask) {
-        // For daily tasks
-        // Get current daily tasks
-        const dailyTasksData = await AsyncStorage.getItem(`@dailyTasksWithStatus_${userToken}`);
-        const dailyTasks = dailyTasksData ? JSON.parse(dailyTasksData) : [];
-        
-        // Add new task with standardized category information
-        const newTask = {
-          text: taskText,
-          status: 'default',
-          category: standardCategory
-        };
-        
-        // Save updated tasks
-        await AsyncStorage.setItem(
-          `@dailyTasksWithStatus_${userToken}`, 
-          JSON.stringify([...dailyTasks, newTask])
-        );
-        
-        // Also update the task categories in AsyncStorage
-        const categoriesData = await AsyncStorage.getItem(`@taskCategories_${userToken}`);
-        let taskCategories = categoriesData ? JSON.parse(categoriesData) : [];
-        
-        // Add the category if it doesn't already exist
-        if (!taskCategories.includes(standardCategory)) {
-          taskCategories.push(standardCategory);
-          await AsyncStorage.setItem(
-            `@taskCategories_${userToken}`,
-            JSON.stringify(taskCategories)
-          );
-        }
-      } else {
-        // For additional tasks
-        // Get current additional tasks
-        const additionalTasksData = await AsyncStorage.getItem(`additionalTasks_${userToken}`);
-        const additionalTasks = additionalTasksData ? JSON.parse(additionalTasksData) : [];
-        
-        // Create new task with all required properties
-        const newTask = {
-          id: `restored-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          text: taskText,
-          completed: false,
-          category: standardCategory,
-          color: getCategoryColor(standardCategory),
-          showImage: false,
-          image: null
-        };
-        
-        // Save updated tasks
-        await AsyncStorage.setItem(
-          `additionalTasks_${userToken}`, 
-          JSON.stringify([...additionalTasks, newTask])
-        );
-      }
-      
-      console.log(`Task restored: ${taskText} (${isDailyTask ? 'daily' : 'additional'}) with category: ${standardCategory}`);
-      return true;
-    } catch (error) {
-      console.error('Error restoring task:', error);
-      return false;
-    }
   };
   
   const filteredRecords = getFilteredRecords();

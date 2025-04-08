@@ -297,6 +297,7 @@ export interface TaskCompletionRecord {
   duration: number;   // Duration in minutes
   is_daily: number;   // 1 for daily task, 0 for additional task
   completed_at: number; // Timestamp when completed
+  original_task_id?: string; // Add optional original task ID
 }
 
 // Function to save a task completion record
@@ -322,10 +323,16 @@ export const saveTaskCompletionRecord = async (
       ? Math.max(0, ...existingRecords.map(r => r.id || 0)) + 1 // Ensure IDs are numbers, default to 0 if missing
       : 1;
 
-    // Create complete record with ID
+    // Create complete record with ID and potential original_task_id
     const completeRecord: TaskCompletionRecord = {
       id: newId,
-      ...record
+      day: record.day,
+      task_name: record.task_name,
+      category: record.category,
+      duration: record.duration,
+      is_daily: record.is_daily,
+      completed_at: record.completed_at,
+      original_task_id: record.original_task_id, // Include the original ID
     };
 
     // Add to existing records
@@ -362,7 +369,9 @@ export const getTaskCompletionRecords = async (
             typeof r.category === 'string' &&
             typeof r.duration === 'number' &&
             typeof r.is_daily === 'number' &&
-            typeof r.completed_at === 'number'
+            typeof r.completed_at === 'number' &&
+            // original_task_id is optional string
+            (typeof r.original_task_id === 'string' || typeof r.original_task_id === 'undefined')
         );
     }
     return [];
@@ -559,11 +568,12 @@ export const removeTaskCompletionRecord = async (
     const taskIndex = records.findIndex(record => record.id === taskId);
     if (taskIndex === -1) { console.error(`Completion record ID ${taskId} not found`); return null; }
 
-    const removedTask = records[taskIndex];
+    const removedTask = records[taskIndex]; // Capture the full record
     const updatedRecords = [...records.slice(0, taskIndex), ...records.slice(taskIndex + 1)];
 
     await AsyncStorage.setItem(`@task_completion_records_${userToken}`, JSON.stringify(updatedRecords));
-    return removedTask;
+    console.log(`Removed task completion record ID: ${taskId}`);
+    return removedTask; // Return the removed record
   } catch (error) {
     console.error('Error removing task completion record:', error);
     return null;
