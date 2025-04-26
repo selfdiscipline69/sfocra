@@ -1,6 +1,6 @@
 // Load the current classes JSON file
 const fs = require('fs');
-const path = require('path');
+const path = require('path'); 
 
 // Import your class generation function
 const { generateAllClassEntries } = require('./class_generation');

@@ -37,7 +37,6 @@ export default function RootLayout() {
           <Stack.Screen name="signup" />
           <Stack.Screen name="question1" />
           <Stack.Screen name="question2" />
-          <Stack.Screen name="question3" />
           <Stack.Screen name="question4" />
           <Stack.Screen name="user_info" />
 

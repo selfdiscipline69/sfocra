@@ -9,8 +9,8 @@ export default function TabLayout() {
       <Tabs.Screen name="homepage" />
       <Tabs.Screen name="performance" />
       <Tabs.Screen name="settings" />
-      <Tabs.Screen name="addTask" />
-      <Tabs.Screen name="appearance" />
+      {/* <Tabs.Screen name="addTask" /> */}
+      {/* <Tabs.Screen name="appearance" /> */}
       <Tabs.Screen 
         name="privacy"
         options={{
