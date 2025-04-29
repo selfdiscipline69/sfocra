@@ -53,7 +53,7 @@ export default function UserInfoScreen() {
         style={styles.container}
       >
         <View style={styles.content}>
-          <Text style={styles.headerText}>One Last Step</Text>
+          <Text style={styles.headerText}>Step One</Text>
           <Text style={styles.subText}>Tell us who you are, hero</Text>
           
           <View style={styles.inputSection}>

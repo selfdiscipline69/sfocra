@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '../src/lib/supabase';
 
 const { width } = Dimensions.get('window');
 
@@ -65,8 +66,8 @@ export default function RegisterScreen() {
     }
     
     // Validate password is not empty and at least 6 characters
-    if (!password || password.trim() === '' || password.length < 1) {
-      setPasswordError('Password must be at least 1 characters');
+    if (!password || password.trim() === '' || password.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
       shakeElement(passwordShakeAnimation);
       hasError = true;
     }
@@ -82,17 +83,49 @@ export default function RegisterScreen() {
       return;
     }
 
-    // Check if user already exists
     try {
-      const existingEmail = await AsyncStorage.getItem('userEmail');
+      // Sign up with Supabase and trigger email confirmation
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: 'myapp://login',
+          data: {
+            name: email.split('@')[0] // Basic name based on email
+          }
+        }
+      });
       
-      if (existingEmail === email) {
-        setEmailError('This email is already registered');
-        shakeElement(emailShakeAnimation);
+      if (error) {
+        if (error.message.includes('already registered')) {
+          setEmailError('This email is already registered');
+          shakeElement(emailShakeAnimation);
+        } else {
+          setEmailError('Registration failed. Please try again.');
+          shakeElement(emailShakeAnimation);
+        }
+        console.error('Signup error:', error.message);
         return;
       }
-      
-      // Save user registration data
+
+      console.log('Registration data:', data);
+
+      // Call the Edge Function to send a welcome email
+      try {
+        const { error: functionError } = await supabase.functions.invoke('send-welcome-email', {
+          body: { email, name: email.split('@')[0] }
+        });
+        
+        if (functionError) {
+          console.error('Failed to send welcome email:', functionError);
+        } else {
+          console.log('Welcome email sent successfully');
+        }
+      } catch (funcErr) {
+        console.error('Edge function error:', funcErr);
+      }
+
+      // Save user data to AsyncStorage for local app state
       await AsyncStorage.setItem('userEmail', email);
       await AsyncStorage.setItem('userPassword', password);
       const token = `${email}_${password}`;
@@ -102,16 +135,14 @@ export default function RegisterScreen() {
       await AsyncStorage.removeItem(`question1Choice_${token}`);
       await AsyncStorage.removeItem(`question1Code_${token}`);
       
-      // Also remove non-token-specific choices to prevent confusion
-      await AsyncStorage.removeItem('question1Choice');
-      await AsyncStorage.removeItem('question1Code');
-      
       console.log('User registered successfully with token:', token);
       
       // Navigate to the user_info page to complete profile
       router.push('/user_info');
     } catch (err) {
       console.error('Failed to register user', err);
+      setEmailError('Registration failed. Please try again.');
+      shakeElement(emailShakeAnimation);
     }
   };
 
