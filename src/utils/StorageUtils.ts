@@ -138,8 +138,13 @@ export const getAdditionalTasks = async (userToken: string): Promise<AdditionalT
              typeof task.id === 'string' &&
              typeof task.text === 'string' && task.text.trim() !== '' &&
              typeof task.completed === 'boolean' &&
-             typeof task.showImage === 'boolean'
-             // Add other necessary checks for AdditionalTask fields
+             typeof task.showImage === 'boolean' &&
+             // New fields are optional - validate only if present
+             (task.taskKey === undefined || typeof task.taskKey === 'string') &&
+             (task.intensityKey === undefined || typeof task.intensityKey === 'string') &&
+             // Other existing fields
+             (task.category === undefined || 
+              ['fitness', 'learning', 'mindfulness', 'social', 'creativity'].includes(task.category))
          );
       }
     }
@@ -154,6 +159,7 @@ export const getAdditionalTasks = async (userToken: string): Promise<AdditionalT
 export const saveAdditionalTasks = async (userToken: string, tasks: AdditionalTask[]): Promise<void> => {
   try {
     if (userToken) {
+      // Ensure new fields are preserved when saving
       await AsyncStorage.setItem(`additionalTasks_${userToken}`, JSON.stringify(tasks));
     }
   } catch (error) {
@@ -580,6 +586,150 @@ export const removeTaskCompletionRecord = async (
   }
 };
 
+// --- New functions for task addition state ---
+/**
+ * Save the most recently selected category for task creation
+ */
+export const saveAddTaskCategory = async (userToken: string, category: string): Promise<void> => {
+  try {
+    if (!userToken) return;
+    await AsyncStorage.setItem(`AddTaskCategory_${userToken}`, category);
+  } catch (error) {
+    console.error('Error saving add task category:', error);
+  }
+};
+
+/**
+ * Get the most recently selected category for task creation
+ */
+export const getAddTaskCategory = async (userToken: string): Promise<string | null> => {
+  try {
+    if (!userToken) return null;
+    return await AsyncStorage.getItem(`AddTaskCategory_${userToken}`);
+  } catch (error) {
+    console.error('Error getting add task category:', error);
+    return null;
+  }
+};
+
+/**
+ * Save the most recently selected task key (from TaskLibrary) for task creation
+ */
+export const saveAddTaskKey = async (userToken: string, taskKey: string): Promise<void> => {
+  try {
+    if (!userToken) return;
+    await AsyncStorage.setItem(`AddTaskKey_${userToken}`, taskKey);
+  } catch (error) {
+    console.error('Error saving add task key:', error);
+  }
+};
+
+/**
+ * Get the most recently selected task key for task creation
+ */
+export const getAddTaskKey = async (userToken: string): Promise<string | null> => {
+  try {
+    if (!userToken) return null;
+    return await AsyncStorage.getItem(`AddTaskKey_${userToken}`);
+  } catch (error) {
+    console.error('Error getting add task key:', error);
+    return null;
+  }
+};
+
+/**
+ * Save the most recently selected intensity key for task creation
+ */
+export const saveAddTaskIntensity = async (userToken: string, intensityKey: string): Promise<void> => {
+  try {
+    if (!userToken) return;
+    await AsyncStorage.setItem(`AddTaskIntensity_${userToken}`, intensityKey);
+  } catch (error) {
+    console.error('Error saving add task intensity:', error);
+  }
+};
+
+/**
+ * Get the most recently selected intensity key for task creation
+ */
+export const getAddTaskIntensity = async (userToken: string): Promise<string | null> => {
+  try {
+    if (!userToken) return null;
+    return await AsyncStorage.getItem(`AddTaskIntensity_${userToken}`);
+  } catch (error) {
+    console.error('Error getting add task intensity:', error);
+    return null;
+  }
+};
+
+/**
+ * Save all task selection properties at once
+ */
+export const saveTaskSelectionState = async (
+  userToken: string, 
+  state: { category: string | null; taskKey: string | null; intensityKey: string | null }
+): Promise<void> => {
+  try {
+    if (!userToken) return;
+    
+    // Store as a JSON string to keep all related data together
+    await AsyncStorage.setItem(
+      `TaskSelectionState_${userToken}`, 
+      JSON.stringify(state)
+    );
+    
+    // Also store individual values if needed separately
+    if (state.category) await saveAddTaskCategory(userToken, state.category);
+    if (state.taskKey) await saveAddTaskKey(userToken, state.taskKey);
+    if (state.intensityKey) await saveAddTaskIntensity(userToken, state.intensityKey);
+  } catch (error) {
+    console.error('Error saving task selection state:', error);
+  }
+};
+
+/**
+ * Get all task selection properties at once
+ */
+export const getTaskSelectionState = async (
+  userToken: string
+): Promise<{ category: string | null; taskKey: string | null; intensityKey: string | null }> => {
+  try {
+    if (!userToken) {
+      return { category: null, taskKey: null, intensityKey: null };
+    }
+    
+    const storedState = await AsyncStorage.getItem(`TaskSelectionState_${userToken}`);
+    
+    if (storedState) {
+      try {
+        const parsedState = JSON.parse(storedState);
+        if (
+          typeof parsedState === 'object' && 
+          parsedState !== null && 
+          (parsedState.category === null || typeof parsedState.category === 'string') &&
+          (parsedState.taskKey === null || typeof parsedState.taskKey === 'string') &&
+          (parsedState.intensityKey === null || typeof parsedState.intensityKey === 'string')
+        ) {
+          return parsedState;
+        }
+      } catch (parseError) {
+        console.error('Error parsing task selection state:', parseError);
+      }
+    }
+    
+    // If unified state not available or invalid, try to get individual values
+    const category = await getAddTaskCategory(userToken);
+    const taskKey = await getAddTaskKey(userToken);
+    const intensityKey = await getAddTaskIntensity(userToken);
+    
+    return { category, taskKey, intensityKey };
+  } catch (error) {
+    console.error('Error getting task selection state:', error);
+    return { category: null, taskKey: null, intensityKey: null };
+  }
+};
+// --- End new functions ---
+
 // Create and export a storageService object with all the functions
 export const storageService = {
   getUserData,
@@ -601,4 +751,13 @@ export const storageService = {
   updateTaskDuration,
   removeTaskCompletionRecord,
   normalizeCategory, // Export normalizeCategory
+  // Add new functions to the service object
+  saveAddTaskCategory,
+  getAddTaskCategory,
+  saveAddTaskKey,
+  getAddTaskKey,
+  saveAddTaskIntensity,
+  getAddTaskIntensity,
+  saveTaskSelectionState,
+  getTaskSelectionState,
 };

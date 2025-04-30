@@ -122,10 +122,8 @@ const DailyTaskInput = ({
         >
           <WeeklyTrialBox
             title={`Daily Task`}
-            // Fix: Pass undefined directly if category is 'general', otherwise pass the category.
-            // No need for casting if WeeklyTrialBox expects the specific string types or undefined.
-            category={taskItem.category === 'general' ? undefined : taskItem.category}
-            theme={theme}
+            category={taskItem.category === 'general' ? undefined : taskItem.category as "fitness" | "learning" | "mindfulness" | "social" | "creativity"}
+            //theme={theme}
           >
             <TaskDisplay
               taskText={taskItem.text}
@@ -140,19 +138,25 @@ const DailyTaskInput = ({
 
 const styles = StyleSheet.create({
   taskWrapper: {
-      paddingVertical: 5,
+    paddingVertical: 5,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    minHeight: 60, // Ensures consistent height for proper positioning
   },
   taskText: {
     fontSize: 15,
     textAlign: 'left',
     width: '100%',
     lineHeight: 20,
-    marginBottom: 3,
+    marginBottom: 1,
   },
   longPressHint: {
     fontSize: 11,
     textAlign: 'right',
     fontStyle: 'italic',
+    alignSelf: 'flex-end',
+    marginTop: 'auto', // Pushes the hint to the bottom
   },
   leftAction: {
     flex: 1,

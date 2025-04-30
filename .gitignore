@@ -36,4 +36,7 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# to-do list
+.todo.md
+
 app-example

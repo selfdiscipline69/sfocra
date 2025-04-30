@@ -1,4 +1,41 @@
 {
+    "task_category": {
+      "fitness": [
+        "gym-workout",
+        "running",
+        "stretching",
+        "outdoor-cardio",
+        "bodyweight",
+        "rhythmic-movement",
+        "yoga",
+        "walking",
+        "jogging",
+        "good-sleep",
+        "recovery"
+      ],
+      "learning": [
+        "book-reading",
+        "podcast",
+        "chill-music",
+        "online-tutorial",
+        "skill-dev",
+        "documentary",
+        "article-reading"
+      ],
+      "mindfulness": [
+        "meditation",
+        "journaling",
+        "self-reflection"
+      ],
+      "social": [
+        "social-talk",
+        "hobby-discovery"
+      ],
+      "creativity": [
+        "creative-training",
+        "cooking"
+      ]
+    },
     "meditation": {
       "task": "Meditation",
       "category": "mindfulness",

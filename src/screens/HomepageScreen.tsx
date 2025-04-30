@@ -11,7 +11,6 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Modal,
-  TextInput,
   Alert,
   RefreshControl,
   DeviceEventEmitter,
@@ -34,16 +33,32 @@ import WeeklyTrialSection from '../components/WeeklyTrialSection';
 import DailyTaskInput from '../components/DailyTaskInput';
 import AdditionalTaskDisplay from '../components/AdditionalTaskDisplay';
 import BottomNavigation from '../components/BottomNavigation';
-import TimerDisplay from '../components/TimerDisplay';
+import TimerDisplay, { TimerDisplayRef } from '../components/TimerDisplay';
+import CustomTaskSelector, { CustomTaskSelectorRef } from '../components/addTask/CustomTaskSelector';
 
 // Task Addition Utilities
 import { addCustomTask } from '../utils/taskAdditionUtils';
+import TaskLibrary from '../../assets/TaskLibrary.json';
 import questsData from '../../assets/Quest.json';
 import { themes } from '../context/ThemeContext';
 import { Task } from '../components/DailyTaskInput';
 import { AdditionalTask } from '../types/UserTypes';
 
 const { width } = Dimensions.get('window');
+
+// Define types for TaskLibrary structure
+type TaskDetails = {
+  task: string;
+  category: string;
+  intensities: { [key: string]: { duration: string } };
+};
+
+type TaskLibraryType = {
+  task_category: { [key: string]: string[] };
+  [key: string]: TaskDetails | { [key: string]: string[] }; // Index signature for tasks
+};
+
+const TypedTaskLibrary = TaskLibrary as TaskLibraryType;
 
 // Function to get category color
 const getCategoryColor = (category: string): string => {
@@ -64,19 +79,25 @@ const HomepageScreen = () => {
   const { theme } = useTheme();
   const { userData, content, actions } = useHomepageData();
   
-  // Task Addition State
-  const [modalType, setModalType] = useState<'none' | 'task' | 'category'>('none');
+  // Task Addition State (Main Modal)
+  const [modalType, setModalType] = useState<'none' | 'task'>('none'); // Simplified main modal control
+
+  // Random Task State (Keep as is)
   const [randomTask, setRandomTask] = useState<string>('');
-  const [customTask, setCustomTask] = useState<string>('');
   const [randomTaskDuration, setRandomTaskDuration] = useState<string>('30');
-  const [customTaskDuration, setCustomTaskDuration] = useState<string>('30');
   const [randomTaskCategory, setRandomTaskCategory] = useState<string>('General');
-  const [customTaskCategory, setCustomTaskCategory] = useState<string>('Select');
-  const [customTaskTime, setCustomTaskTime] = useState<string>('');
   
-  // Define available categories for modal
-  const taskCategories = ["Fitness", "Learning", "Mindfulness", "Social", "Creativity"];
-  
+  // --- State to hold selection from CustomTaskSelector ---
+  const [customSelection, setCustomSelection] = useState<{
+      category: string | null;
+      taskKey: string | null;
+      intensityKey: string | null;
+  }>({ category: null, taskKey: null, intensityKey: null });
+  // --- End selection state ---
+
+  // Ref for the custom task selector component
+  const customTaskSelectorRef = useRef<CustomTaskSelectorRef>(null);
+
   // Weekly trial category determination from hook
   const weeklyTrialCategory = React.useMemo(() => {
     if (!content.currentChallenge) return 'general';
@@ -110,7 +131,7 @@ const HomepageScreen = () => {
       if (taskKeys.length === 0) { return { task: "Empty library", duration: '0', category: "General" }; }
       const randomKey = taskKeys[Math.floor(Math.random() * taskKeys.length)];
       const randomTaskObj = taskLibrary[randomKey];
-      if (!randomTaskObj) { return { task: "Task not found", duration: '0', category: "General" }; }
+      if (!randomTaskObj) { return { task: "Task not found", duration: '30', category: "General" }; }
 
       // Use imported normalizeCategory
       const category = normalizeCategory(randomTaskObj.category);
@@ -124,18 +145,20 @@ const HomepageScreen = () => {
     }
   };
 
-  // Show the modal to add new task
+  // Show the main modal to add new task (Updated)
   const addNewTask = () => {
     try {
+      // Generate random task as before
       const randomTaskInfo = generateRandomTask();
       setRandomTask(randomTaskInfo.task);
       setRandomTaskDuration(randomTaskInfo.duration);
       setRandomTaskCategory(randomTaskInfo.category);
-      setCustomTask('');
-      setCustomTaskDuration('30');
-      setCustomTaskCategory('Select');
-      setCustomTaskTime('');
-      setModalType('task');
+
+      // Reset selection in state and in the component via ref
+      setCustomSelection({ category: null, taskKey: null, intensityKey: null });
+      customTaskSelectorRef.current?.reset(); // Call reset method on the component
+
+      setModalType('task'); // Open the main task choice modal
     } catch (error) { console.error('Error preparing to add new task:', error); }
   };
 
@@ -160,24 +183,60 @@ const HomepageScreen = () => {
     } catch (error) { console.error('Error adding random task:', error); }
   };
 
-  // Function to add the custom task
+  // --- Handler for selection changes from CustomTaskSelector ---
+  const handleCustomSelectionChange = useCallback((selection: { category: string | null; taskKey: string | null; intensityKey: string | null }) => {
+      setCustomSelection(selection);
+  }, []);
+  // --- End selection handler ---
+
+  // --- Updated handleAddCustomTask ---
   const handleAddCustomTask = async () => {
-    if (customTaskCategory === "Select") { Alert.alert('Category Required', 'Please select a category.'); return; }
-    if (!customTask.trim()) { Alert.alert('Task Required', 'Please enter a description.'); return; }
+      const { category, taskKey, intensityKey } = customSelection; // Use state managed here
 
-    await addCustomTask({ 
-        customTask, customTaskTime, customTaskDuration, customTaskCategory,
-        additionalTasks: content.additionalTasks || [],
-        setAdditionalTasks: actions.setAdditionalTasks,
-        userToken: userData.userToken,
-        setModalVisible: () => setModalType('none') 
-    });
+      if (!category || !taskKey || !intensityKey) {
+        Alert.alert('Selection Incomplete', 'Please select a category, task, and intensity.');
+        return;
+      }
+
+      // Fetch details from TaskLibrary
+      const taskDetail = TypedTaskLibrary[taskKey] as TaskDetails | undefined;
+      const intensityDetail = taskDetail?.intensities?.[intensityKey];
+
+      if (!taskDetail || !intensityDetail) {
+        Alert.alert('Error', 'Selected task details not found.');
+        return;
+      }
+
+      // Prepare data for the task addition utility
+      const taskName = taskDetail.task;
+      const durationText = intensityDetail.duration;
+      const durationMatch = durationText.match(/(\d+)\s*minute/);
+      const durationMinutes = durationMatch ? durationMatch[1] : '30'; // Default if parse fails
+      const formattedTaskText = `${taskName} (${durationText})`;
+
+      // Call the utility (needs modification in taskAdditionUtils.ts)
+      await addCustomTask({
+          selectedCategory: category, 
+          selectedTaskKey: taskKey || '', 
+          selectedIntensityKey: intensityKey || '',
+          additionalTasks: content.additionalTasks || [],
+          setAdditionalTasks: actions.setAdditionalTasks,
+          userToken: userData.userToken,
+          setModalVisible: () => setModalType('none')
+      });
+
+       // Reset selections after adding (handled by addNewTask on next open)
+       // Or reset immediately if preferred:
+       // setCustomSelection({ category: null, taskKey: null, intensityKey: null });
+       // customTaskSelectorRef.current?.reset();
   };
+  // --- End Updated handleAddCustomTask ---
 
-  // Modal controls
-  const openCategoryModal = () => setModalType('category');
-  const selectCategory = (category: string) => { setCustomTaskCategory(category); setModalType('task'); };
-  const closeAllModals = () => setModalType('none');
+  // Modal controls (Updated)
+  const closeAllModals = () => {
+      setModalType('none');
+      // No need to manage selectionModalType here anymore
+  }
 
   // --- Celebration Modal ---
   const [showCelebration, setShowCelebration] = useState(false);
@@ -257,83 +316,47 @@ const HomepageScreen = () => {
   };
   // --- End Task Completion/Cancellation ---
 
-  // --- Timer Logic ---
-  const [activeTimer, setActiveTimer] = useState<{ taskIndex: number; isDaily: boolean; taskName: string; taskId?: string | number; isActive: boolean; startTime: Date | null; timerStopped: boolean; elapsedSeconds: number; } | null>(null);
-  const handleTaskLongPress = (index: number, taskItem: Task | AdditionalTask) => {
-      if (activeTimer?.isActive) { Alert.alert("Active Timer", "Stop current timer first."); return; }
-      let taskText: string, taskId: string | number | undefined, isDaily: boolean;
-      if (typeof taskItem === 'object' && taskItem !== null && 'status' in taskItem) { taskText = taskItem.text; taskId = taskItem.id; isDaily = true; }
-      else if (typeof taskItem === 'object' && taskItem !== null && 'completed' in taskItem) { taskText = taskItem.text; taskId = taskItem.id; isDaily = false; }
-      else { console.error("Invalid task item for long press:", taskItem); return; }
-      if (!taskText) return;
-    const taskName = taskText.includes('(') ? taskText.split('(')[0].trim() : taskText;
-      setActiveTimer({ taskIndex: index, isDaily, taskName, taskId, isActive: true, startTime: new Date(), timerStopped: false, elapsedSeconds: 0 });
-  };
-  const handleStopTimer = () => {
-    if (!activeTimer || !activeTimer.startTime) return;
-    const elapsed = activeTimer.isActive ? Math.floor((Date.now() - activeTimer.startTime.getTime()) / 1000) : 0;
-    setActiveTimer(prev => prev ? { ...prev, isActive: false, timerStopped: true, elapsedSeconds: prev.elapsedSeconds + elapsed, startTime: null } : null);
-  };
-  const handleResumeTimer = () => {
-    if (!activeTimer || activeTimer.isActive) return;
-    const adjustedStartTime = new Date(Date.now() - (activeTimer.elapsedSeconds * 1000));
-    setActiveTimer(prev => prev ? { ...prev, isActive: true, timerStopped: false, startTime: adjustedStartTime } : null);
-  };
-  const handleDiscardTimer = () => {
-      console.log("Discarding timer");
-      setActiveTimer(null); // Simply remove the timer state
-  };
-  const handleFinishTimer = () => {
-    if (!activeTimer) return;
-    let finalElapsedSeconds = activeTimer.elapsedSeconds;
-    if (activeTimer.isActive && activeTimer.startTime) {
-        finalElapsedSeconds += Math.floor((Date.now() - activeTimer.startTime.getTime()) / 1000);
-    }
-    const { taskIndex, isDaily, taskId } = activeTimer; // No need for taskName here
-    console.log(`Finishing timer: ${isDaily ? 'Daily' : 'Add.'} idx ${taskIndex}, ID ${taskId}, Elapsed: ${finalElapsedSeconds}s`);
-    
-    // Update duration in completion record if > 0 seconds
-    if (finalElapsedSeconds > 0 && userData.userToken) {
-        // Find the most recent completion record for this task ID (or task details if no ID)
-        // This is a bit tricky as completion happens AFTER timer finish.
-        // Maybe save the record ID when completion happens, or update the record *after* completion.
-        // For now, let's assume we can update later if needed, or handle duration on completion itself.
-         console.log("Timer finished, duration update not implemented directly here yet.");
-    }
+  // --- Add Ref for Timer Display ---
+  const timerDisplayRef = useRef<TimerDisplayRef>(null);
+  // --- End Add Ref ---
 
-    setActiveTimer(null); // Reset timer state first
-    if (isDaily) {
-        const taskItem = content.dailyTasks?.[taskIndex];
-        // Match using taskId from the timer state
-        if (typeof taskItem === 'object' && taskItem !== null && taskItem.id === taskId) {
-             handleTaskComplete(taskIndex);
-        } else {
-            console.error(`Daily task mismatch or invalid on finish: idx ${taskIndex}, ID ${taskId}`);
-            // Attempt to find by index if ID match failed but index is valid
-            if (content.dailyTasks && taskIndex >= 0 && taskIndex < content.dailyTasks.length) {
-                console.warn(`Attempting completion by index ${taskIndex} due to ID mismatch.`);
-                handleTaskComplete(taskIndex);
-            }
-        }
-    } else {
-        const currentTasks: AdditionalTask[] = content.additionalTasks || [];
-        if (taskIndex < currentTasks.length) {
-             const taskItem = currentTasks[taskIndex];
-             // Match using taskId from the timer state
-             if (taskItem && taskItem.id === taskId) {
-                 handleAdditionalTaskComplete(taskIndex);
-             } else {
-                 console.error(`Add. task mismatch or invalid on finish: idx ${taskIndex}, ID ${taskId}`);
-                 // Attempt to find by index if ID match failed but index is valid
-                 if (taskIndex >= 0 && taskIndex < currentTasks.length) {
-                     console.warn(`Attempting completion by index ${taskIndex} due to ID mismatch.`);
-                     handleAdditionalTaskComplete(taskIndex);
-                 }
-             }
-        } else { console.error(`Invalid add. task index on finish: ${taskIndex}`); }
-    }
-  };
-  // --- End Timer Logic ---
+  // --- NEW: Timer Start Trigger (Called by Task Components) ---
+  const triggerTimerStart = useCallback((taskItem: Task | AdditionalTask, isDaily: boolean) => {
+      timerDisplayRef.current?.startTimer(taskItem, isDaily);
+  }, []); // Empty dependency array as ref doesn't change
+  // --- End NEW Timer Start Trigger ---
+
+  // --- NEW: Callbacks for TimerDisplay ---
+  const handleTimerComplete = useCallback((taskItem: Task | AdditionalTask, isDaily: boolean, elapsedSeconds: number) => {
+      console.log(`Homepage: Timer finished for task ID ${taskItem.id}, elapsed: ${elapsedSeconds}s`);
+
+      // Find the index based on task ID and type
+      let taskIndex = -1;
+      if (isDaily) {
+          taskIndex = content.dailyTasks?.findIndex(t => t.id === taskItem.id) ?? -1;
+          if (taskIndex !== -1) {
+              handleTaskComplete(taskIndex); // Call existing completion logic
+          } else {
+              console.error("Homepage: Daily task not found on timer completion:", taskItem.id);
+          }
+      } else {
+          taskIndex = content.additionalTasks?.findIndex(t => t.id === taskItem.id) ?? -1;
+          if (taskIndex !== -1) {
+              handleAdditionalTaskComplete(taskIndex); // Call existing completion logic
+          } else {
+              console.error("Homepage: Additional task not found on timer completion:", taskItem.id);
+          }
+      }
+       // Optionally: Update duration in storage using elapsedSeconds if needed here
+       // storageService.updateTaskDuration(...)
+  }, [content.dailyTasks, content.additionalTasks, handleTaskComplete, handleAdditionalTaskComplete]); // Add dependencies
+
+  const handleTimerDiscard = useCallback((taskItem: Task | AdditionalTask, isDaily: boolean) => {
+      console.log(`Homepage: Timer discarded for task ID ${taskItem.id}`);
+      // No action needed here usually, as TimerDisplay hides itself.
+      // You could add logic here if discarding needs to affect task state somehow.
+  }, []);
+  // --- End NEW Callbacks ---
 
   // --- Secret Day Adjustment Logic ---
   const [isDayAdjustModalVisible, setIsDayAdjustModalVisible] = useState(false);
@@ -366,21 +389,13 @@ const HomepageScreen = () => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={[styles.container, { backgroundColor: theme.background }]} keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 20} >
       <View style={styles.innerContainer}>
-        {/* Active Timer Display - Add onDiscard */}
-        {activeTimer && (
-          <TimerDisplay
-            isRunning={activeTimer.isActive}
-            taskName={activeTimer.taskName}
-            startTime={activeTimer.startTime || undefined}
-            onStop={handleStopTimer}
-            timerStopped={activeTimer.timerStopped}
-            onFinish={handleFinishTimer}
-            onResume={handleResumeTimer}
-            onDiscard={handleDiscardTimer}
-            elapsedSeconds={activeTimer.elapsedSeconds}
-            theme={theme}
-          />
-        )}
+        {/* Render TimerDisplay unconditionally and pass ref/callbacks */}
+        <TimerDisplay
+          ref={timerDisplayRef}
+          theme={theme}
+          onTimerFinish={handleTimerComplete}
+          onTimerDiscard={handleTimerDiscard}
+        />
 
         {/* ScrollView */}
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={true} scrollEnabled={true} style={styles.scrollView} refreshControl={ <RefreshControl refreshing={false} onRefresh={actions.refreshData} colors={[theme.accent]} tintColor={theme.accent} /> } >
@@ -400,71 +415,83 @@ const HomepageScreen = () => {
             <View style={styles.weeklyTrialContainer}>
               <WeeklyTrialSection weeklyTrial={content.weeklyTrial} theme={theme} category={weeklyTrialCategory as any} />
             </View>
-            {/* Daily Tasks */}
+            {/* Daily Tasks - Update long press handler */}
             <View style={styles.dailyTasksContainer}>
-              <DailyTaskInput tasks={content.dailyTasks || []} theme={theme} onTaskComplete={handleTaskComplete} onTaskCancel={handleTaskCancel} onTaskLongPress={(index, taskItem) => handleTaskLongPress(index, taskItem as Task)} />
+              <DailyTaskInput
+                tasks={content.dailyTasks || []}
+                theme={theme}
+                onTaskComplete={handleTaskComplete}
+                onTaskCancel={handleTaskCancel}
+                // Pass the new trigger function
+                onTaskLongPress={(index, taskItem) => triggerTimerStart(taskItem as Task, true)}
+              />
             </View>
           </View>
-          {/* Additional Tasks */}
+          {/* Additional Tasks - Update long press handler */}
           <View style={styles.sectionContainer}>
-            <AdditionalTaskDisplay tasks={content.additionalTasks || []} theme={theme} onTaskComplete={handleAdditionalTaskComplete} onTaskCancel={handleAdditionalTaskCancel} onTaskLongPress={(index, taskItem) => handleTaskLongPress(index, taskItem as AdditionalTask)} />
+            <AdditionalTaskDisplay
+              tasks={content.additionalTasks || []}
+              theme={theme}
+              onTaskComplete={handleAdditionalTaskComplete}
+              onTaskCancel={handleAdditionalTaskCancel}
+              // Pass the new trigger function
+              onTaskLongPress={(index, taskItem) => triggerTimerStart(taskItem as AdditionalTask, false)}
+            />
           </View>
           <View style={styles.keyboardSpace} />
         </ScrollView>
 
         {/* Modals */}
-        {/* Task Choice Modal */}
+        {/* Task Choice Modal (Updated "Create Custom Task" part) */}
          <Modal animationType="slide" transparent={true} visible={modalType === 'task'} onRequestClose={closeAllModals}>
               <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                  <View style={styles.modalOverlay}>
                 <View style={[styles.modalContent, { backgroundColor: theme.boxBackground }]}>
                   <Text style={[styles.modalTitle, { color: theme.text }]}>Choose Your Task</Text>
-                    {/* Random Task Option */}
+                    
+                    {/* Random Task Option (Keep as is) */}
                     <View style={[styles.taskOptionContainer, { backgroundColor: theme.mode === 'dark' ? '#333' : '#f0f0f0' }]}>
                       <Text style={[styles.taskOptionTitle, { color: theme.text }]}>Suggested Task:</Text>
                             <Text style={[styles.taskOptionText, { color: theme.text }]}>{randomTask} ({randomTaskDuration}) - {randomTaskCategory}</Text>
                             <TouchableOpacity style={[styles.taskOptionButton, { backgroundColor: theme.accent }]} onPress={addRandomTask}><Text style={styles.taskOptionButtonText}>Use This Task</Text></TouchableOpacity>
                     </View>
+
                     <View style={[styles.modalDivider, { backgroundColor: theme.mode === 'dark' ? '#555' : '#ddd' }]} />
-                    {/* Custom Task Option */}
+                    
+                    {/* --- Custom Task Selection UI via Component --- */}
                     <View style={styles.taskOptionContainer}>
                       <Text style={[styles.taskOptionTitle, { color: theme.text }]}>Create Custom Task:</Text>
-                           <TextInput style={[styles.taskOptionInput, { backgroundColor: theme.mode === 'dark' ? '#444' : '#f5f5f5', color: theme.text, borderColor: theme.mode === 'dark' ? '#555' : '#ddd', borderWidth: 1 }]} placeholder="Enter your task" placeholderTextColor={theme.mode === 'dark' ? '#aaa' : '#888'} value={customTask} onChangeText={setCustomTask} />
-                      <View style={styles.taskDetailsRow}>
-                        <View style={styles.taskDetailItem}>
-                          <Text style={[styles.taskDetailLabel, { color: theme.text }]}>Duration (min)</Text>
-                                   <TextInput style={[styles.taskDetailInput, { backgroundColor: theme.mode === 'dark' ? '#444' : '#f5f5f5', color: theme.text, borderColor: theme.mode === 'dark' ? '#555' : '#ddd', borderWidth: 1 }]} placeholder="30" placeholderTextColor={theme.mode === 'dark' ? '#aaa' : '#888'} keyboardType="numeric" value={customTaskDuration} onChangeText={setCustomTaskDuration} />
-                        </View>
-                        <View style={styles.taskDetailItem}>
-                          <Text style={[styles.taskDetailLabel, { color: theme.text }]}>Category</Text>
-                                   <TouchableOpacity onPress={openCategoryModal} style={[styles.taskDetailInput, { backgroundColor: theme.mode === 'dark' ? '#444' : '#f5f5f5', borderColor: theme.mode === 'dark' ? '#555' : '#ddd', borderWidth: 1, justifyContent: 'center', alignItems: 'flex-start', paddingHorizontal: 12, height: 45 }]}>
-                                       <Text style={{ color: customTaskCategory === "Select" ? (theme.mode === 'dark' ? '#aaa' : '#888') : theme.text }}>{customTaskCategory}</Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                             <View style={[styles.taskDetailItem, { width: '100%', marginBottom: 10 }]}>
-                        <Text style={[styles.taskDetailLabel, { color: theme.text }]}>Time (optional)</Text>
-                               <TextInput style={[styles.taskDetailInput, { backgroundColor: theme.mode === 'dark' ? '#444' : '#f5f5f5', color: theme.text, borderColor: theme.mode === 'dark' ? '#555' : '#ddd', borderWidth: 1 }]} placeholder="e.g., 3:30 PM" placeholderTextColor={theme.mode === 'dark' ? '#aaa' : '#888'} value={customTaskTime} onChangeText={setCustomTaskTime} />
-                      </View>
-                            <TouchableOpacity style={[styles.taskOptionButton, { backgroundColor: theme.accent, marginTop: 10 }]} onPress={handleAddCustomTask}><Text style={styles.taskOptionButtonText}>Add Custom Task</Text></TouchableOpacity>
+
+                      {/* Render the new component */}
+                      <CustomTaskSelector
+                          ref={customTaskSelectorRef} // Assign ref
+                          theme={theme}
+                          onSelectionChange={handleCustomSelectionChange}
+                      />
+
+                      {/* Add Custom Task Button (conditionally enabled based on state) */}
+                      <TouchableOpacity
+                          style={[
+                              styles.taskOptionButton,
+                              { backgroundColor: theme.accent, marginTop: 20 },
+                              (!customSelection.category || !customSelection.taskKey || !customSelection.intensityKey) && styles.disabledButton // Disable if not all selected
+                          ]}
+                          onPress={handleAddCustomTask}
+                          disabled={!customSelection.category || !customSelection.taskKey || !customSelection.intensityKey}
+                      >
+                          <Text style={styles.taskOptionButtonText}>Add Custom Task</Text>
+                      </TouchableOpacity>
                     </View>
-                       {/* Fix: Move Cancel button inside TouchableWithoutFeedback */}
-                       <TouchableOpacity style={styles.cancelButton} onPress={closeAllModals}><Text style={[styles.cancelButtonText, { color: theme.text }]}>Cancel</Text></TouchableOpacity>
+                    {/* --- End Custom Task Selection UI --- */}
+
+                    {/* Cancel button */}
+                    <TouchableOpacity style={styles.cancelButton} onPress={closeAllModals}>
+                        <Text style={[styles.cancelButtonText, { color: theme.text }]}>Cancel</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
              </TouchableWithoutFeedback>
          </Modal>
-
-          {/* Category Selection Modal */}
-        <Modal animationType="fade" transparent={true} visible={modalType === 'category'} onRequestClose={() => setModalType('task')}>
-            <View style={styles.modalOverlay}>
-              <View style={[styles.modalContent, { backgroundColor: theme.boxBackground }]}>
-                <Text style={[styles.modalTitle, { color: theme.text }]}>Select Category</Text>
-                    {taskCategories.map((category, index) => ( <TouchableOpacity key={index} style={[styles.categoryButton, { backgroundColor: theme.mode === 'dark' ? '#333' : '#f0f0f0' }]} onPress={() => selectCategory(category)}> <Text style={[styles.categoryButtonText, { color: theme.text }]}>{category}</Text> </TouchableOpacity> ))}
-                    <TouchableOpacity style={styles.cancelButton} onPress={() => setModalType('task')}><Text style={[styles.cancelButtonText, { color: theme.text }]}>Back</Text></TouchableOpacity>
-              </View>
-            </View>
-        </Modal>
 
         {/* Day Adjustment Modal */}
         <Modal animationType="fade" transparent={true} visible={isDayAdjustModalVisible} onRequestClose={() => setIsDayAdjustModalVisible(false)}>
@@ -532,18 +559,11 @@ const styles = StyleSheet.create({
   taskOptionContainer: { width: '100%', padding: 15, borderRadius: 10, marginBottom: 20 },
   taskOptionTitle: { fontSize: 18, fontWeight: '600', marginBottom: 12 },
   taskOptionText: { fontSize: 16, marginBottom: 15, textAlign: 'left', lineHeight: 22 },
-  taskOptionInput: { width: '100%', borderRadius: 8, paddingHorizontal: 15, marginBottom: 15, height: 50, borderWidth: 1 },
-  taskDetailsRow: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginBottom: 15 },
-  taskDetailItem: { width: '48%' },
-  taskDetailLabel: { fontSize: 14, marginBottom: 6, fontWeight: '500' },
-  taskDetailInput: { borderRadius: 8, height: 45, paddingHorizontal: 12, borderWidth: 1, justifyContent: 'center' },
   taskOptionButton: { paddingVertical: 14, paddingHorizontal: 20, borderRadius: 8, alignItems: 'center', width: '100%' },
   taskOptionButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
   cancelButton: { marginTop: 10, padding: 12 },
   cancelButtonText: { fontSize: 16, fontWeight: '500' },
   modalDivider: { height: 1, width: '90%', marginVertical: 20 },
-  categoryButton: { width: '100%', padding: 15, borderRadius: 8, marginBottom: 12, alignItems: 'center' },
-  categoryButtonText: { fontSize: 16, fontWeight: '500' },
   sectionContainer: { marginBottom: 15 },
   contentContainer: { marginBottom: 15 },
   weeklyTrialContainer: { marginBottom: 15 },
@@ -552,7 +572,7 @@ const styles = StyleSheet.create({
   modalText: { fontSize: 16, marginBottom: 15, textAlign: 'center', lineHeight: 22 },
   modalButton: { width: '85%', paddingVertical: 14, borderRadius: 8, alignItems: 'center', marginTop: 12 },
   modalButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  celebrationModalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.75)' }, // Darker overlay maybe
+  celebrationModalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.75)' },
   celebrationModalContent: { width: width * 0.85, borderRadius: 15, paddingVertical: 30, paddingHorizontal: 20, alignItems: 'center', shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5 },
   celebrationImage: {
     width: 200, // Adjust size as needed
@@ -586,8 +606,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 30, // Spacing before button
   },
-  celebrationButton: { paddingVertical: 12, paddingHorizontal: 25, borderRadius: 25, alignItems: 'center', width: '70%', alignSelf: 'center' }, // Make button slightly smaller?
+  celebrationButton: { paddingVertical: 12, paddingHorizontal: 25, borderRadius: 25, alignItems: 'center', width: '70%', alignSelf: 'center' },
   celebrationButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  disabledButton: {
+      opacity: 0.5,
+  },
 });
 
 export default HomepageScreen;

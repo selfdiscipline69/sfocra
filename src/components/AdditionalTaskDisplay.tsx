@@ -6,7 +6,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import AnimatedSpriteIcon from './AnimatedSpriteIcon';
 
 // Type for WeeklyTrialBox category prop - adjust as needed
-type WeeklyTrialBoxCategory = 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity' | 'general' | undefined;
+type WeeklyTrialBoxCategory = 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity' | undefined;
 
 interface AdditionalTaskDisplayProps {
   tasks: AdditionalTask[];
@@ -105,6 +105,13 @@ const AdditionalTaskDisplay = ({
 }: AdditionalTaskDisplayProps) => {
   if (tasks.length === 0) return null;
   
+  const getWeeklyTrialBoxCategory = (taskCategory: AdditionalTask['category']): WeeklyTrialBoxCategory => {
+    if (!taskCategory || !['fitness', 'learning', 'mindfulness', 'social', 'creativity'].includes(taskCategory)) {
+      return undefined; // Map 'general' or any other non-standard category to undefined
+    }
+    return taskCategory as WeeklyTrialBoxCategory; // Cast to the expected type
+  };
+
   return (
     <>
       <View style={styles.sectionHeader}>
@@ -200,7 +207,7 @@ const AdditionalTaskDisplay = ({
             >
               <WeeklyTrialBox 
                 title={`Additional Task ${index + 1}`}
-                category={task.category as WeeklyTrialBoxCategory}
+                category={getWeeklyTrialBoxCategory(task.category)}
               >
                 <AdditionalTaskContent 
                   text={task.text} 
