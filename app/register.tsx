@@ -31,17 +31,18 @@ export default function RegisterScreen() {
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [secureConfirmTextEntry, setSecureConfirmTextEntry] = useState(true);
+  const [isRegistering, setIsRegistering] = useState(false);
   
   const emailShakeAnimation = useRef(new Animated.Value(0)).current;
   const passwordShakeAnimation = useRef(new Animated.Value(0)).current;
   const confirmPasswordShakeAnimation = useRef(new Animated.Value(0)).current;
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const shakeElement = (animation) => {
+  const shakeElement = (animation: Animated.Value) => {
     Animated.sequence([
       Animated.timing(animation, { toValue: 10, duration: 100, useNativeDriver: true }),
       Animated.timing(animation, { toValue: -10, duration: 100, useNativeDriver: true }),
@@ -51,6 +52,9 @@ export default function RegisterScreen() {
   };
 
   const handleRegister = async () => {
+    // Prevent multiple submissions
+    if (isRegistering) return;
+    
     // Reset error messages
     setEmailError('');
     setPasswordError('');
@@ -84,6 +88,8 @@ export default function RegisterScreen() {
     }
 
     try {
+      setIsRegistering(true); // Disable button
+      
       // Sign up with Supabase and trigger email confirmation
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -143,6 +149,8 @@ export default function RegisterScreen() {
       console.error('Failed to register user', err);
       setEmailError('Registration failed. Please try again.');
       shakeElement(emailShakeAnimation);
+    } finally {
+      setIsRegistering(false); // Re-enable button
     }
   };
 
@@ -173,7 +181,7 @@ export default function RegisterScreen() {
                   placeholder="Email Address"
                   placeholderTextColor="#aaa"
                   value={email}
-                  onChangeText={(text) => {
+                  onChangeText={(text: string) => {
                     setEmail(text);
                     setEmailError('');
                   }}
@@ -192,7 +200,7 @@ export default function RegisterScreen() {
                   placeholder="Password"
                   placeholderTextColor="white"
                   value={password}
-                  onChangeText={(text) => {
+                  onChangeText={(text: string) => {
                     setPassword(text);
                     setPasswordError('');
                   }}
@@ -222,7 +230,7 @@ export default function RegisterScreen() {
                   placeholder="Confirm Password"
                   placeholderTextColor="white"
                   value={confirmPassword}
-                  onChangeText={(text) => {
+                  onChangeText={(text: string) => {
                     setConfirmPassword(text);
                     setConfirmPasswordError('');
                   }}
@@ -244,8 +252,17 @@ export default function RegisterScreen() {
               {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
 
               {/* Register Button */}
-              <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                <Text style={styles.registerText}>Register</Text>
+              <TouchableOpacity 
+                style={[
+                  styles.registerButton, 
+                  isRegistering && styles.disabledButton
+                ]} 
+                onPress={handleRegister}
+                disabled={isRegistering}
+              >
+                <Text style={styles.registerText}>
+                  {isRegistering ? 'Registering...' : 'Register'}
+                </Text>
               </TouchableOpacity>
 
               {/* Login Option */}
@@ -399,5 +416,9 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     tintColor: 'white',
+  },
+  disabledButton: {
+    backgroundColor: '#888', // Gray out when disabled
+    opacity: 0.7,
   },
 });
