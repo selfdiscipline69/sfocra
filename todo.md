@@ -95,3 +95,50 @@
     Ensure the system works with both old and new task formats
     Provide fallbacks for missing fields
 
+git command:
+Here’s a typical Git workflow for creating a feature branch, pushing it up, and then merging it back into `main` when you’re done:
+
+1. Create & switch to your new branch  
+```bash
+git checkout -b feature/my-new-thing
+```
+
+2. Work, then stage & commit your changes  
+```bash
+git add .
+git commit -m "feat: add my new thing"
+```
+
+3. Push the branch to origin and set the upstream  
+```bash
+git push -u origin feature/my-new-thing
+```
+
+4. (Optional) Continue working—future `git push` will just do  
+```bash
+git push
+```
+
+5. When you’re ready to merge back into `main`:
+
+   a. Switch to `main` and update it  
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+
+   b. Merge in your feature branch  
+   ```bash
+   git merge --no-ff feature/my-new-thing
+   ```
+
+   c. Push the updated `main`  
+   ```bash
+   git push origin main
+   ```
+
+6. (Optional) Clean up your feature branch locally and remotely  
+```bash
+git branch -d feature/my-new-thing
+git push origin --delete feature/my-new-thing
+```
