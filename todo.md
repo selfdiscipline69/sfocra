@@ -1,99 +1,153 @@
-# Task Addition Feature Modification Plan
-## Files to Modify
-    src/screens/HomepageScreen.tsx
-    src/utils/taskAdditionUtils.ts
-    src/components/AdditionalTaskDisplay.tsx
-    src/utils/StorageUtils.ts
-    src/types/UserTypes.ts
-    src/utils/taskCategoryUtils.ts
+# Task Management System Refactoring: To-Do List
 
-## Requirements Summary
-- Keep the "Suggested Task" section unchanged
-- Modify the "Create Custom Task" section to use a new UI with buttons for category, task, and intensity
-- Read the task_category from TaskLibrary.json for options
-- Implement dependencies between selections (disable buttons until prior selections are made)
-- Store selections in AsyncStorage
-- do not remove any code that you think are unused, just replace the old code that does the same feature
-- Add JSDoc Comments to explain the modification with detail
+## Overview
+This document outlines the steps needed to implement a unified task display system with enhanced data fields and two new modal components: the Task Box Modal and Edit Task Modal. These changes will standardize the UI for both daily and additional tasks while expanding functionality.
 
-## Detailed Modifications
-1. HomepageScreen.tsx
-@HomepageScreen.tsx - Replace the "Create Custom Task" section with new UI:
+## Data Structure Updates
 
-- Keep the suggested random task part intact
-- Replace custom task input with three buttons: Category, Task, Intensity
-- Each button opens a slider with options from TaskLibrary.json
-- Implement button states (disabled/enabled) based on selection state (disable the second, third button and enable the first button as default)
-- Add three modal states for category/task/intensity selection
-- Update addCustomTask function to work with the new UI components
-- Store the selected values in state variables
-- Implement new slider component for each selection
+### 1. Update UserTypes.ts
+```
+- Create a unified TaskData interface that includes:
+  - id: string
+  - category: string
+  - taskName: string
+  - intensity: string (duration)
+  - is_daily: boolean (1 for daily, 0 for additional)
+  - XP: number (default 500 for daily, 250 for additional)
+  - is_Recurrent: boolean
+  - Recurrent_frequency: number[] (7-item array for days of week)
+  - start_time: string (format: "HH:MM")
+  - note: string
+  - status: 'default' | 'completed' | 'canceled' (for daily tasks)
+  - completed_at?: number (timestamp)
+  - day?: number (account age day)
+  
+- Update existing Task and AdditionalTask types to either:
+  - Extend the unified TaskData interface, or
+  - Replace them with the new interface
+```
 
-2. taskAdditionUtils.ts
-@taskAdditionUtils.ts - Update task addition utility:
+### 2. Update StorageUtils.ts
+```
+- Modify task storage functions to handle the new data structure
+- Add migration utilities for existing task data
+- Update getTaskCompletionRecords and saveTaskCompletionRecord to handle additional fields
+- Implement functions to convert between the old and new data formats if needed
+```
 
-- Modify addCustomTask function to handle the new structure with category/task/intensity
-- Add utility functions to:
-  - Read TaskLibrary.json and extract available categories (task_category)
-  - Filter tasks based on selected category
-  - Filter intensities based on selected task
-  - Store all input as string
-- Format task text to include intensity information from the selected intensity
-- Update the structure of the AdditionalTask object to include new fields
-- Implement AsyncStorage saving for new fields (AddTaskCategory, AddTaskIntensity)
+## UI Components
 
-3. AdditionalTaskDisplay.tsx
-@AdditionalTaskDisplay.tsx - Update to handle new task format:
+### 3. Create Task_modal/TaskBoxModal.tsx
+```
+- Create a reusable component that displays:
+  - Task type label (top-left)
+  - Category animation (top-right)
+  - Content section with:
+    - Category
+    - TaskName
+    - Intensity (duration)
+    - Recurrent frequency (if applicable)
+    - Start time (bottom-left)
+  - "Long press to start timer" hint (bottom-right)
+  
+- Implement:
+  - Long press handler for timer
+  - Single tap handler for edit modal
+  - Swipe actions for task completion/cancellation
+```
 
-- Update the display to handle tasks created with the new format
-- Ensure component can display tasks with intensity information
-- Handle tasks created with either the old or new format for backward compatibility
+### 4. Create Task_modal/EditTaskModal.tsx
+```
+- Create a form modal with FlatList for all editable fields:
+  - Category selector (disabled for daily tasks)
+  - TaskName/Intensity selector (similar to CustomTaskSelector)
+  - Recurrence toggle and day selectors
+  - Start time selectors (hour/minute)
+  - Note text area
+  
+- Implement:
+  - Loading of TaskLibrary data
+  - Filtering tasks by category
+  - Saving changes back to storage
+  - Form validation
+```
 
-4. StorageUtils.ts
-@StorageUtils.ts - Add storage utilities for new task structure:
+### 5. Update DailyTaskInput.tsx
+```
+- Refactor to use the new TaskBoxModal component
+- Map existing Task objects to the new TaskData format
+- Maintain existing functionality but delegate UI to TaskBoxModal
+- Handle edit actions through EditTaskModal
+```
 
-- Add functions to save and retrieve:
-  - AddTaskCategory
-  - AddTaskIntensity
-- Update the AdditionalTask handling to include new fields
-- Implement migration for existing tasks if needed
-- Add type validation for new fields
+### 6. Update AdditionalTaskDisplay.tsx
+```
+- Refactor to use the new TaskBoxModal component
+- Map existing AdditionalTask objects to the new TaskData format
+- Maintain existing functionality but delegate UI to TaskBoxModal
+- Handle edit actions through EditTaskModal
+```
 
-5. UserTypes.ts
-@UserTypes.ts - Update AdditionalTask interface:
+### 7. Update HomepageScreen.tsx
+```
+- Integrate the new modals
+- Update state management to handle the expanded task data
+- Add handlers for edit functionality
+- Ensure timer functionality works with new components
+- Update refresh logic to account for task edits
+```
 
-- Add new optional fields for:
-  - taskKey: string (to store the key from TaskLibrary)
-  - intensity: string (to store the selected intensity)
-- Ensure backward compatibility with existing tasks
-- Update category type to include all possible categories from TaskLibrary.json
+## Additional Components
 
-6. taskCategoryUtils.ts
-@taskCategoryUtils.ts - Enhance category detection:
+### 8. Create Task_modal/RecurrenceSelector.tsx (Optional)
+```
+- Create a reusable component for selecting recurring days
+- Display weekday abbreviations (Mon, Tue, etc.)
+- Toggle selection with visual feedback
+- Return the 7-item array of selections
+```
 
-- Add function to extract available categories from TaskLibrary.json
-- Add function to filter tasks by category
-- Add function to get intensity options for a task
-- Maintain backward compatibility with existing functions
-- Add utility to format task display text based on task and intensity
+### 9. Create Task_modal/TimeSelector.tsx (Optional)
+```
+- Create a reusable component for time selection
+- Implement hour and minute pickers
+- Format and return time string in "HH:MM" format
+```
 
-## Implementation Notes
-1. Default Values: Set default values to 'general' for categories and appropriate defaults for other fields to prevent errors.
-2. Button States:
-    Category button: Always enabled
-    Task button: Enabled only after category selection
-    Intensity button: Enabled only after task selection
-3. Sliders: Create reusable slider components for selections that display options from TaskLibrary.json.
-4. AsyncStorage Keys:
-    AddTaskCategory_${userToken}
-    AddTaskTask_${userToken}
-    AddTaskIntensity_${userToken}
-5. TaskLibrary.json Structure:
-    Use the existing structure with categories, tasks, and intensities
-    Parse JSON structure to populate UI options dynamically
-6. Backward Compatibility:
-    Ensure the system works with both old and new task formats
-    Provide fallbacks for missing fields
+## Testing and Integration
+
+### 10. Test Migration
+```
+- Verify existing tasks convert correctly to new format
+- Ensure task completion records integrate with new fields
+- Check that UI correctly displays all task types
+```
+
+### 11. Test Task Box Features
+```
+- Verify timer functionality works with long press
+- Test swipe actions for completion/cancellation
+- Confirm recurrence displays correctly
+```
+
+### 12. Test Edit Modal
+```
+- Verify all fields save correctly
+- Test TaskLibrary integration
+- Check that edits persist across app restarts
+```
+
+## Implementation Priority
+
+1. Data structure updates (UserTypes.ts, StorageUtils.ts)
+2. Core UI components (TaskBoxModal.tsx)
+3. Edit functionality (EditTaskModal.tsx)
+4. Integration with existing components
+5. Optional selector components
+6. Testing and refinement
+
+This approach ensures a smooth transition to the new unified system while maintaining backward compatibility with existing data.
+
 
 git command:
 Here’s a typical Git workflow for creating a feature branch, pushing it up, and then merging it back into `main` when you’re done:
