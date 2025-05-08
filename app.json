@@ -35,6 +35,16 @@
         "projectId": "ca4bfe6a-f8d3-4b9b-9953-21659d8ef83f"
       }
     },
-    "scheme": "sfocra"
+    "scheme": "sfocra",
+    "plugins": [
+      "expo-router"
+    ],
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/ca4bfe6a-f8d3-4b9b-9953-21659d8ef83f"
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
   }
 }

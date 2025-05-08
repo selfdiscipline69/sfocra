@@ -35,6 +35,7 @@ import AdditionalTaskDisplay from '../components/AdditionalTaskDisplay';
 import BottomNavigation from '../components/BottomNavigation';
 import TimerDisplay, { TimerDisplayRef } from '../components/TimerDisplay';
 import CustomTaskSelector, { CustomTaskSelectorRef } from '../components/addTask/CustomTaskSelector';
+import EditTaskModal from '../components/Task_modal/EditTaskModal';
 
 // Task Addition Utilities
 import { addCustomTask } from '../utils/taskAdditionUtils';
@@ -43,6 +44,7 @@ import questsData from '../../assets/Quest.json';
 import { themes } from '../context/ThemeContext';
 import { Task } from '../components/DailyTaskInput';
 import { AdditionalTask } from '../types/UserTypes';
+import { TaskData } from '../types/UserTypes';
 
 const { width } = Dimensions.get('window');
 
@@ -97,6 +99,11 @@ const HomepageScreen = () => {
 
   // Ref for the custom task selector component
   const customTaskSelectorRef = useRef<CustomTaskSelectorRef>(null);
+
+  // --- Edit Task Modal State ---
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState<TaskData | null>(null);
+  // --- End Edit Task Modal State ---
 
   // Weekly trial category determination from hook
   const weeklyTrialCategory = React.useMemo(() => {
@@ -165,22 +172,66 @@ const HomepageScreen = () => {
   // Function to add the selected random task to *additional* tasks
   const addRandomTask = async () => {
     try {
-      const formattedQuest = `${randomTask} (${randomTaskDuration} min) - ${randomTaskCategory}`;
-      // Use imported normalizeCategory
       const categoryKey = normalizeCategory(randomTaskCategory);
-      const newTask: AdditionalTask = {
+
+      const newTaskData: TaskData = {
         id: `random-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-        text: formattedQuest,
-        image: null,
-        showImage: false,
-        completed: false,
-        category: categoryKey === 'general' ? undefined : categoryKey as any,
-        color: getCategoryColor(categoryKey || 'general')
+        taskName: randomTask,
+        intensity: randomTaskDuration,
+        category: categoryKey === 'general' ? 'general' : categoryKey as TaskData['category'],
+        is_daily: false,
+        XP: 250,
+        status: 'default',
+        is_Recurrent: false,
+        Recurrent_frequency: [0,0,0,0,0,0,0],
+        start_time: "00:00",
+        note: "",
       };
-      const currentTasks: AdditionalTask[] = content.additionalTasks || [];
-      actions.setAdditionalTasks([...currentTasks, newTask]);
+
+      const currentTasks: TaskData[] = (content.additionalTasks || []).map((task: AdditionalTask) => {
+        const { taskName, intensity } = parseAdditionalTaskText(task.text);
+        return {
+            id: task.id,
+            category: task.category || 'general',
+            taskName: taskName,
+            intensity: intensity,
+            is_daily: false,
+            XP: 250,
+            status: task.completed ? 'completed' : 'default',
+            image: task.image,
+            showImage: task.showImage,
+            taskKey: task.taskKey,
+            intensityKey: task.intensityKey,
+            color: task.color,
+            // Provide defaults for other TaskData fields
+            is_Recurrent: false,
+            Recurrent_frequency: [0,0,0,0,0,0,0],
+            start_time: '00:00',
+            note: '',
+            completed_at: task.completed ? Date.now() : undefined, // Or task.completed_at if it exists
+            // day: undefined, // Or a relevant value
+        };
+      });
+
+      const updatedTasks = [...currentTasks, newTaskData];
+      actions.setAdditionalTasks(updatedTasks as any); 
+      if (userData.userToken) {
+        await storageService.saveAdditionalTasks(userData.userToken, updatedTasks as any);
+      }
       setModalType('none');
     } catch (error) { console.error('Error adding random task:', error); }
+  };
+
+  // Helper function to parse task text into name and intensity (can be moved to a util file)
+  const parseAdditionalTaskText = (text: string): { taskName: string; intensity: string } => {
+    const intensityRegex = /\(([^)]+)\)$/;
+    const match = text.match(intensityRegex);
+    if (match && match[1]) {
+      const taskName = text.replace(intensityRegex, '').trim();
+      const intensity = match[1].trim();
+      return { taskName, intensity };
+    }
+    return { taskName: text.trim(), intensity: 'Standard' };
   };
 
   // --- Handler for selection changes from CustomTaskSelector ---
@@ -191,14 +242,13 @@ const HomepageScreen = () => {
 
   // --- Updated handleAddCustomTask ---
   const handleAddCustomTask = async () => {
-      const { category, taskKey, intensityKey } = customSelection; // Use state managed here
+      const { category, taskKey, intensityKey } = customSelection;
 
       if (!category || !taskKey || !intensityKey) {
         Alert.alert('Selection Incomplete', 'Please select a category, task, and intensity.');
         return;
       }
 
-      // Fetch details from TaskLibrary
       const taskDetail = TypedTaskLibrary[taskKey] as TaskDetails | undefined;
       const intensityDetail = taskDetail?.intensities?.[intensityKey];
 
@@ -206,36 +256,63 @@ const HomepageScreen = () => {
         Alert.alert('Error', 'Selected task details not found.');
         return;
       }
+      
+      const newTaskData: TaskData = {
+        id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+        taskName: taskDetail.task,
+        intensity: intensityDetail.duration,
+        category: normalizeCategory(category) as TaskData['category'],
+        is_daily: false,
+        XP: 250,
+        status: 'default',
+        taskKey: taskKey,
+        intensityKey: intensityKey,
+        is_Recurrent: false,
+        Recurrent_frequency: [0,0,0,0,0,0,0],
+        start_time: "00:00",
+        note: "",
+        color: getCategoryColor(normalizeCategory(category)),
+      };
 
-      // Prepare data for the task addition utility
-      const taskName = taskDetail.task;
-      const durationText = intensityDetail.duration;
-      const durationMatch = durationText.match(/(\d+)\s*minute/);
-      const durationMinutes = durationMatch ? durationMatch[1] : '30'; // Default if parse fails
-      const formattedTaskText = `${taskName} (${durationText})`;
-
-      // Call the utility (needs modification in taskAdditionUtils.ts)
-      await addCustomTask({
-          selectedCategory: category, 
-          selectedTaskKey: taskKey || '', 
-          selectedIntensityKey: intensityKey || '',
-          additionalTasks: content.additionalTasks || [],
-          setAdditionalTasks: actions.setAdditionalTasks,
-          userToken: userData.userToken,
-          setModalVisible: () => setModalType('none')
+      const currentTasks: TaskData[] = (content.additionalTasks || []).map((task: AdditionalTask) => {
+         const { taskName, intensity } = parseAdditionalTaskText(task.text);
+         return {
+            id: task.id,
+            category: task.category || 'general',
+            taskName: taskName,
+            intensity: intensity,
+            is_daily: false,
+            XP: 250,
+            status: task.completed ? 'completed' : 'default',
+            image: task.image,
+            showImage: task.showImage,
+            taskKey: task.taskKey,
+            intensityKey: task.intensityKey,
+            color: task.color,
+            // Provide defaults for other TaskData fields
+            is_Recurrent: false,
+            Recurrent_frequency: [0,0,0,0,0,0,0],
+            start_time: '00:00',
+            note: '',
+            completed_at: task.completed ? Date.now() : undefined, // Or task.completed_at if it exists
+            // day: undefined, // Or a relevant value
+         };
       });
 
-       // Reset selections after adding (handled by addNewTask on next open)
-       // Or reset immediately if preferred:
-       // setCustomSelection({ category: null, taskKey: null, intensityKey: null });
-       // customTaskSelectorRef.current?.reset();
+      const updatedTasks = [...currentTasks, newTaskData];
+      actions.setAdditionalTasks(updatedTasks as any); 
+      if (userData.userToken) {
+         await storageService.saveAdditionalTasks(userData.userToken, updatedTasks as any);
+      }
+      setModalType('none');
   };
   // --- End Updated handleAddCustomTask ---
 
   // Modal controls (Updated)
   const closeAllModals = () => {
       setModalType('none');
-      // No need to manage selectionModalType here anymore
+      setIsEditModalVisible(false); // Also close edit modal if open
+      setTaskToEdit(null);
   }
 
   // --- Celebration Modal ---
@@ -321,42 +398,158 @@ const HomepageScreen = () => {
   // --- End Add Ref ---
 
   // --- NEW: Timer Start Trigger (Called by Task Components) ---
-  const triggerTimerStart = useCallback((taskItem: Task | AdditionalTask, isDaily: boolean) => {
-      timerDisplayRef.current?.startTimer(taskItem, isDaily);
+  const triggerTimerStart = useCallback((taskItem: TaskData, isDaily: boolean) => {
+      timerDisplayRef.current?.startTimer(taskItem as any, isDaily); // Cast for now
   }, []); // Empty dependency array as ref doesn't change
   // --- End NEW Timer Start Trigger ---
 
   // --- NEW: Callbacks for TimerDisplay ---
-  const handleTimerComplete = useCallback((taskItem: Task | AdditionalTask, isDaily: boolean, elapsedSeconds: number) => {
-      console.log(`Homepage: Timer finished for task ID ${taskItem.id}, elapsed: ${elapsedSeconds}s`);
+  const handleTimerComplete = useCallback((taskItemFromTimer: TaskData | Task | AdditionalTask, isDaily: boolean, elapsedSeconds: number) => {
+      console.log(`Homepage: Timer finished for task ID ${taskItemFromTimer.id}, elapsed: ${elapsedSeconds}s`);
 
       // Find the index based on task ID and type
       let taskIndex = -1;
       if (isDaily) {
-          taskIndex = content.dailyTasks?.findIndex(t => t.id === taskItem.id) ?? -1;
+          taskIndex = content.dailyTasks?.findIndex(t => t.id === taskItemFromTimer.id) ?? -1;
           if (taskIndex !== -1) {
               handleTaskComplete(taskIndex); // Call existing completion logic
           } else {
-              console.error("Homepage: Daily task not found on timer completion:", taskItem.id);
+              console.error("Homepage: Daily task not found on timer completion:", taskItemFromTimer.id);
           }
       } else {
-          taskIndex = content.additionalTasks?.findIndex(t => t.id === taskItem.id) ?? -1;
+          taskIndex = content.additionalTasks?.findIndex(t => t.id === taskItemFromTimer.id) ?? -1;
           if (taskIndex !== -1) {
               handleAdditionalTaskComplete(taskIndex); // Call existing completion logic
           } else {
-              console.error("Homepage: Additional task not found on timer completion:", taskItem.id);
+              console.error("Homepage: Additional task not found on timer completion:", taskItemFromTimer.id);
           }
       }
        // Optionally: Update duration in storage using elapsedSeconds if needed here
        // storageService.updateTaskDuration(...)
   }, [content.dailyTasks, content.additionalTasks, handleTaskComplete, handleAdditionalTaskComplete]); // Add dependencies
 
-  const handleTimerDiscard = useCallback((taskItem: Task | AdditionalTask, isDaily: boolean) => {
+  const handleTimerDiscard = useCallback((taskItem: TaskData | Task | AdditionalTask, isDaily: boolean) => {
       console.log(`Homepage: Timer discarded for task ID ${taskItem.id}`);
       // No action needed here usually, as TimerDisplay hides itself.
       // You could add logic here if discarding needs to affect task state somehow.
   }, []);
   // --- End NEW Callbacks ---
+
+  // --- Edit Task Modal Handlers ---
+  const openEditModal = (task: TaskData) => {
+    setTaskToEdit(task);
+    setIsEditModalVisible(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalVisible(false);
+    setTaskToEdit(null);
+  };
+
+  // Helper function to parse daily task text (can be moved to a util file)
+  const parseDailyTaskText = (text: string): { taskName: string; intensity: string } => {
+    const intensityRegex = /\(([^)]+)\)$/; // Matches content in parentheses at the end
+    const match = text.match(intensityRegex);
+    if (match && match[1]) {
+      const taskName = text.replace(intensityRegex, '').trim();
+      const intensity = match[1].trim();
+      return { taskName, intensity };
+    }
+    return { taskName: text.trim(), intensity: 'Standard' }; // Default intensity if not parsed
+  };
+
+  const handleSaveEditedTask = async (updatedTask: TaskData) => {
+    if (!userData.userToken) {
+      Alert.alert("Error", "User not logged in.");
+      closeEditModal();
+      return;
+    }
+
+    if (updatedTask.is_daily) {
+      const newDailyTasksList: TaskData[] = (content.dailyTasks || []).map(oldTask => {
+        if (oldTask.id === updatedTask.id) {
+          return updatedTask; 
+        }
+        const { taskName, intensity } = parseDailyTaskText(oldTask.text);
+        return {
+          id: oldTask.id || `daily-fallback-${Math.random().toString(36).slice(2)}`,
+          category: oldTask.category || 'general',
+          taskName,
+          intensity,
+          is_daily: true,
+          XP: 500, // Default XP for daily tasks
+          status: oldTask.status,
+          // Add defaults for other TaskData fields that might be missing from old Task type
+          is_Recurrent: false, 
+          Recurrent_frequency: [0,0,0,0,0,0,0],
+          start_time: '00:00', 
+          note: '', 
+          // completed_at, day can remain undefined or be populated if oldTask had them
+        };
+      });
+      
+      // Assuming actions.setDailyTasks will be added to useHomepageData and accept TaskData[]
+      // To bypass the current TypeScript error if the hook isn't updated yet:
+      if (typeof (actions as any).setDailyTasks === 'function') {
+        (actions as any).setDailyTasks(newDailyTasksList);
+      } else {
+        console.warn("'actions.setDailyTasks' is not yet available from useHomepageData hook.");
+      }
+
+      // Map TaskData[] back to Task[] for saveDailyTasksState if it hasn't been updated
+      const tasksToSaveForStorage: Task[] = newDailyTasksList.map(td => ({
+        id: td.id,
+        text: `${td.taskName} (${td.intensity})`, // Reconstruct the 'text' field
+        status: td.status,
+        category: td.category,
+      }));
+      await storageService.saveDailyTasksState(userData.userToken, { tasks: tasksToSaveForStorage, accountAge: content.accountAge });
+
+    } else {
+      const newAdditionalTasksList: TaskData[] = (content.additionalTasks || []).map((task: AdditionalTask) => {
+        if (task.id === updatedTask.id) {
+          return updatedTask;
+        }
+        const { taskName, intensity } = parseAdditionalTaskText(task.text);
+        return {
+          id: task.id,
+          category: task.category || 'general',
+          taskName,
+          intensity,
+          is_daily: false,
+          XP: 250,
+          status: task.completed ? 'completed' : 'default',
+          image: task.image,
+          showImage: task.showImage,
+          taskKey: task.taskKey,
+          intensityKey: task.intensityKey,
+          color: task.color,
+          is_Recurrent: false,
+          Recurrent_frequency: [0,0,0,0,0,0,0],
+          start_time: '00:00',
+          note: '',
+          completed_at: task.completed ? Date.now() : undefined,
+        };
+      });
+      actions.setAdditionalTasks(newAdditionalTasksList as any); 
+      // Similarly, saveAdditionalTasks might need tasks mapped back if it expects AdditionalTask[]
+      const additionalTasksToSaveForStorage: AdditionalTask[] = newAdditionalTasksList.map(td => ({
+        id: td.id,
+        text: `${td.taskName} (${td.intensity})`,
+        image: td.image || null,
+        completed: td.status === 'completed',
+        showImage: td.showImage || false,
+        category: td.category as AdditionalTask['category'], // Cast category
+        color: td.color,
+        taskKey: td.taskKey,
+        intensityKey: td.intensityKey,
+      }));
+      await storageService.saveAdditionalTasks(userData.userToken, additionalTasksToSaveForStorage);
+    }
+    DeviceEventEmitter.emit('taskStateUpdated');
+    closeEditModal();
+  };
+  // --- End Edit Task Modal Handlers ---
 
   // --- Secret Day Adjustment Logic ---
   const [isDayAdjustModalVisible, setIsDayAdjustModalVisible] = useState(false);
@@ -423,7 +616,8 @@ const HomepageScreen = () => {
                 onTaskComplete={handleTaskComplete}
                 onTaskCancel={handleTaskCancel}
                 // Pass the new trigger function
-                onTaskLongPress={(index, taskItem) => triggerTimerStart(taskItem as Task, true)}
+                onTaskLongPress={(index, taskData) => triggerTimerStart(taskData, true)}
+                onTaskEdit={openEditModal}
               />
             </View>
           </View>
@@ -435,7 +629,8 @@ const HomepageScreen = () => {
               onTaskComplete={handleAdditionalTaskComplete}
               onTaskCancel={handleAdditionalTaskCancel}
               // Pass the new trigger function
-              onTaskLongPress={(index, taskItem) => triggerTimerStart(taskItem as AdditionalTask, false)}
+              onTaskLongPress={(index, taskData) => triggerTimerStart(taskData, false)}
+              onTaskEdit={openEditModal}
             />
           </View>
           <View style={styles.keyboardSpace} />
@@ -492,6 +687,17 @@ const HomepageScreen = () => {
             </View>
              </TouchableWithoutFeedback>
          </Modal>
+
+        {/* Edit Task Modal */}
+        {taskToEdit && ( // Conditionally render EditTaskModal
+          <EditTaskModal
+            isVisible={isEditModalVisible}
+            onClose={closeEditModal}
+            taskToEdit={taskToEdit}
+            onSave={handleSaveEditedTask}
+            theme={theme}
+          />
+        )}
 
         {/* Day Adjustment Modal */}
         <Modal animationType="fade" transparent={true} visible={isDayAdjustModalVisible} onRequestClose={() => setIsDayAdjustModalVisible(false)}>

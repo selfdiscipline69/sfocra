@@ -3,6 +3,8 @@
 ## Overview
 This document outlines the steps needed to implement a unified task display system with enhanced data fields and two new modal components: the Task Box Modal and Edit Task Modal. These changes will standardize the UI for both daily and additional tasks while expanding functionality.
 
+Note: Comment the old code if it is needed to be replaced.
+
 ## Data Structure Updates
 
 ### 1. Update UserTypes.ts

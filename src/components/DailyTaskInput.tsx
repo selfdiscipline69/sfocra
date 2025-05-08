@@ -1,77 +1,91 @@
 import React from 'react';
-import { StyleSheet, View, Text, Animated, TouchableWithoutFeedback } from 'react-native';
-import WeeklyTrialBox, { useBoxTextColor } from './WeeklyTrialBox';
-// import { useTheme } from '../context/ThemeContext'; // Theme is passed as prop
-import { Swipeable } from 'react-native-gesture-handler';
+import { StyleSheet, View, Text } from 'react-native';
+// import WeeklyTrialBox, { useBoxTextColor } from './WeeklyTrialBox'; // No longer used directly
+// import { Swipeable } from 'react-native-gesture-handler'; // No longer used directly
 // import AnimatedSpriteIcon from './AnimatedSpriteIcon'; // Seems unused
-// Needed for progress type
-import { GestureHandlerStateChangeEvent, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+
+// Import the new components and types
+import TaskBoxModal from './Task_modal/TaskBoxModal';
+import { TaskData } from '../types/UserTypes';
 
 // Define task type that can be an object with status and optional ID/category
+// This is the incoming prop type for daily tasks
 export type Task = {
-  id?: string;
+  id?: string; // Should ideally be present and unique
   text: string;
   status: 'default' | 'completed' | 'canceled';
   category?: string; // Keep as general string, casting happens at usage
 };
 
-// Type for WeeklyTrialBox category prop
-// Fix: Ensure 'general' is included as a valid type alongside specific categories
-type WeeklyTrialBoxCategory = 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity' | 'general' | undefined;
+// Type for WeeklyTrialBox category prop (no longer directly used here)
+// type WeeklyTrialBoxCategory = 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creativity' | 'general' | undefined;
 
 interface DailyTaskInputProps {
   tasks: Task[]; // Expecting array of Task objects
   theme: any; // Replace with proper theme type if available
-  onTaskComplete?: (index: number) => void;
-  onTaskCancel?: (index: number) => void;
-  // Pass the full task object for context
-  onTaskLongPress?: (index: number, taskItem: Task) => void;
+  onTaskComplete?: (index: number) => void; // HomepageScreen expects index
+  onTaskCancel?: (index: number) => void;   // HomepageScreen expects index
+  onTaskLongPress?: (index: number, taskItem: TaskData) => void; // Pass mapped TaskData
+  onTaskEdit?: (taskItem: TaskData) => void; // New prop to handle edit modal opening
 }
 
-// Internal component to display the task text and handle long press visual cue
-const TaskDisplay = ({
-  taskText,
-  onLongPress,
-}: {
-  taskText: string;
-  onLongPress?: () => void;
-}) => {
-  const textColor = useBoxTextColor(); // Get text color from box context
-
-  return (
-    <TouchableWithoutFeedback onLongPress={onLongPress} delayLongPress={300}>
-      <View style={styles.taskWrapper}>
-        <Text style={[styles.taskText, { color: textColor }]}>
-          {taskText}
-        </Text>
-        <Text style={[styles.longPressHint, { color: textColor, opacity: 0.6 }]}>
-          Long press to start timer
-        </Text>
-      </View>
-    </TouchableWithoutFeedback>
-  );
+// Helper function to parse task text into name and intensity
+const parseTaskText = (text: string): { taskName: string; intensity: string } => {
+  const intensityRegex = /\(([^)]+)\)$/; // Matches content in parentheses at the end
+  const match = text.match(intensityRegex);
+  if (match && match[1]) {
+    const taskName = text.replace(intensityRegex, '').trim();
+    const intensity = match[1].trim();
+    return { taskName, intensity };
+  }
+  return { taskName: text.trim(), intensity: 'Standard' }; // Default intensity if not parsed
 };
 
 
-// Swipe right action (Cancel) - Add type for progress
-const CancelAction = (progress: Animated.AnimatedInterpolation<number>, theme: any) => {
-  const trans = progress.interpolate({ inputRange: [0, 1], outputRange: [100, 0] });
-  return (
-    <Animated.View style={[styles.rightAction, { backgroundColor: theme.mode === 'dark' ? '#D13030' : '#FF3B30', transform: [{ translateX: trans }] }]}>
-      <Text style={styles.actionText}>Cancel</Text>
-    </Animated.View>
-  );
-};
+// // Internal component to display the task text and handle long press visual cue (No longer needed)
+// const TaskDisplay = ({
+//   taskText,
+//   onLongPress,
+// }: {
+//   taskText: string;
+//   onLongPress?: () => void;
+// }) => {
+//   const textColor = useBoxTextColor(); 
 
-// Swipe left action (Complete) - Add type for progress
-const CompleteAction = (progress: Animated.AnimatedInterpolation<number>, theme: any) => {
-  const trans = progress.interpolate({ inputRange: [0, 1], outputRange: [-100, 0] });
-  return (
-    <Animated.View style={[styles.leftAction, { backgroundColor: theme.mode === 'dark' ? '#30A030' : '#34C759', transform: [{ translateX: trans }] }]}>
-      <Text style={styles.actionText}>Done</Text>
-    </Animated.View>
-  );
-};
+//   return (
+//     <TouchableWithoutFeedback onLongPress={onLongPress} delayLongPress={300}>
+//       <View style={styles.taskWrapper}>
+//         <Text style={[styles.taskText, { color: textColor }]}>
+//           {taskText}
+//         </Text>
+//         <Text style={[styles.longPressHint, { color: textColor, opacity: 0.6 }]}>
+//           Long press to start timer
+//         </Text>
+//       </View>
+//     </TouchableWithoutFeedback>
+//   );
+// };
+
+
+// // Swipe right action (Cancel) - (No longer needed, handled by TaskBoxModal)
+// const CancelAction = (progress: Animated.AnimatedInterpolation<number>, theme: any) => {
+//   const trans = progress.interpolate({ inputRange: [0, 1], outputRange: [100, 0] });
+//   return (
+//     <Animated.View style={[styles.rightAction, { backgroundColor: theme.mode === 'dark' ? '#D13030' : '#FF3B30', transform: [{ translateX: trans }] }]}>
+//       <Text style={styles.actionText}>Cancel</Text>
+//     </Animated.View>
+//   );
+// };
+
+// // Swipe left action (Complete) - (No longer needed, handled by TaskBoxModal)
+// const CompleteAction = (progress: Animated.AnimatedInterpolation<number>, theme: any) => {
+//   const trans = progress.interpolate({ inputRange: [0, 1], outputRange: [-100, 0] });
+//   return (
+//     <Animated.View style={[styles.leftAction, { backgroundColor: theme.mode === 'dark' ? '#30A030' : '#34C759', transform: [{ translateX: trans }] }]}>
+//       <Text style={styles.actionText}>Done</Text>
+//     </Animated.View>
+//   );
+// };
 
 
 const DailyTaskInput = ({
@@ -80,24 +94,15 @@ const DailyTaskInput = ({
   onTaskComplete = () => {},
   onTaskCancel = () => {},
   onTaskLongPress = () => {},
+  onTaskEdit = () => {}, // Initialize new prop
 }: DailyTaskInputProps) => {
 
   // Filter tasks to only show those with 'default' status
-  const activeTasks = (tasks || []).filter(task => // Ensure tasks is an array
-    typeof task === 'object' && task !== null && task.status === 'default'
-  );
+  const activeTasksWithOriginalIndex = (tasks || [])
+    .map((task, index) => ({ ...task, originalIndex: index })) // Keep original index
+    .filter(task => typeof task === 'object' && task !== null && task.status === 'default');
 
-  // Map to original index for callbacks
-   const tasksWithOriginalIndex = activeTasks.map(task => {
-        const originalIndex = (tasks || []).findIndex(originalTask =>
-            typeof originalTask === 'object' && typeof task === 'object' &&
-            ((originalTask.id && task.id && originalTask.id === task.id) || originalTask.text === task.text)
-        );
-        return { ...task, originalIndex: originalIndex !== -1 ? originalIndex : -1 };
-    }).filter(task => task.originalIndex !== -1);
-
-
-  if (tasksWithOriginalIndex.length === 0) {
+  if (activeTasksWithOriginalIndex.length === 0) {
       return (
           <View style={styles.noTasksContainer}>
               <Text style={[styles.noTasksText, { color: theme.textMuted || '#888' }]}>
@@ -107,80 +112,58 @@ const DailyTaskInput = ({
       );
   }
 
+  // Map Task[] to TaskData[]
+  const mappedTasks: TaskData[] = activeTasksWithOriginalIndex.map(taskItem => {
+    const { taskName, intensity } = parseTaskText(taskItem.text);
+    const taskId = taskItem.id || `daily-${taskItem.originalIndex}-${Date.now()}`; // Ensure an ID
+
+    return {
+      id: taskId,
+      category: taskItem.category || 'general',
+      taskName: taskName,
+      intensity: intensity,
+      is_daily: true,
+      XP: 500, // Default XP for daily tasks
+      is_Recurrent: false, // Daily tasks from Quest.json are not typically recurrent by default in this structure
+      Recurrent_frequency: [0, 0, 0, 0, 0, 0, 0],
+      start_time: '00:00', // Default start time
+      note: '', // Default empty note
+      status: taskItem.status,
+      // completed_at, day, taskKey, intensityKey can be undefined or set if available
+      // For daily tasks from Quest.json, taskKey/intensityKey might not be directly applicable
+      // unless Quest.json is also mapped to TaskLibrary structure.
+      originalIndex: taskItem.originalIndex, // Keep for callbacks if needed
+    } as TaskData & { originalIndex: number }; // Add originalIndex to the mapped type for temporary use
+  });
+
 
   return (
     <>
-      {tasksWithOriginalIndex.map((taskItem) => (
-        <Swipeable
-          key={`task-${taskItem.originalIndex}-${taskItem.id || taskItem.text}`}
-          // Fix: Add type annotation for progress parameter
-          renderRightActions={(progress: Animated.AnimatedInterpolation<number>) => CancelAction(progress, theme)}
-          renderLeftActions={(progress: Animated.AnimatedInterpolation<number>) => CompleteAction(progress, theme)}
-          onSwipeableRightOpen={() => onTaskCancel(taskItem.originalIndex)}
-          onSwipeableLeftOpen={() => onTaskComplete(taskItem.originalIndex)}
-          enabled={taskItem.status === 'default'}
-        >
-          <WeeklyTrialBox
-            title={`Daily Task`}
-            category={taskItem.category === 'general' ? undefined : taskItem.category as "fitness" | "learning" | "mindfulness" | "social" | "creativity"}
-            //theme={theme}
-          >
-            <TaskDisplay
-              taskText={taskItem.text}
-              onLongPress={() => onTaskLongPress(taskItem.originalIndex, taskItem)}
-            />
-          </WeeklyTrialBox>
-        </Swipeable>
-      ))}
+      {mappedTasks.map((mappedTask) => {
+        // Find the original index using the id or the temporary originalIndex from mappedTask
+        // This assumes mappedTask.id is unique and reliable.
+        // Or, if we are certain about the order, mappedTask.originalIndex can be used directly.
+        const taskOriginalIndex = (mappedTask as any).originalIndex; // Accessing the temporarily added originalIndex
+
+        return (
+          <TaskBoxModal
+            key={mappedTask.id}
+            task={mappedTask}
+            theme={theme}
+            onComplete={() => onTaskComplete(taskOriginalIndex)} // Pass original index
+            onCancel={() => onTaskCancel(taskOriginalIndex)}     // Pass original index
+            onLongPress={() => onTaskLongPress(taskOriginalIndex, mappedTask)} // Pass original index and mapped TaskData
+            onPress={() => onTaskEdit(mappedTask)} // Pass mapped TaskData for editing
+          />
+        );
+      })}
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  taskWrapper: {
-    paddingVertical: 5,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    minHeight: 60, // Ensures consistent height for proper positioning
-  },
-  taskText: {
-    fontSize: 15,
-    textAlign: 'left',
-    width: '100%',
-    lineHeight: 20,
-    marginBottom: 1,
-  },
-  longPressHint: {
-    fontSize: 11,
-    textAlign: 'right',
-    fontStyle: 'italic',
-    alignSelf: 'flex-end',
-    marginTop: 'auto', // Pushes the hint to the bottom
-  },
-  leftAction: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start', // Align text left
-    marginBottom: 15,
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
-    paddingLeft: 20, // Indent text
-  },
-  rightAction: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-end', // Align text right
-    marginBottom: 15,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    paddingRight: 20, // Indent text
-  },
-  actionText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 15,
-  },
+  // Styles for TaskDisplay, leftAction, rightAction, taskWrapper, longPressHint can be removed
+  // as they are no longer used. Keep noTasksContainer and noTasksText.
   noTasksContainer: {
       paddingVertical: 20,
       alignItems: 'center',
@@ -191,6 +174,7 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontStyle: 'italic',
   }
+  // Removed old styles: taskWrapper, taskText, longPressHint, leftAction, rightAction, actionText
 });
 
 export default DailyTaskInput;

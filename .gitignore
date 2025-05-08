@@ -37,6 +37,6 @@ yarn-error.*
 *.tsbuildinfo
 
 # to-do list
-.todo.md
+# .todo.md
 
 app-example
