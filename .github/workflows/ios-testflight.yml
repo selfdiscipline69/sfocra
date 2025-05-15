@@ -37,16 +37,23 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Setup Ruby
+      - name: Setup Ruby and bundle
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
-          bundler-cache: true
+          ruby-version: '3.2'  # Updated from 3.0 to 3.2 for Bundler 2.6.9 compatibility
+          bundler-cache: false  # Disable automatic bundler cache to handle platform differences
           working-directory: 'ios'
 
-      - name: Install Fastlane and CocoaPods
+      - name: Install dependencies with Bundler
         run: |
           cd ios
+          # Add the current platform to the lockfile
+          bundle lock --add-platform arm64-darwin-23
+          bundle lock --add-platform arm64-darwin
+          bundle lock --add-platform x86_64-darwin
+          # Install gems
+          bundle install
+          # Install Fastlane and CocoaPods
           gem install fastlane cocoapods
           pod install
 
