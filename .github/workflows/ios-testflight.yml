@@ -51,11 +51,10 @@ jobs:
           bundle lock --add-platform arm64-darwin-23
           bundle lock --add-platform arm64-darwin
           bundle lock --add-platform x86_64-darwin
-          # Install gems
+          # Install gems from Gemfile
           bundle install
-          # Install Fastlane and CocoaPods
-          gem install fastlane cocoapods
-          pod install
+          # Run pod install
+          bundle exec pod install
 
       - name: Configure Apple Credentials
         env:

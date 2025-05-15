@@ -1,6 +1,13 @@
 source "https://rubygems.org"
 
+# Essential gems for iOS development
 gem "fastlane"
+gem "cocoapods"
+
+# Plugin requirements - add these if you have specific fastlane plugins
+gem "fastlane-plugin-firebase_app_distribution"
+
+# Add other gems as needed
 
 plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
 eval_gemfile(plugins_path) if File.exist?(plugins_path) 
