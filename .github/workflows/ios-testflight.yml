@@ -16,6 +16,10 @@ jobs:
       # Add env variables for code signing
       TEAM_ID: ${{ vars.APPLE_TEAM_ID}}
       BUNDLE_IDENTIFIER: ${{ vars.BUNDLE_IDENTIFIER}}
+      # App Store Connect API Key details
+      APPSTORE_KEY_ID: ${{ vars.APPSTORE_KEY_ID }}
+      APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
+      FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
 
     steps:
       - name: Checkout code
@@ -148,37 +152,22 @@ jobs:
           cd ios
           bundle exec pod install
 
-      # Configure code signing with automatic provisioning
-      - name: Set up code signing settings
-        run: |
-          cd ios
-          
-          # Create keychain
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          security create-keychain -p "github-actions" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "github-actions" $KEYCHAIN_PATH
-          security default-keychain -s $KEYCHAIN_PATH
-          
-          # Configure Xcode project for CI Build with automatic signing
-          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_IDENTIFIER" Sfocra/Info.plist
-          
-          # Update project.pbxproj with team ID for automatic signing
-          perl -i -pe "s/DEVELOPMENT_TEAM = \"\";/DEVELOPMENT_TEAM = \"$TEAM_ID\";/g" Sfocra.xcodeproj/project.pbxproj
-          perl -i -pe "s/\"DEVELOPMENT_TEAM\[sdk=iphoneos\*\]\" = \"\";/\"DEVELOPMENT_TEAM[sdk=iphoneos*]\" = \"$TEAM_ID\";/g" Sfocra.xcodeproj/project.pbxproj
-          perl -i -pe "s/CODE_SIGN_STYLE = Manual;/CODE_SIGN_STYLE = Automatic;/g" Sfocra.xcodeproj/project.pbxproj
-
       - name: Configure Apple Credentials
         env:
           APPSTORE_API_KEY_BASE64: ${{ secrets.APPLE_PRIVATE_KEY }}
-          APPLE_API_KEY_ID: ${{ vars.APPSTORE_KEY_ID }}
-          APPLE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
         run: |
           mkdir -p ~/private_keys
           echo -n "$APPSTORE_API_KEY_BASE64" | base64 --decode > ~/private_keys/AuthKey.p8
           echo "API_KEY_PATH=~/private_keys/AuthKey.p8" >> $GITHUB_ENV
-          echo "API_KEY_ID=$APPLE_API_KEY_ID" >> $GITHUB_ENV
-          echo "ISSUER_ID=$APPLE_ISSUER_ID" >> $GITHUB_ENV
+          
+          # Create App Store Connect API auth configuration JSON
+          cat > ~/.app-store-connect-auth.json << EOL
+          {
+            "key_id": "$APPSTORE_KEY_ID",
+            "issuer_id": "$APPSTORE_ISSUER_ID",
+            "key": "$(cat ~/private_keys/AuthKey.p8)"
+          }
+          EOL
           
           # Verify that the key file exists and has content
           ls -la ~/private_keys/
@@ -186,14 +175,25 @@ jobs:
             echo "ERROR: API key file is empty or doesn't exist"
             exit 1
           fi
+          
+          if [ ! -s ~/.app-store-connect-auth.json ]; then
+            echo "ERROR: App Store Connect API auth file is empty or doesn't exist"
+            exit 1
+          fi
+          
+          # Create temporary keychain for the build
+          KEYCHAIN_NAME=build_keychain
+          KEYCHAIN_PASSWORD=build_keychain_password
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+          security default-keychain -s "$KEYCHAIN_NAME"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+          security set-keychain-settings -t 3600 -u "$KEYCHAIN_NAME"
 
       - name: Build and Upload to TestFlight
-        env:
-          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         run: |
           cd ios
-          # Add allowProvisioningUpdates flag to let Xcode handle provisioning
-          bundle exec fastlane beta allow_provisioning_updates:true
+          # Use explicitly specified API key file
+          bundle exec fastlane beta api_key_path:~/.app-store-connect-auth.json use_api_key:true
           
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4

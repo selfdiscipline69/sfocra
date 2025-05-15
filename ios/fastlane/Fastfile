@@ -5,6 +5,8 @@ platform :ios do
   lane :beta do |options|
     # Options
     allow_provisioning_updates = options[:allow_provisioning_updates] || false
+    api_key_path = options[:api_key_path]
+    use_api_key = options[:use_api_key] || false
     
     # Ensure build directory exists (Windows compatible)
     if FastlaneCore::Helper.windows?
@@ -25,6 +27,15 @@ platform :ios do
     
     # These actions will only run on CI (GitHub Actions) or macOS
     unless FastlaneCore::Helper.windows?
+      if use_api_key && api_key_path
+        UI.important("Using App Store Connect API key at: #{api_key_path}")
+        app_store_connect_api_key(
+          key_filepath: api_key_path,
+          duration: 1200, # 20 minutes
+          in_house: false
+        )
+      end
+      
       # Update code signing settings - use automatic signing
       update_code_signing_settings(
         use_automatic_signing: true,
@@ -59,13 +70,8 @@ platform :ios do
       # Upload to TestFlight
       upload_to_testflight(
         skip_waiting_for_build_processing: true,
-        apple_id: CredentialsManager::AppfileConfig.try_fetch_value(:apple_id),
-        api_key_path: ENV["API_KEY_PATH"],
-        api_key: {
-          key_id: ENV["API_KEY_ID"],
-          issuer_id: ENV["ISSUER_ID"],
-          key_filepath: ENV["API_KEY_PATH"]
-        }
+        apple_id: CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
+        # API key is automatically picked up from lane context when app_store_connect_api_key is used
       )
     else
       UI.important("Running on Windows - skipping iOS build and upload steps. These will run on CI.")
