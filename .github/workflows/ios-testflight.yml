@@ -53,7 +53,18 @@ jobs:
           bundle lock --add-platform x86_64-darwin
           # Install gems from Gemfile
           bundle install
-          # Run pod install
+          
+      - name: Patch RNScreens Podspec
+        run: |
+          # Create backup of original podspec
+          cp node_modules/react-native-screens/RNScreens.podspec node_modules/react-native-screens/RNScreens.podspec.bak
+          # Remove the problematic project_header_files line
+          sed -i '' '/project_header_files/d' node_modules/react-native-screens/RNScreens.podspec
+          echo "Patched RNScreens.podspec to remove unsupported property"
+          
+      - name: Install CocoaPods
+        run: |
+          cd ios
           bundle exec pod install
 
       - name: Configure Apple Credentials

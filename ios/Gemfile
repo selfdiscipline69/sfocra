@@ -2,10 +2,10 @@ source "https://rubygems.org"
 
 # Essential gems for iOS development
 gem "fastlane"
-gem "cocoapods"
+gem "cocoapods", "~> 1.12.0"  # Specific newer version to support RNScreens
 
-# Plugin requirements - add these if you have specific fastlane plugins
-gem "fastlane-plugin-firebase_app_distribution"
+# Plugin requirements are handled by the Pluginfile - no need to specify them here
+# gem "fastlane-plugin-firebase_app_distribution"
 
 # Add other gems as needed
 
