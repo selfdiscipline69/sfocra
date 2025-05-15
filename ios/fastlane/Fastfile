@@ -1,0 +1,29 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    # Ensure build directory exists
+    sh("mkdir -p ../build")
+    
+    # Increment build number
+    increment_build_number(xcodeproj: "Sfocra.xcodeproj")
+    
+    # Update CocoaPods dependencies
+    cocoapods
+    
+    # Build the app
+    build_app(
+      workspace: "Sfocra.xcworkspace",
+      scheme: "Sfocra",
+      output_directory: "build",
+      output_name: "Sfocra.ipa",
+      export_method: "app-store"
+    )
+    
+    # Upload to TestFlight
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true
+    )
+  end
+end 

@@ -28,3 +28,14 @@ project.xcworkspace
 
 # CocoaPods
 /Pods/
+
+# Fastlane specific
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/.env*
+
+# Build artifacts
+*.ipa
+*.app.dSYM.zip

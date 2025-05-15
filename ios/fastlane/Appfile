@@ -1,0 +1,6 @@
+app_identifier("org.name.Sfocra") # Replace with your app's bundle identifier
+apple_id("jimmymkchu@gmail.com") # Replace with your Apple ID email
+team_id("DT9RP93U4S") # Replace with your team ID from Apple Developer Portal
+
+# For more information about the Appfile, see:
+# https://docs.fastlane.tools/advanced/#appfile 
