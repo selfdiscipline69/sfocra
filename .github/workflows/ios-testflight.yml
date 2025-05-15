@@ -148,39 +148,25 @@ jobs:
           cd ios
           bundle exec pod install
 
-      # Configure code signing using manual approach
+      # Configure code signing with automatic provisioning
       - name: Set up code signing settings
         run: |
           cd ios
           
-          # Create a keychain
+          # Create keychain
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
           security create-keychain -p "github-actions" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
           security unlock-keychain -p "github-actions" $KEYCHAIN_PATH
           security default-keychain -s $KEYCHAIN_PATH
           
-          # Configure Xcode project for CI Build
+          # Configure Xcode project for CI Build with automatic signing
           /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_IDENTIFIER" Sfocra/Info.plist
           
-          # Create an export options plist file
-          cat > ExportOptions.plist << EOL
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>method</key>
-              <string>app-store</string>
-              <key>teamID</key>
-              <string>$TEAM_ID</string>
-          </dict>
-          </plist>
-          EOL
-          
-          # Update project.pbxproj with team ID 
-          # Use perl for cross-platform compatibility instead of sed
+          # Update project.pbxproj with team ID for automatic signing
           perl -i -pe "s/DEVELOPMENT_TEAM = \"\";/DEVELOPMENT_TEAM = \"$TEAM_ID\";/g" Sfocra.xcodeproj/project.pbxproj
           perl -i -pe "s/\"DEVELOPMENT_TEAM\[sdk=iphoneos\*\]\" = \"\";/\"DEVELOPMENT_TEAM[sdk=iphoneos*]\" = \"$TEAM_ID\";/g" Sfocra.xcodeproj/project.pbxproj
+          perl -i -pe "s/CODE_SIGN_STYLE = Manual;/CODE_SIGN_STYLE = Automatic;/g" Sfocra.xcodeproj/project.pbxproj
 
       - name: Configure Apple Credentials
         env:
