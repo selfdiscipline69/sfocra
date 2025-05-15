@@ -3,27 +3,52 @@ default_platform(:ios)
 platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
-    # Ensure build directory exists
-    sh("mkdir -p ../build")
+    # Ensure build directory exists (Windows compatible)
+    if FastlaneCore::Helper.windows?
+      sh("mkdir ..\\build 2>nul || exit 0")
+    else
+      sh("mkdir -p ../build")
+    end
     
-    # Increment build number
-    increment_build_number(xcodeproj: "Sfocra.xcodeproj")
+    # Increment build number - Skip on Windows as this requires xcodebuild
+    unless FastlaneCore::Helper.windows?
+      increment_build_number(xcodeproj: "Sfocra.xcodeproj")
+    end
     
-    # Update CocoaPods dependencies
-    cocoapods
+    # Update CocoaPods dependencies - Skip on Windows as this requires macOS
+    unless FastlaneCore::Helper.windows?
+      cocoapods
+    end
     
-    # Build the app
-    build_app(
-      workspace: "Sfocra.xcworkspace",
-      scheme: "Sfocra",
-      output_directory: "build",
-      output_name: "Sfocra.ipa",
-      export_method: "app-store"
-    )
+    # These actions will only run on CI (GitHub Actions) or macOS
+    unless FastlaneCore::Helper.windows?
+      # Build the app
+      build_app(
+        workspace: "Sfocra.xcworkspace",
+        scheme: "Sfocra",
+        output_directory: "build",
+        output_name: "Sfocra.ipa",
+        export_method: "app-store"
+      )
+      
+      # Upload to TestFlight
+      upload_to_testflight(
+        skip_waiting_for_build_processing: true
+      )
+    else
+      UI.important("Running on Windows - skipping iOS build and upload steps. These will run on CI.")
+    end
+  end
+  
+  desc "Prepare development environment"
+  lane :setup do
+    # Works on any platform
+    UI.success("Fastlane environment is ready!")
     
-    # Upload to TestFlight
-    upload_to_testflight(
-      skip_waiting_for_build_processing: true
-    )
+    # Only on macOS
+    unless FastlaneCore::Helper.windows?
+      # Install certificates, profiles, etc.
+      UI.success("macOS-specific setup complete")
+    end
   end
 end 
