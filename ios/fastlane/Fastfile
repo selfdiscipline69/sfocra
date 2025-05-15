@@ -27,15 +27,25 @@ platform :ios do
     
     # These actions will only run on CI (GitHub Actions) or macOS
     unless FastlaneCore::Helper.windows?
+      api_key = nil
+      
       if use_api_key && api_key_path
         UI.important("Using App Store Connect API key at: #{api_key_path}")
         
+        # Try to convert to absolute path with tilde expansion
+        expanded_path = File.expand_path(api_key_path)
+        UI.important("Expanded path: #{expanded_path}")
+        
         # Use the api_key method which handles the JSON file format
         api_key = app_store_connect_api_key_from_json_file(
-          json_key_file: api_key_path
+          json_key_file: expanded_path
         )
         
-        UI.success("Successfully loaded API key with ID: #{api_key[:key_id]}")
+        if api_key.nil?
+          UI.error("Failed to load API key. Falling back to App-specific password if available.")
+        else
+          UI.success("Successfully loaded API key with ID: #{api_key[:key_id]}")
+        end
       end
       
       # Update code signing settings - use automatic signing
@@ -77,7 +87,16 @@ platform :ios do
       
       # Add API key to upload args if available
       if use_api_key && api_key
+        UI.important("Using API key for TestFlight upload")
         upload_to_testflight_args[:api_key] = api_key
+      else
+        UI.important("API key not available, using Apple ID for authentication")
+        # Ensure app-specific password is available
+        if ENV["FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD"].nil?
+          UI.important("No app-specific password found in environment. You may need to provide it interactively.")
+        else
+          UI.important("Using app-specific password from environment")
+        end
       end
       
       upload_to_testflight(upload_to_testflight_args)
@@ -93,6 +112,14 @@ platform :ios do
     UI.important("Loading API key from file: #{json_key_file}")
     
     begin
+      # Verify file exists first
+      unless File.exist?(json_key_file)
+        UI.error("API key file does not exist at path: #{json_key_file}")
+        UI.error("Current directory: #{Dir.pwd}")
+        UI.error("Home directory: #{ENV['HOME']}")
+        return nil
+      end
+      
       # Read and parse the JSON file
       api_key_json = JSON.parse(File.read(json_key_file))
       
@@ -118,7 +145,10 @@ platform :ios do
       }
     rescue => e
       UI.error("Failed to parse API key JSON file: #{e.message}")
-      UI.error("File content: #{File.read(json_key_file).inspect}")
+      # Only try to read file if it exists
+      if File.exist?(json_key_file)
+        UI.error("File content: #{File.read(json_key_file).inspect}")
+      end
       raise e
     end
   end

@@ -161,13 +161,18 @@ jobs:
           echo "API_KEY_PATH=~/private_keys/AuthKey.p8" >> $GITHUB_ENV
           
           # Create App Store Connect API auth configuration JSON
-          cat > ~/.app-store-connect-auth.json << EOL
+          # Use absolute path with $HOME instead of tilde
+          mkdir -p $HOME/.fastlane
+          cat > $HOME/.fastlane/app-store-connect-auth.json << EOL
           {
             "key_id": "$APPSTORE_KEY_ID",
             "issuer_id": "$APPSTORE_ISSUER_ID",
             "key": "$(cat ~/private_keys/AuthKey.p8)"
           }
           EOL
+          
+          # Store the full path in an environment variable for later use
+          echo "APPSTORE_AUTH_FILE=$HOME/.fastlane/app-store-connect-auth.json" >> $GITHUB_ENV
           
           # Verify that the key file exists and has content
           ls -la ~/private_keys/
@@ -176,7 +181,7 @@ jobs:
             exit 1
           fi
           
-          if [ ! -s ~/.app-store-connect-auth.json ]; then
+          if [ ! -s $HOME/.fastlane/app-store-connect-auth.json ]; then
             echo "ERROR: App Store Connect API auth file is empty or doesn't exist"
             exit 1
           fi
@@ -192,8 +197,8 @@ jobs:
       - name: Build and Upload to TestFlight
         run: |
           cd ios
-          # Use explicitly specified API key file
-          bundle exec fastlane beta api_key_path:~/.app-store-connect-auth.json use_api_key:true
+          # Use the environment variable with the full path
+          bundle exec fastlane beta api_key_path:$APPSTORE_AUTH_FILE use_api_key:true
           
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
