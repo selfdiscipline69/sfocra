@@ -2,7 +2,10 @@ default_platform(:ios)
 
 platform :ios do
   desc "Push a new beta build to TestFlight"
-  lane :beta do
+  lane :beta do |options|
+    # Options
+    allow_provisioning_updates = options[:allow_provisioning_updates] || false
+    
     # Ensure build directory exists (Windows compatible)
     if FastlaneCore::Helper.windows?
       sh("mkdir ..\\build 2>nul || exit 0")
@@ -31,8 +34,8 @@ platform :ios do
         path: "Sfocra.xcodeproj"
       )
       
-      # Build the app with automatic signing
-      build_app(
+      # Build options
+      build_options = {
         workspace: "Sfocra.xcworkspace",
         scheme: "Sfocra",
         output_directory: "build",
@@ -43,7 +46,15 @@ platform :ios do
           method: "app-store",
           teamID: ENV["TEAM_ID"] || CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
         }
-      )
+      }
+      
+      # Add extra xcodebuild arguments if needed
+      if allow_provisioning_updates
+        build_options[:xcargs] = "-allowProvisioningUpdates"
+      end
+      
+      # Build the app with automatic signing
+      build_app(build_options)
       
       # Upload to TestFlight
       upload_to_testflight(

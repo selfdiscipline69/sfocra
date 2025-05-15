@@ -179,13 +179,21 @@ jobs:
           echo "API_KEY_PATH=~/private_keys/AuthKey.p8" >> $GITHUB_ENV
           echo "API_KEY_ID=$APPLE_API_KEY_ID" >> $GITHUB_ENV
           echo "ISSUER_ID=$APPLE_ISSUER_ID" >> $GITHUB_ENV
+          
+          # Verify that the key file exists and has content
+          ls -la ~/private_keys/
+          if [ ! -s ~/private_keys/AuthKey.p8 ]; then
+            echo "ERROR: API key file is empty or doesn't exist"
+            exit 1
+          fi
 
       - name: Build and Upload to TestFlight
         env:
           FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         run: |
           cd ios
-          bundle exec fastlane beta
+          # Add allowProvisioningUpdates flag to let Xcode handle provisioning
+          bundle exec fastlane beta allow_provisioning_updates:true
           
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
