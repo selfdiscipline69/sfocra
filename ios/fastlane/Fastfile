@@ -5,8 +5,6 @@ platform :ios do
   lane :beta do |options|
     # Options
     allow_provisioning_updates = options[:allow_provisioning_updates] || false
-    api_key_path = options[:api_key_path]
-    use_api_key = options[:use_api_key] || false
     
     # Ensure build directory exists (Windows compatible)
     if FastlaneCore::Helper.windows?
@@ -27,32 +25,13 @@ platform :ios do
     
     # These actions will only run on CI (GitHub Actions) or macOS
     unless FastlaneCore::Helper.windows?
-      api_key = nil
-      
-      if use_api_key && api_key_path
-        UI.important("Using App Store Connect API key at: #{api_key_path}")
-        
-        # Try to convert to absolute path with tilde expansion
-        expanded_path = File.expand_path(api_key_path)
-        UI.important("Expanded path: #{expanded_path}")
-        
-        # Use the api_key method which handles the JSON file format
-        api_key = app_store_connect_api_key_from_json_file(
-          json_key_file: expanded_path
-        )
-        
-        if api_key.nil?
-          UI.error("Failed to load API key. Falling back to App-specific password if available.")
-        else
-          UI.success("Successfully loaded API key with ID: #{api_key[:key_id]}")
-        end
-      end
-      
-      # Update code signing settings - use automatic signing
+      # Update code signing settings - use manual signing with imported certificate
       update_code_signing_settings(
-        use_automatic_signing: true,
+        use_automatic_signing: false,
         team_id: ENV["TEAM_ID"] || CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
         bundle_identifier: ENV["BUNDLE_IDENTIFIER"] || CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier),
+        code_sign_identity: "iPhone Distribution",
+        profile_name: "profile", # This matches the filename we imported
         build_configurations: ["Release"],
         path: "Sfocra.xcodeproj"
       )
@@ -67,89 +46,25 @@ platform :ios do
         clean: true,
         export_options: {
           method: "app-store",
+          provisioningProfiles: {
+            ENV["BUNDLE_IDENTIFIER"] => "profile" # Profile name should match imported profile
+          },
           teamID: ENV["TEAM_ID"] || CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
         }
       }
       
-      # Add extra xcodebuild arguments if needed
-      if allow_provisioning_updates
-        build_options[:xcargs] = "-allowProvisioningUpdates"
-      end
-      
-      # Build the app with automatic signing
+      # Build the app with manual signing
       build_app(build_options)
       
-      # Upload to TestFlight
-      upload_to_testflight_args = {
+      # Upload to TestFlight using app-specific password
+      upload_to_testflight(
         skip_waiting_for_build_processing: true,
-        apple_id: CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
-      }
-      
-      # Add API key to upload args if available
-      if use_api_key && api_key
-        UI.important("Using API key for TestFlight upload")
-        upload_to_testflight_args[:api_key] = api_key
-      else
-        UI.important("API key not available, using Apple ID for authentication")
-        # Ensure app-specific password is available
-        if ENV["FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD"].nil?
-          UI.important("No app-specific password found in environment. You may need to provide it interactively.")
-        else
-          UI.important("Using app-specific password from environment")
-        end
-      end
-      
-      upload_to_testflight(upload_to_testflight_args)
+        apple_id: CredentialsManager::AppfileConfig.try_fetch_value(:apple_id),
+        username: ENV["FASTLANE_USER"],
+        # Fastlane will use FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD env var automatically
+      )
     else
       UI.important("Running on Windows - skipping iOS build and upload steps. These will run on CI.")
-    end
-  end
-  
-  # Helper method to parse API key JSON file
-  def app_store_connect_api_key_from_json_file(json_key_file:)
-    require 'json'
-    
-    UI.important("Loading API key from file: #{json_key_file}")
-    
-    begin
-      # Verify file exists first
-      unless File.exist?(json_key_file)
-        UI.error("API key file does not exist at path: #{json_key_file}")
-        UI.error("Current directory: #{Dir.pwd}")
-        UI.error("Home directory: #{ENV['HOME']}")
-        return nil
-      end
-      
-      # Read and parse the JSON file
-      api_key_json = JSON.parse(File.read(json_key_file))
-      
-      # Extract the key information
-      key_id = api_key_json["key_id"]
-      issuer_id = api_key_json["issuer_id"]
-      key_content = api_key_json["key"]
-      
-      # Validate required fields
-      unless key_id && issuer_id && key_content
-        UI.user_error!("API key JSON file is missing required fields: key_id, issuer_id, or key")
-      end
-      
-      UI.success("Loaded API key with ID: #{key_id}")
-      
-      # Return the API key hash
-      return {
-        key_id: key_id,
-        issuer_id: issuer_id,
-        key_content: key_content,
-        duration: 1200,  # 20 minutes
-        in_house: false
-      }
-    rescue => e
-      UI.error("Failed to parse API key JSON file: #{e.message}")
-      # Only try to read file if it exists
-      if File.exist?(json_key_file)
-        UI.error("File content: #{File.read(json_key_file).inspect}")
-      end
-      raise e
     end
   end
   

@@ -154,51 +154,41 @@ jobs:
 
       - name: Configure Apple Credentials
         env:
-          APPSTORE_API_KEY_BASE64: ${{ secrets.APPLE_PRIVATE_KEY }}
+          CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: "temporary_keychain_password"
         run: |
-          mkdir -p ~/private_keys
-          echo -n "$APPSTORE_API_KEY_BASE64" | base64 --decode > ~/private_keys/AuthKey.p8
-          echo "API_KEY_PATH=~/private_keys/AuthKey.p8" >> $GITHUB_ENV
+          # Create temporary keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -t 3600 -u $KEYCHAIN_PATH
           
-          # Create App Store Connect API auth configuration JSON
-          # Use absolute path with $HOME instead of tilde
-          mkdir -p $HOME/.fastlane
-          cat > $HOME/.fastlane/app-store-connect-auth.json << EOL
-          {
-            "key_id": "$APPSTORE_KEY_ID",
-            "issuer_id": "$APPSTORE_ISSUER_ID",
-            "key": "$(cat ~/private_keys/AuthKey.p8)"
-          }
-          EOL
+          # Import certificate to keychain
+          CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
+          echo -n "$CERTIFICATE_BASE64" | base64 --decode > $CERTIFICATE_PATH
+          security import $CERTIFICATE_PATH -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
           
-          # Store the full path in an environment variable for later use
-          echo "APPSTORE_AUTH_FILE=$HOME/.fastlane/app-store-connect-auth.json" >> $GITHUB_ENV
+          # Apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          PROVISIONING_PROFILE_PATH=~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+          echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROVISIONING_PROFILE_PATH"
           
-          # Verify that the key file exists and has content
-          ls -la ~/private_keys/
-          if [ ! -s ~/private_keys/AuthKey.p8 ]; then
-            echo "ERROR: API key file is empty or doesn't exist"
-            exit 1
-          fi
-          
-          if [ ! -s $HOME/.fastlane/app-store-connect-auth.json ]; then
-            echo "ERROR: App Store Connect API auth file is empty or doesn't exist"
-            exit 1
-          fi
-          
-          # Create temporary keychain for the build
-          KEYCHAIN_NAME=build_keychain
-          KEYCHAIN_PASSWORD=build_keychain_password
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
-          security default-keychain -s "$KEYCHAIN_NAME"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
-          security set-keychain-settings -t 3600 -u "$KEYCHAIN_NAME"
+          # Set environment variables for later steps
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
 
       - name: Build and Upload to TestFlight
+        env:
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          FASTLANE_USER: ${{ secrets.APPLE_ID }}
+          FASTLANE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         run: |
           cd ios
-          # Use the environment variable with the full path
-          bundle exec fastlane beta api_key_path:$APPSTORE_AUTH_FILE use_api_key:true
+          # Use app-specific password approach instead of API key
+          bundle exec fastlane beta
           
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
