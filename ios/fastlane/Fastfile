@@ -22,18 +22,42 @@ platform :ios do
     
     # These actions will only run on CI (GitHub Actions) or macOS
     unless FastlaneCore::Helper.windows?
+      # Update code signing settings
+      update_code_signing_settings(
+        use_automatic_signing: false,
+        team_id: ENV["TEAM_ID"] || CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
+        code_sign_identity: "Apple Distribution",
+        bundle_identifier: ENV["BUNDLE_IDENTIFIER"] || CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier),
+        profile_name: "AppStore #{ENV["BUNDLE_IDENTIFIER"] || CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)}",
+        build_configurations: ["Release"],
+        path: "Sfocra.xcodeproj"
+      )
+      
       # Build the app
       build_app(
         workspace: "Sfocra.xcworkspace",
         scheme: "Sfocra",
         output_directory: "build",
         output_name: "Sfocra.ipa",
-        export_method: "app-store"
+        export_method: "app-store",
+        clean: true,
+        skip_profile_detection: true,
+        export_options: {
+          method: "app-store",
+          teamID: ENV["TEAM_ID"] || CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+        }
       )
       
       # Upload to TestFlight
       upload_to_testflight(
-        skip_waiting_for_build_processing: true
+        skip_waiting_for_build_processing: true,
+        apple_id: CredentialsManager::AppfileConfig.try_fetch_value(:apple_id),
+        api_key_path: ENV["API_KEY_PATH"],
+        api_key: {
+          key_id: ENV["API_KEY_ID"],
+          issuer_id: ENV["ISSUER_ID"],
+          key_filepath: ENV["API_KEY_PATH"]
+        }
       )
     else
       UI.important("Running on Windows - skipping iOS build and upload steps. These will run on CI.")

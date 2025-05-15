@@ -13,6 +13,9 @@ jobs:
       BUNDLE_GEMFILE: ${{ github.workspace }}/ios/Gemfile
       # Disable Hermes to work around podspec issues
       USE_HERMES: 0
+      # Add env variables for code signing
+      TEAM_ID: ${{ vars.APPLE_TEAM_ID}}
+      BUNDLE_IDENTIFIER: ${{ vars.BUNDLE_IDENTIFIER}}
 
     steps:
       - name: Checkout code
@@ -144,6 +147,40 @@ jobs:
         run: |
           cd ios
           bundle exec pod install
+
+      # Configure code signing using manual approach
+      - name: Set up code signing settings
+        run: |
+          cd ios
+          
+          # Create a keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          security create-keychain -p "github-actions" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "github-actions" $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
+          
+          # Configure Xcode project for CI Build
+          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_IDENTIFIER" Sfocra/Info.plist
+          
+          # Create an export options plist file
+          cat > ExportOptions.plist << EOL
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>$TEAM_ID</string>
+          </dict>
+          </plist>
+          EOL
+          
+          # Update project.pbxproj with team ID 
+          # Use perl for cross-platform compatibility instead of sed
+          perl -i -pe "s/DEVELOPMENT_TEAM = \"\";/DEVELOPMENT_TEAM = \"$TEAM_ID\";/g" Sfocra.xcodeproj/project.pbxproj
+          perl -i -pe "s/\"DEVELOPMENT_TEAM\[sdk=iphoneos\*\]\" = \"\";/\"DEVELOPMENT_TEAM[sdk=iphoneos*]\" = \"$TEAM_ID\";/g" Sfocra.xcodeproj/project.pbxproj
 
       - name: Configure Apple Credentials
         env:
